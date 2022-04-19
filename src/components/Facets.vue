@@ -7,15 +7,12 @@ const terms = ref([])
 
 const emit = defineEmits(['applied'])
 const apply = () => {
-  const termsActual = terms.value
-  console.log(termsActual)
-  emit('applied', termsActual)
+  emit('applied', terms.value)
 }
 
 function rootTerms (facet) {
   return facet.terms.filter(t => !t.parent)
 }
-
 </script>
 
 <template>

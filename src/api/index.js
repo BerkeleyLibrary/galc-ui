@@ -15,7 +15,7 @@ function allFacets () {
 }
 
 function allItems () {
-  return jsonApi().findAll('items', { include: 'terms' })
+  return jsonApi().findAll('items')
 }
 
 // TODO: encapsulate all this in an object?

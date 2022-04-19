@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, defineProps } from 'vue'
-import SearchBox from './components/SearchBox.vue'
+import Search from './components/Search.vue'
 import Facets from './components/Facets.vue'
 import { useGalcStore } from './stores/galc'
 import { useConfigStore } from './stores/config'
@@ -19,7 +19,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <SearchBox/>
+  <Search/>
   <Facets/>
 </template>
 
