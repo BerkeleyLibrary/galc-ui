@@ -1,5 +1,6 @@
 import JsonApi from 'devour-client'
 import { useConfigStore } from '../stores/config'
+import camelcaseKeys from 'camelcase-keys'
 
 export default {
   facets () {
@@ -31,6 +32,7 @@ function jsonApi () {
 
 function initJsonApi () {
   const jsonApi = new JsonApi({ apiUrl: apiBaseUrl() })
+  jsonApi.insertMiddlewareBefore('response', camelcaseMiddleware)
 
   // noinspection JSUnusedGlobalSymbols
   jsonApi.define(
@@ -90,3 +92,11 @@ function config () {
   return _config
 }
 
+const camelcaseMiddleware = {
+  name: 'camelcase-middleware',
+  res: (payload) => {
+    const axiosData = payload.res.data
+    axiosData.data = camelcaseKeys(axiosData.data, { deep: true })
+    return payload
+  }
+}

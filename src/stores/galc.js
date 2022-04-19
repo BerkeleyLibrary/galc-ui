@@ -16,7 +16,7 @@ export const useGalcStore = defineStore('galc', {
     reloadItems () {
       const store = this
       GalcAPI.items()
-        .then(({ data, errors, meta, links }) => { store.items = data})
+        .then(({ data, errors, meta, links }) => { store.items = data })
         .catch((error) => console.log(error))
     }
   }
