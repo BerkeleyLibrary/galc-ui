@@ -1,21 +1,23 @@
 <script setup>
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
-import HelloWorld from './components/HelloWorld.vue'
+import { onMounted } from 'vue'
+import SearchBox from './components/SearchBox.vue'
+import Facets from './components/Facets.vue'
+import { useGalcStore } from './stores'
+import { useConfigStore } from './stores/config'
+
+const galc = useGalcStore()
+const config = useConfigStore()
+
+onMounted(() => {
+  config.baseUrl = new URL('http://localhost:3000/') // TODO: inject this
+  galc.reloadFacets()
+})
 </script>
 
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Hello Vue 3 + Vite" />
+  <SearchBox/>
+  <Facets/>
 </template>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
 </style>
