@@ -1,9 +1,10 @@
 <script setup>
 import { onMounted, defineProps } from 'vue'
-import Search from './components/Search.vue'
-import Facets from './components/Facets.vue'
 import { useGalcStore } from './stores/galc'
 import { useConfigStore } from './stores/config'
+import Search from './components/Search.vue'
+import Facets from './components/Facets.vue'
+import Results from './components/Results.vue'
 
 const props = defineProps({
   apiBaseUrl: { type: String, default: null }
@@ -21,6 +22,7 @@ onMounted(() => {
 <template>
   <Search/>
   <Facets/>
+  <Results/>
 </template>
 
 <style>

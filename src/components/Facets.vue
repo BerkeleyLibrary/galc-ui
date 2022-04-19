@@ -1,8 +1,11 @@
 <script setup>
 import { defineEmits, ref } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useGalcStore } from '../stores/galc'
 
 const galc = useGalcStore()
+const { facets } = storeToRefs(galc)
+
 const terms = ref([])
 
 const emit = defineEmits(['applied'])
@@ -17,7 +20,7 @@ function rootTerms (facet) {
 
 <template>
   <form class="facets">
-    <fieldset v-for="facet in galc.facets" :key="facet.id">
+    <fieldset v-for="facet in facets" :key="facet.id">
       <details>
         <summary>{{ facet.name }}</summary>
         <template v-for="term in rootTerms(facet)" :key="term.id">
