@@ -1,14 +1,21 @@
 import JsonApi from 'devour-client'
 import { useConfigStore } from '../stores/config'
 
-// TODO: make sure these return Promises & handle errors properly
 export default {
   facets () {
-    return jsonApi().findAll('facets', { include: 'terms' })
+    return allFacets()
   },
   items () {
-    return jsonApi().findAll('items', { include: 'terms' })
+    return allItems()
   }
+}
+
+function allFacets () {
+  return jsonApi().findAll('facets', { include: 'terms' })
+}
+
+function allItems () {
+  return jsonApi().findAll('items', { include: 'terms' })
 }
 
 // TODO: encapsulate all this in an object?
@@ -25,6 +32,7 @@ function jsonApi () {
 function initJsonApi () {
   const jsonApi = new JsonApi({ apiUrl: apiBaseUrl() })
 
+  // noinspection JSUnusedGlobalSymbols
   jsonApi.define(
     'facet',
     {
@@ -81,3 +89,4 @@ function config () {
   }
   return _config
 }
+

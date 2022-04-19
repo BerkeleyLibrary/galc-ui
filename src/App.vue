@@ -2,7 +2,7 @@
 import { onMounted, defineProps } from 'vue'
 import SearchBox from './components/SearchBox.vue'
 import Facets from './components/Facets.vue'
-import { useGalcStore } from './stores'
+import { useGalcStore } from './stores/galc'
 import { useConfigStore } from './stores/config'
 
 const props = defineProps({
