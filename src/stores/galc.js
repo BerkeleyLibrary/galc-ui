@@ -4,8 +4,22 @@ import GalcAPI from '../api/index.js'
 export const useGalcStore = defineStore('galc', {
   state: () => ({
     items: [],
-    facets: []
+    facets: [],
+    selectedTermsByFacet: {}
   }),
+  getters: {
+    getSelectedTerms: (state) => {
+      return (facet) => {
+        let selectedTerms = state.selectedTermsByFacet[facet]
+        if (!selectedTerms) {
+          // TODO: can we get away with mutating the state here?
+          selectedTerms = []
+          state.selectedTermsByFacet[facet] = selectedTerms
+        }
+        return selectedTerms
+      }
+    }
+  },
   actions: {
     reloadFacets () {
       const store = this

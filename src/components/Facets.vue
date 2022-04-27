@@ -1,45 +1,24 @@
 <script setup>
-import { defineEmits, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useGalcStore } from '../stores/galc'
+import Facet from './Facet.vue'
 
 const galc = useGalcStore()
 const { facets } = storeToRefs(galc)
-
-const terms = ref([])
-
-const emit = defineEmits(['applied'])
-const apply = () => {
-  emit('applied', terms.value)
-}
-
-function rootTerms (facet) {
-  return facet.terms.filter(t => !t.parent)
-}
+const getSelectedTerms = galc.getSelectedTerms
 </script>
 
 <template>
-  <form class="facets">
+  <form class="galc-facets">
     <fieldset v-for="facet in facets" :key="facet.id">
-      <details>
-        <summary>{{ facet.name }}</summary>
-        <template v-for="term in rootTerms(facet)" :key="term.id">
-          <input :id="`term-${term.id}`" v-model="terms" :value="term.id" type="checkbox" @change="apply()">
-          <label :for="`term-${term.id}`">{{ term.value }}</label>
-          <fieldset v-if="term.children">
-            <template v-for="child in term.children" :key="child.id">
-              <input :id="`child-${child.id}`" v-model="terms" :value="child.id" type="checkbox" @change="apply()">
-              <label :for="`child-${child.id}`">{{ child.value }}</label>
-            </template>
-          </fieldset>
-        </template>
-      </details>
+      <Facet :facet="facet" :selected-terms="getSelectedTerms(facet)"/>
     </fieldset>
   </form>
 </template>
 
-<style scoped lang="scss">
-.facets {
+<!-- TODO: figure out how to use scoped styles & still style subcomponent here -->
+<style lang="scss">
+form.galc-facets {
   display: grid;
   grid-template-columns: min-content min-content minmax(0, 1fr);
   column-gap: 0.25rem; // TODO: something sensible
@@ -54,6 +33,10 @@ function rootTerms (facet) {
       summary {
         grid-column: 1 / 4;
         list-style: none;
+
+        &::-webkit-details-marker {
+          display: none;
+        }
 
         &::after {
           content: ' ';
@@ -71,25 +54,25 @@ function rootTerms (facet) {
           background-image: url('../assets/angle-up.svg');
         }
       }
-    }
-
-    input {
-      grid-column: 1;
-    }
-
-    label {
-      grid-column: 2 / 4;
-    }
-
-    fieldset {
-      display: contents;
 
       input {
-        grid-column: 2;
+        grid-column: 1;
       }
 
       label {
-        grid-column: 3 / 4;
+        grid-column: 2 / 4;
+      }
+
+      fieldset {
+        display: contents;
+
+        input {
+          grid-column: 2;
+        }
+
+        label {
+          grid-column: 3 / 4;
+        }
       }
     }
   }
