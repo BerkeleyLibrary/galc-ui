@@ -3,56 +3,46 @@ import { storeToRefs } from 'pinia'
 import { useGalcStore } from '../stores/galc'
 import Facet from './Facet.vue'
 
-const galc = useGalcStore()
-const { facets } = storeToRefs(galc)
-const getSelectedTerms = galc.getSelectedTerms
+const galcStore = useGalcStore()
+const { facets } = storeToRefs(galcStore)
+const { getSelectedTerms, setSelectedTerms } = galcStore
+
+function applySelection (payload) {
+  console.log('applySelection(%o)', payload)
+  const { facet, selectedTerms } = payload
+  setSelectedTerms(facet, selectedTerms)
+}
+
 </script>
 
 <template>
-  <form class="galc-facets">
-    <fieldset v-for="facet in facets" :key="facet.id">
-      <Facet :facet="facet" :selected-terms="getSelectedTerms(facet)"/>
-    </fieldset>
+  <form class="galc-facet-form">
+    <Facet
+      v-for="facet in facets"
+      :id="`galc-facet-${facet.name}`"
+      :key="facet.name"
+      :facet="facet"
+      :selected-terms="getSelectedTerms(facet)"
+      @applied="applySelection"
+    />
   </form>
 </template>
 
 <!-- TODO: figure out how to use scoped styles & still style subcomponent here -->
 <style lang="scss">
-form.galc-facets {
+form.galc-facet-form {
   display: grid;
-  grid-template-columns: min-content min-content minmax(0, 1fr);
+  grid-template-columns: min-content max-content minmax(0, 1fr);
   column-gap: 0.25rem; // TODO: something sensible
   row-gap: 0.5rem; // TODO: something sensible
+  align-items: start;
 
   > fieldset {
-    display: contents;
 
     details {
-      display: contents;
 
       summary {
         grid-column: 1 / 4;
-        list-style: none;
-
-        &::-webkit-details-marker {
-          display: none;
-        }
-
-        &::after {
-          content: ' ';
-          padding-left: 1em;
-          background-repeat: no-repeat;
-          background-position: center;
-          background-size: 1em 1em;
-          background-image: url('../assets/angle-down.svg');
-          width: 2em;
-        }
-      }
-
-      &[open] {
-        summary::after {
-          background-image: url('../assets/angle-up.svg');
-        }
       }
 
       input {
@@ -64,7 +54,6 @@ form.galc-facets {
       }
 
       fieldset {
-        display: contents;
 
         input {
           grid-column: 2;

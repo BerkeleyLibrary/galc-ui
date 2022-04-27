@@ -20,10 +20,30 @@ onMounted(() => {
 </script>
 
 <template>
-  <Search/>
-  <Facets/>
-  <Results/>
+  <section class="galc">
+    <h2 class="galc-title">Search the collection</h2>
+    <Search class="galc-search"/>
+    <Facets class="galc-facets"/>
+    <Results class="galc-results"/>
+  </section>
 </template>
 
-<style>
+<style lang="scss">
+section.galc {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: start;
+
+  .galc-title, .galc-search {
+    grid-column: 1 / span 2;
+  }
+
+  .galc-facets {
+    grid-column: 1;
+  }
+
+  .galc-results {
+    grid-column: 2;
+  }
+}
 </style>

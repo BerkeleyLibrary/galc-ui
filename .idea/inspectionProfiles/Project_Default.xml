@@ -10,6 +10,9 @@
     <inspection_tool class="GoUnusedGlobalVariable" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="GoUnusedVariable" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="GrazieInspection" enabled="false" level="TYPO" enabled_by_default="false" />
+    <inspection_tool class="JSUnusedAssignment" enabled="true" level="INFORMATION" enabled_by_default="true" />
+    <inspection_tool class="JSUnusedGlobalSymbols" enabled="true" level="INFORMATION" enabled_by_default="true" />
+    <inspection_tool class="JSUnusedLocalSymbols" enabled="true" level="INFORMATION" enabled_by_default="true" />
     <inspection_tool class="LanguageDetectionInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="Rubocop" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="RubyCaseWithoutElseBlockInspection" enabled="false" level="WARNING" enabled_by_default="false" />

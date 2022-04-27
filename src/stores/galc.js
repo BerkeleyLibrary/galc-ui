@@ -7,20 +7,17 @@ export const useGalcStore = defineStore('galc', {
     facets: [],
     selectedTermsByFacet: {}
   }),
-  getters: {
-    getSelectedTerms: (state) => {
-      return (facet) => {
-        let selectedTerms = state.selectedTermsByFacet[facet]
-        if (!selectedTerms) {
-          // TODO: can we get away with mutating the state here?
-          selectedTerms = []
-          state.selectedTermsByFacet[facet] = selectedTerms
-        }
-        return selectedTerms
-      }
-    }
-  },
   actions: {
+    getSelectedTerms (facet) {
+      if (!(facet in this.selectedTermsByFacet)) {
+        this.selectedTermsByFacet[facet] = []
+      }
+      return this.selectedTermsByFacet[facet]
+    },
+    setSelectedTerms (facet, selectedTerms) {
+      console.log('setSelectedTerms(%o, %o)', facet, selectedTerms)
+      this.selectedTermsByFacet[facet] = selectedTerms
+    },
     reloadFacets () {
       const store = this
       GalcAPI.facets()

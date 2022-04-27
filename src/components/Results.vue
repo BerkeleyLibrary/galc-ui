@@ -2,8 +2,8 @@
 import { storeToRefs } from 'pinia'
 import { useGalcStore } from '../stores/galc'
 
-const galc = useGalcStore()
-const { items } = storeToRefs(galc)
+const galcStore = useGalcStore()
+const { items } = storeToRefs(galcStore)
 
 // TODO: make this configurable
 const imageBase = 'https://digitalassets.lib.berkeley.edu/galc/ucb/images/'
@@ -22,7 +22,7 @@ function thumbnailFor (item) {
           <img :src="thumbnailFor(item)" :alt="item.title" class="thumbnail">
         </td>
         <td>
-          <table class="metadata">
+          <table class="galc-metadata">
             <thead>
               <tr>
                 <th colspan="2">{{ item.title }}</th>
@@ -41,8 +41,10 @@ function thumbnailFor (item) {
   </table>
 </template>
 
-<style scoped lang="scss">
-img.thumbnail {
-  width: 180px;
+<style lang="scss">
+table.galc-results {
+  img.thumbnail {
+    width: 180px;
+  }
 }
 </style>
