@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, defineProps } from 'vue'
-import { useGalcStore } from './stores/galc'
+import { useGalcStore } from './stores/galcStore'
 import { useConfigStore } from './stores/config'
 import Search from './components/Search.vue'
 import Facets from './components/Facets.vue'

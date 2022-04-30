@@ -1,5 +1,5 @@
 <script setup>
-import { useGalcStore } from '../stores/galc'
+import { useGalcStore } from '../stores/galcStore'
 
 const galc = useGalcStore()
 

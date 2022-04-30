@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia'
-import { useGalcStore } from '../stores/galc'
+import { useGalcStore } from '../stores/galcStore'
 
 const galcStore = useGalcStore()
 const { items } = storeToRefs(galcStore)

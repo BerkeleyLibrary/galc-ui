@@ -6,8 +6,8 @@ export default {
   facets () {
     return allFacets()
   },
-  items () {
-    return allItems()
+  items (params = {}) {
+    return allItems(params)
   }
 }
 
@@ -15,8 +15,8 @@ function allFacets () {
   return jsonApi().findAll('facets', { include: 'terms' })
 }
 
-function allItems () {
-  return jsonApi().findAll('items')
+function allItems (params = {}) {
+  return jsonApi().findAll('items', params)
 }
 
 // TODO: encapsulate all this in an object?

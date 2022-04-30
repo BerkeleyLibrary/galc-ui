@@ -1,6 +1,7 @@
 <script setup>
 import { storeToRefs } from 'pinia'
-import { useGalcStore } from '../stores/galc'
+import { stringify } from 'flatted'
+import { useGalcStore } from '../stores/galcStore'
 import Facet from './Facet.vue'
 
 const galcStore = useGalcStore()
@@ -8,7 +9,7 @@ const { facets } = storeToRefs(galcStore)
 const { getSelectedTerms, setSelectedTerms } = galcStore
 
 function applySelection (payload) {
-  console.log('applySelection(%o)', payload)
+  console.log(`applySelection(${stringify(payload)})`)
   const { facet, selectedTerms } = payload
   setSelectedTerms(facet, selectedTerms)
 }
