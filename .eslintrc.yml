@@ -12,4 +12,6 @@ rules:
   'vue/html-closing-bracket-spacing': 0
   'vue/max-attributes-per-line': 0
   'vue/singleline-html-element-content-newline': 0
-
+  'dot-notation':
+    - error
+    - allowPattern: '^[A-Z]'

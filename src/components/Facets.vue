@@ -7,6 +7,9 @@ const { facets, searchPerformed } = storeToRefs(useGalcStore())
 
 </script>
 
+<!-- TODO: provide a way to clear all facets -->
+<!-- TODO: provide ways to clear individual facets -->
+
 <template>
   <form v-if="searchPerformed" class="galc-facet-form">
     <h3 class="galc-facet-title">Refine your results</h3>
@@ -21,7 +24,7 @@ const { facets, searchPerformed } = storeToRefs(useGalcStore())
 
 <!-- TODO: figure out how to use scoped styles & still style subcomponent here -->
 <style lang="scss">
-form.galc-facet-form {
+form.galc-facets {
   display: grid;
   grid-template-columns: min-content max-content minmax(0, 1fr);
   align-items: center;
