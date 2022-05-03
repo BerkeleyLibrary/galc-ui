@@ -9,7 +9,7 @@ const { facets, searchPerformed } = storeToRefs(useGalcStore())
 
 <template>
   <form v-if="searchPerformed" class="galc-facet-form">
-    <p class="galc-facet-title">Refine your results</p>
+    <h3 class="galc-facet-title">Refine your results</h3>
     <Facet
       v-for="facet in facets"
       :id="`galc-facet-${facet.name}`"
@@ -24,14 +24,15 @@ const { facets, searchPerformed } = storeToRefs(useGalcStore())
 form.galc-facet-form {
   display: grid;
   grid-template-columns: min-content max-content minmax(0, 1fr);
-  align-items: start;
+  align-items: center;
+  justify-items: start;
 
   // TODO: rationalize these measurements
-  column-gap: 0.25rem;
-  row-gap: 0.5rem;
+  column-gap: 0.5rem;
+  row-gap: 0;
   margin-right: 2rem;
 
-  p.galc-facet-title {
+  .galc-facet-title {
     white-space: nowrap;
     grid-column: 1 / 4;
     margin-bottom: 0;

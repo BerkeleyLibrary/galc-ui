@@ -46,5 +46,16 @@ const currentSelection = computed({
 <style lang="scss">
 div.galc-term-selection {
   display: contents;
+
+  label {
+    white-space: nowrap;
+    height: min-content;
+    font-weight: normal;
+    line-height: 1.15;
+  }
+
+  fieldset.galc-facet-subterms {
+    display: contents;
+  }
 }
 </style>

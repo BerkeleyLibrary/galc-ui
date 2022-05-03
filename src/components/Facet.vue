@@ -37,6 +37,7 @@ fieldset.galc-facet {
       white-space: nowrap;
       display: block;
       height: min-content;
+      font-weight: bold;
 
       &::-webkit-details-marker {
         display: none;
@@ -59,15 +60,6 @@ fieldset.galc-facet {
       }
     }
 
-    label {
-      white-space: nowrap;
-      height: min-content;
-      font-weight: normal;
-    }
-
-    fieldset.galc-facet-subterms {
-      display: contents;
-    }
   }
 }
 </style>
