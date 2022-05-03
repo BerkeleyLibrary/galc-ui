@@ -1,46 +1,53 @@
 <script setup>
-import { computed, defineEmits, defineProps, ref } from 'vue'
+import { computed, defineProps } from 'vue'
+import { useGalcStore } from '../stores/galcStore'
+
+const { getTermSelection, setTermSelection } = useGalcStore()
 
 // ------------------------------------------------------------
 // Properties
 
 const props = defineProps({
-  facet: { type: Object, default: null },
-  selectedTerms: { type: Array, default: () => [] }
+  facet: { type: Object, default: null }
 })
 
 // ------------------------------------------------------------
 // Local state
 
+const facetName = computed(() => props.facet.name)
 const rootTerms = computed(() => props.facet.terms.filter(t => !t.parent))
-const currentSelection = ref(props.selectedTerms)
 
-// ------------------------------------------------------------
-// Events
-
-const emit = defineEmits(['applied'])
-
-function apply () {
-  const payload = { facet: props.facet, selectedTerms: this.currentSelection }
-  emit('applied', payload)
-}
+const currentSelection = computed({
+  get () {
+    return getTermSelection(facetName.value)
+  },
+  set (selection) {
+    setTermSelection(facetName.value, selection)
+  }
+})
 </script>
 
 <template>
   <fieldset class="galc-facet">
     <details>
-      <summary>{{ facet.name }}</summary>
+      <summary>{{ facetName }}</summary>
       <template v-for="term in rootTerms" :key="term.id">
-        <input :id="`term-${term.id}`" v-model="currentSelection" :value="term" type="checkbox" @change="apply()">
+        <!-- TODO: extract a TermSelection component -->
+        <input
+          :id="`term-${term.id}`"
+          v-model="currentSelection"
+          :value="term.value"
+          type="checkbox"
+        >
         <label :for="`term-${term.id}`">{{ term.value }}</label>
         <fieldset v-if="term.children" class="galc-facet-subterms">
           <template v-for="child in term.children" :key="child.id">
+            <!-- TODO: extract a TermSelection component -->
             <input
               :id="`child-${child.id}`"
               v-model="currentSelection"
-              :value="child"
+              :value="child.value"
               type="checkbox"
-              @change="apply()"
             >
             <label :for="`child-${child.id}`">{{ child.value }}</label>
           </template>

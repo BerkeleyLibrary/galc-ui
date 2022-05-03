@@ -1,37 +1,32 @@
 import { defineStore } from 'pinia'
-import { stringify } from 'flatted'
 import GalcAPI from '../api/index.js'
 
 export const useGalcStore = defineStore('galc', {
   state: () => ({
     items: [],
     facets: [],
-    selectedTermsByFacetName: {}
+    facetTermSelection: {}
   }),
   getters: {
     itemParams (state) {
       const params = {}
-      for (const [facetName, terms] of Object.entries(state.selectedTermsByFacetName)) {
-        if (terms && terms.length) {
-          params[`filter[${facetName}]`] = terms.map(t => t.value).join(',')
+      for (const [facetName, termValues] of Object.entries(state.facetTermSelection)) {
+        if (termValues && termValues.length) {
+          params[`filter[${facetName}]`] = termValues.join(',')
         }
       }
       return params
     }
   },
   actions: {
-    // TODO: explicitly use facet names and term values
-    getSelectedTerms (facet) {
-      if (!(facet.name in this.selectedTermsByFacetName)) {
-        this.setSelectedTerms(facet, [])
+    getTermSelection (facetName) {
+      if (!(facetName in this.facetTermSelection)) {
+        this.setTermSelection(facetName, [])
       }
-      return this.selectedTermsByFacetName[facet.name]
+      return this.facetTermSelection[facetName]
     },
-    // TODO: explicitly use facet names and term values
-    setSelectedTerms (facet, selectedTerms) {
-      const newSelection = Object.assign({}, this.selectedTermsByFacetName)
-      newSelection[facet.name] = selectedTerms
-      this.selectedTermsByFacetName = newSelection
+    setTermSelection (facetName, termSelection) {
+      this.facetTermSelection[facetName] = termSelection
     },
     reloadFacets () {
       GalcAPI.facets()
@@ -40,7 +35,6 @@ export const useGalcStore = defineStore('galc', {
     },
     reloadItems () {
       const itemParams = this.itemParams
-      console.log(`reloadItems(): itemParams: ${stringify(itemParams)}`)
       GalcAPI.items(itemParams)
         .then(this.updateItems)
         .catch((error) => console.log(error))
