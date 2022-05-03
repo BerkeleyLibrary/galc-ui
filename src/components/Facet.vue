@@ -1,8 +1,6 @@
 <script setup>
 import { computed, defineProps } from 'vue'
-import { useGalcStore } from '../stores/galcStore'
-
-const { getTermSelection, setTermSelection } = useGalcStore()
+import TermSelection from './TermSelection.vue'
 
 // ------------------------------------------------------------
 // Properties
@@ -16,43 +14,13 @@ const props = defineProps({
 
 const facetName = computed(() => props.facet.name)
 const rootTerms = computed(() => props.facet.terms.filter(t => !t.parent))
-
-const currentSelection = computed({
-  get () {
-    return getTermSelection(facetName.value)
-  },
-  set (selection) {
-    setTermSelection(facetName.value, selection)
-  }
-})
 </script>
 
 <template>
   <fieldset class="galc-facet">
     <details>
       <summary>{{ facetName }}</summary>
-      <template v-for="term in rootTerms" :key="term.id">
-        <!-- TODO: extract a TermSelection component -->
-        <input
-          :id="`term-${term.id}`"
-          v-model="currentSelection"
-          :value="term.value"
-          type="checkbox"
-        >
-        <label :for="`term-${term.id}`">{{ term.value }}</label>
-        <fieldset v-if="term.children" class="galc-facet-subterms">
-          <template v-for="child in term.children" :key="child.id">
-            <!-- TODO: extract a TermSelection component -->
-            <input
-              :id="`child-${child.id}`"
-              v-model="currentSelection"
-              :value="child.value"
-              type="checkbox"
-            >
-            <label :for="`child-${child.id}`">{{ child.value }}</label>
-          </template>
-        </fieldset>
-      </template>
+      <TermSelection v-for="term in rootTerms" :key="term.id" :facet="props.facet" :term="term"/>
     </details>
   </fieldset>
 </template>
