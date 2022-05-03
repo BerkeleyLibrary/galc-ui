@@ -94,6 +94,7 @@ fieldset.galc-facet {
     label {
       white-space: nowrap;
       height: min-content;
+      font-weight: normal;
     }
 
     fieldset.galc-facet-subterms {
