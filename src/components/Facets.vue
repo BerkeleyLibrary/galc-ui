@@ -3,11 +3,12 @@ import { storeToRefs } from 'pinia'
 import { useGalcStore } from '../stores/galcStore'
 import Facet from './Facet.vue'
 
-const { facets } = storeToRefs(useGalcStore())
+const { facets, searchPerformed } = storeToRefs(useGalcStore())
+
 </script>
 
 <template>
-  <form class="galc-facet-form">
+  <form v-if="searchPerformed" class="galc-facet-form">
     <Facet
       v-for="facet in facets"
       :id="`galc-facet-${facet.name}`"
@@ -29,7 +30,6 @@ form.galc-facet-form {
   > fieldset {
 
     details {
-
       summary {
         grid-column: 1 / 4;
       }

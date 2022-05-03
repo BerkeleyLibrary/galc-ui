@@ -2,6 +2,23 @@
   <profile version="1.0">
     <option name="myName" value="Project Default" />
     <inspection_tool class="ConvertOneChainedExprToSafeNavigation" enabled="true" level="INFORMATION" enabled_by_default="true" />
+    <inspection_tool class="CssNonIntegerLengthInPixels" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="CssOverwrittenProperties" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CssUnknownProperty" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="myCustomPropertiesEnabled" value="true" />
+      <option name="myIgnoreVendorSpecificProperties" value="false" />
+      <option name="myCustomPropertiesList">
+        <value>
+          <list size="5">
+            <item index="0" class="java.lang.String" itemvalue="transform" />
+            <item index="1" class="java.lang.String" itemvalue="text-decoration" />
+            <item index="2" class="java.lang.String" itemvalue="text-decoration-skip" />
+            <item index="3" class="java.lang.String" itemvalue="text-decoration-line" />
+            <item index="4" class="java.lang.String" itemvalue="text-decoration-skip-ink" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
     <inspection_tool class="Eslint" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="useSeverityFromConfigFile" value="false" />
     </inspection_tool>

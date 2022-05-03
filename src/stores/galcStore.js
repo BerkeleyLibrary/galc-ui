@@ -5,7 +5,8 @@ export const useGalcStore = defineStore('galc', {
   state: () => ({
     items: [],
     facets: [],
-    facetTermSelection: {}
+    facetTermSelection: {},
+    searchPerformed: false
   }),
   getters: {
     itemParams (state) {
@@ -21,29 +22,34 @@ export const useGalcStore = defineStore('galc', {
   actions: {
     getTermSelection (facetName) {
       if (!(facetName in this.facetTermSelection)) {
-        this.setTermSelection(facetName, [])
+        return []
       }
       return this.facetTermSelection[facetName]
     },
     setTermSelection (facetName, termSelection) {
       this.facetTermSelection[facetName] = termSelection
+      this.performSearch()
     },
-    reloadFacets () {
+    loadFacets () {
       GalcAPI.facets()
         .then(this.updateFacets)
         .catch((error) => console.log(error))
     },
-    reloadItems () {
+    performSearch () {
       const itemParams = this.itemParams
+      console.log('performSearch: %o', itemParams)
       GalcAPI.items(itemParams)
-        .then(this.updateItems)
+        .then(this.updateResults)
         .catch((error) => console.log(error))
     },
     updateFacets ({ data, errors, meta, links }) {
       this.facets = data
     },
-    updateItems ({ data, errors, meta, links }) {
-      this.items = data
+    updateResults ({ data, errors, meta, links }) {
+      this.$patch({
+        searchPerformed: true,
+        items: data
+      })
     }
   }
 })

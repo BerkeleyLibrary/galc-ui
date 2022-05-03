@@ -15,7 +15,7 @@ const config = useConfigStore()
 
 onMounted(() => {
   config.baseUrl = props.apiBaseUrl
-  galc.reloadFacets()
+  galc.loadFacets()
 })
 </script>
 
