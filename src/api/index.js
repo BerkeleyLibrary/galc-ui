@@ -16,7 +16,8 @@ function allFacets () {
 }
 
 function allItems (params = {}) {
-  return jsonApi().findAll('items', params)
+  const paramsActual = { include: 'terms', ...params }
+  return jsonApi().findAll('items', paramsActual)
 }
 
 // TODO: encapsulate all this in an object?
@@ -33,25 +34,34 @@ function jsonApi () {
 function initJsonApi () {
   const jsonApi = new JsonApi({ apiUrl: apiBaseUrl() })
   jsonApi.insertMiddlewareBefore('response', camelcaseMiddleware)
+  defineFacet(jsonApi)
+  defineTerm(jsonApi)
+  defineItem(jsonApi)
+  return jsonApi
+}
 
-  // noinspection JSUnusedGlobalSymbols
+function defineFacet (jsonApi) {
   jsonApi.define(
     'facet',
     {
       name: '',
-      terms: { jsonApi: 'hasMany', type: 'term' } // TODO: should this be plural?
+      terms: { jsonApi: 'hasMany', type: 'term' }
     }
   )
+}
 
+function defineTerm (jsonApi) {
   jsonApi.define(
     'term',
     {
       value: '',
       facet: { jsonApi: 'hasOne', type: 'facet' },
       parent: { jsonApi: 'hasOne', type: 'term' },
-      children: { jsonApi: 'hasMany', type: 'term' } // TODO: should this be plural?
+      children: { jsonApi: 'hasMany', type: 'term' }
     })
+}
 
+function defineItem (jsonApi) {
   jsonApi.define(
     'item',
     {
@@ -76,7 +86,6 @@ function initJsonApi () {
       terms: { jsonApi: 'hasMany', type: 'term' }
     }
   )
-  return jsonApi
 }
 
 function apiBaseUrl () {
