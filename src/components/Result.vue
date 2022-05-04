@@ -26,22 +26,30 @@ const props = defineProps({
 // Local state
 
 // TODO: does this need to be reactive?
-const item = props.item
 const facetTerms = getFacetTerms()
 
-const thumbnailUrl = new URL(item.image, imageBase)
+const thumbnailUrl = new URL(props.item.image, imageBase)
 
-const media = facetTerms['Medium']
-const date = itemDate()
-const genre = itemGenre()
-const size = itemSize()
-const colors = itemColors()
-// const metadata = extractMetadata()
+const medium = facetValue('Medium')
+const genre = facetValue('Genre')
+const size = facetValue('Size')
+const colors = facetValue('Colors')
+
+const metadata = {
+  Date: props.item.date || 'No Date',
+  Decade: facetValue('Decade'),
+  Size: size,
+  Dimensions: props.item.dimensions,
+  Genre: genre,
+  Colors: colors,
+  Series: props.item.series
+}
 
 // ------------------------------------------------------------
 // Helper functions
 
 function getFacetTerms () {
+  const item = props.item
   const terms = {}
   if (item.terms) {
     for (const term of item.terms) {
@@ -55,66 +63,12 @@ function getFacetTerms () {
   return terms
 }
 
-// const attrKeys = ['Date', 'Decade', 'Medium', 'Genre', 'Dimensions', 'Size', 'Colors', 'Series', 'Description']
-
-// TODO: DRY these
-function itemGenre () {
-  const genreTerms = facetTerms['Genre']
-  if (genreTerms) {
-    return genreTerms.join(', ')
+function facetValue (facetName) {
+  const terms = facetTerms[facetName]
+  if (terms) {
+    return terms.join(', ')
   }
 }
-
-// TODO: DRY these
-function itemSize () {
-  const sizeTerms = facetTerms['Size']
-  if (sizeTerms) {
-    return sizeTerms.join(', ')
-  }
-}
-
-// TODO: DRY these
-function itemColors () {
-  const colorsTerms = facetTerms['Colors']
-  if (colorsTerms) {
-    return colorsTerms.join(', ')
-  }
-}
-
-// TODO: DRY these
-function itemDate () {
-  const date = item.date
-  if (date) {
-    console.log('Returning item date %o', date)
-    return date
-  }
-  const decadeTerms = facetTerms['Decade']
-  if (decadeTerms) {
-    const decade = decadeTerms.join(', ')
-    if (decade.length > 0 && decade !== 'No Date') {
-      console.log('Returning decade %o', decade)
-      return decade
-    }
-  }
-  console.log('No date found')
-}
-
-// function extractMetadata () {
-//   const metadata = {}
-//   for (const attrKey of attrKeys) {
-//     const facetValues = facetTerms[attrKey]
-//     if (facetValues) {
-//       metadata[attrKey] = facetValues.sort()
-//     } else {
-//       const attrVal = item[attrKey.toLowerCase()]
-//       if (attrVal) {
-//         metadata[attrKey] = [attrVal]
-//       }
-//     }
-//   }
-//   console.log('metdata: %o', metadata)
-//   return metadata
-// }
 
 function getFacetName (term) {
   const facetId = term.facet.id
@@ -127,25 +81,23 @@ function getFacetName (term) {
 
 <template>
   <section class="galc-result">
-    <img :src="thumbnailUrl" alt="thumbnail" class="galc-thumbnail">
-
-    <ul class="galc-result-medium">
-      <li v-for="medium in media" :key="medium">{{ medium }}</li>
-    </ul>
-    <h4 class="galc-result-title">{{ item.title }}</h4>
-    <p class="galc-result-artist">
-      {{ item.artist }}
-    </p>
-    <ul class="galc-result-metadata">
-      <!-- TODO: DRY these -->
-      <li v-if="date">{{ date }}</li>
-      <li v-if="genre">{{ genre }}</li>
-      <li v-if="item.dimensions">{{ item.dimensions }}</li>
-      <li v-if="size">{{ size }}</li>
-      <li v-if="colors">{{ colors }}</li>
-      <li v-if="item.series">{{ item.series }}</li>
-      <li v-if="item.description">{{ item.description }}</li>
-    </ul>
+    <div class="galc-result-thumbnail">
+      <img :src="thumbnailUrl" alt="thumbnail" class="galc-thumbnail">
+    </div>
+    <div class="galc-result-details">
+      <p class="galc-result-medium">{{ medium }}</p>
+      <h4 class="galc-result-title">{{ item.title }}</h4>
+      <p class="galc-result-artist">{{ item.artist }}</p>
+      <p class="galc-result-description">{{ item.description }}</p>
+      <table class="galc-result-metadata">
+        <template v-for="(v, k) in metadata" :key="k">
+          <tr v-if="v">
+            <th>{{ k }}</th>
+            <td>{{ v }}</td>
+          </tr>
+        </template>
+      </table>
+    </div>
     <!-- TODO: availability -->
     <!-- TODO: request button -->
   </section>
@@ -155,63 +107,72 @@ function getFacetName (term) {
 .galc-result {
   display: grid;
   grid-template-columns: max-content  minmax(0, 1fr);
-  grid-template-rows: min-content min-content min-content minmax(0, 1fr);
+  grid-column-gap: 0.5em;
   align-items: start;
   justify-items: start;
 
-  h4, p {
-    margin: 0;
-    line-height: 1em;
-  }
-
-  // TODO: rationalize these measurements
-  column-gap: 0.5rem;
-  row-gap: 0;
-
-  img.galc-thumbnail {
-    width: 120px;
+  .galc-result-thumbnail {
     grid-column: 1;
-    grid-row: 1 / 5;
-    margin-right: 0.5rem;
-  }
 
-  ul.galc-result-medium {
-    grid-column: 2;
-    grid-row: 1;
-
-    list-style-type: none;
-    padding-left: 0;
-    font-size: 0.75em;
-    line-height: 1em;
-
-    li {
-      display: inline-block;
-      text-transform: uppercase;
-      margin: 0;
-
-      &:not(:first-of-type) {
-        &::before {
-          content: ', ';
-        }
-      }
+    img.galc-thumbnail {
+      width: 180px;
+      grid-column: 1;
+      grid-row: 1 / 6;
+      margin-right: 0.5rem;
     }
   }
 
-  ul.galc-result-metadata {
-    display: block;
-    list-style-type: none;
-    padding-left: 0;
-    font-size: 1rem;
-    line-height: 1.15em;
-    margin-top: 0.35em;
+  .galc-result-details {
+    grid-column: 2;
+    width: 100%;
 
-    li {
-      display: inline;
+    h4, p {
+      line-height: 1.15em;
+      margin-top: 0;
+    }
 
-      // TODO: handle trailing periods in description better
-      &:not(:last-of-type) {
-        &::after {
-          content: '. '
+    p {
+      margin-bottom: 0.25em;
+    }
+
+    p.galc-result-medium {
+      font-size: 0.75em;
+      line-height: 1em;
+      text-transform: uppercase;
+      margin: 0;
+    }
+
+    h4.galc-result-title {
+      margin: 0;
+    }
+
+    p.galc-result-artist {
+
+    }
+
+    p.galc-result-description {
+      font-size: 1rem;
+    }
+
+    table.galc-result-metadata {
+      display: grid;
+      width: 100%;
+      grid-template-columns: min-content min-content min-content minmax(0, 1fr);
+      font-size: 1rem;
+      line-height: 1.25rem;
+      margin-top: 1rem;
+
+      tr {
+        display: contents;
+
+        th {
+          display: block;
+        }
+
+        td {
+          display: block;
+          padding-left: 0.5em;
+          padding-right: 1em;
         }
       }
     }
