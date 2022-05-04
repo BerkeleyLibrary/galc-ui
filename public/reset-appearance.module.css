@@ -4,12 +4,12 @@
  */
 
 .reset-appearance {
-  margin: 0;
-  padding: 0;
-  border: 0 none;
-  background: transparent;
-  line-height: inherit;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
+    margin: 0;
+    padding: 0;
+    border: 0 none;
+    background: transparent;
+    line-height: inherit;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }

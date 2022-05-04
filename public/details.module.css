@@ -6,5 +6,5 @@
  */
 
 .js details:not([open]) .details-wrapper {
-  display: none;
+    display: none;
 }

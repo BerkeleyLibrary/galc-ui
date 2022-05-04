@@ -5,9 +5,10 @@
 
 .container-inline div,
 .container-inline label {
-  display: inline;
+    display: inline;
 }
+
 /* Details contents always need to be rendered as block. */
 .container-inline .details-wrapper {
-  display: block;
+    display: block;
 }
