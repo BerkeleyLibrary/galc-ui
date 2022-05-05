@@ -4,6 +4,7 @@ import GalcAPI from '../api/index.js'
 export const useGalcStore = defineStore('galc', {
   state: () => ({
     items: [],
+    availability: {},
     facets: [],
     facetTermSelection: {},
     searchPerformed: false
@@ -25,6 +26,9 @@ export const useGalcStore = defineStore('galc', {
         return []
       }
       return this.facetTermSelection[facetName]
+    },
+    getAvailability (item) {
+      return this.availability[item.mmsId]
     },
     setTermSelection (facetName, termSelection) {
       this.facetTermSelection[facetName] = termSelection
@@ -48,7 +52,8 @@ export const useGalcStore = defineStore('galc', {
     updateResults ({ data, errors, meta, links }) {
       this.$patch({
         searchPerformed: true,
-        items: data
+        items: data,
+        availability: meta.availability
       })
     }
   }

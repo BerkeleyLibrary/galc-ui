@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps } from 'vue'
+import { computed, defineProps } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useGalcStore } from '../stores/galcStore'
 
@@ -14,6 +14,7 @@ const imageBase = 'https://digitalassets.lib.berkeley.edu/galc/ucb/images/'
 
 const galcStore = useGalcStore()
 const { facets } = storeToRefs(galcStore)
+const { getAvailability } = galcStore
 
 // ------------------------------------------------------------
 // Properties
@@ -29,19 +30,15 @@ const props = defineProps({
 const facetTerms = getFacetTerms()
 
 const thumbnailUrl = new URL(props.item.image, imageBase)
-
-const medium = facetValue('Medium')
-const genre = facetValue('Genre')
-const size = facetValue('Size')
-const colors = facetValue('Colors')
+const available = computed(() => getAvailability(props.item))
 
 const metadata = {
   Date: props.item.date || 'No Date',
   Decade: facetValue('Decade'),
-  Size: size,
+  Size: facetValue('Size'),
   Dimensions: props.item.dimensions,
-  Genre: genre,
-  Colors: colors,
+  Genre: facetValue('Genre'),
+  Colors: facetValue('Colors'),
   Series: props.item.series
 }
 
@@ -76,40 +73,77 @@ function getFacetName (term) {
   const facet = facets.value.find((f) => f.id === facetId)
   return facet && facet.name
 }
-
 </script>
 
 <template>
   <section class="galc-result">
+    <!-- {{ item.mmsId }} -->
     <div class="galc-result-thumbnail">
       <img :src="thumbnailUrl" alt="thumbnail" class="galc-thumbnail">
     </div>
     <div class="galc-result-details">
-      <p class="galc-result-medium">{{ medium }}</p>
-      <h4 class="galc-result-title">{{ item.title }}</h4>
-      <p class="galc-result-artist">{{ item.artist }}</p>
-      <p class="galc-result-description">{{ item.description }}</p>
-      <table class="galc-result-metadata">
-        <template v-for="(v, k) in metadata" :key="k">
-          <tr v-if="v">
-            <th>{{ k }}</th>
-            <td>{{ v }}</td>
+      <div class="galc-result-header">
+        <p class="galc-result-medium">{{ facetValue('Medium') }}</p>
+        <h4 class="galc-result-title">{{ item.title }}</h4>
+        <p class="galc-result-artist">{{ item.artist }}</p>
+        <p class="galc-result-metadata">{{ item.description }}</p>
+      </div>
+      <div class="galc-result-body">
+        <table class="galc-result-metadata">
+          <template v-for="(v, k) in metadata" :key="k">
+            <tr v-if="v">
+              <th>{{ k }}</th>
+              <td>{{ v }}</td>
+            </tr>
+          </template>
+          <tr>
+            <th>Available</th>
+            <td>{{ available }}</td>
           </tr>
-        </template>
-      </table>
+        </table>
+        <p v-if="item.permalinkUri" class="galc-result-metadata">
+          <a href="{{ item.permalinkUri }}">View library catalog record</a>.
+        </p>
+      </div>
+      <div class="galc-result-actions">
+        <!-- TODO: make this do something -->
+        <button v-if="available">Request this item</button>
+        <button v-else disabled>Item unavailable</button>
+      </div>
     </div>
-    <!-- TODO: availability -->
-    <!-- TODO: request button -->
   </section>
 </template>
 
 <style lang="scss">
 .galc-result {
   display: grid;
-  grid-template-columns: max-content  minmax(0, 1fr);
+  grid-template-columns: max-content minmax(0, 1fr);
   grid-column-gap: 0.5em;
   align-items: start;
   justify-items: start;
+
+  button {
+    align-self: end;
+    width: 180px;
+    white-space: nowrap;
+    text-transform: uppercase;
+    font-weight: 700;
+    height: 42px;
+    padding: 6px 10px;
+    transition: background-color .25s, color .25s;
+    color: #000;
+    font-size: 1rem;
+
+    &:hover {
+      background-color: #000;
+      color: #fff;
+    }
+
+    &:disabled {
+      color: #46535e;
+      background-color: #eeeeee;
+    }
+  }
 
   .galc-result-thumbnail {
     grid-column: 1;
@@ -126,13 +160,39 @@ function getFacetName (term) {
     grid-column: 2;
     width: 100%;
 
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 180px;
+    align-items: end;
+
+    div.galc-result-header, div.galc-result-footer {
+      grid-column: 1 / 3;
+    }
+
+    div.galc-result-body {
+      grid-column: 1;
+    }
+
+    div.galc-result-actions {
+      grid-column: 2;
+    }
+
+    .galc-result-metadata {
+      font-size: 1rem;
+      line-height: 1.25rem;
+    }
+
     h4, p {
       line-height: 1.15em;
       margin-top: 0;
     }
 
     p {
-      margin-bottom: 0.25em;
+      &:last-of-type {
+        margin-bottom: 0;
+      }
+      &:not(:last-of-type) {
+        margin-bottom: 0.25em;
+      }
     }
 
     p.galc-result-medium {
@@ -146,14 +206,6 @@ function getFacetName (term) {
       margin: 0;
     }
 
-    p.galc-result-artist {
-
-    }
-
-    p.galc-result-description {
-      font-size: 1rem;
-    }
-
     table.galc-result-metadata {
       display: grid;
       width: 100%;
@@ -161,6 +213,7 @@ function getFacetName (term) {
       font-size: 1rem;
       line-height: 1.25rem;
       margin-top: 1rem;
+      margin-bottom: 1rem;
 
       tr {
         display: contents;

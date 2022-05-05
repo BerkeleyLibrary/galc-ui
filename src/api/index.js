@@ -83,6 +83,7 @@ function defineItem (jsonApi) {
       reserveDate: null,
       createdAt: null,
       updatedAt: null,
+      permalinkUri: null,
       terms: { jsonApi: 'hasMany', type: 'term' }
     }
   )
@@ -101,6 +102,7 @@ function config () {
   return _config
 }
 
+// TODO: do this on server side with JSONAPI::Serializer.set_key_transform
 const camelcaseMiddleware = {
   name: 'camelcase-middleware',
   res: (payload) => {
