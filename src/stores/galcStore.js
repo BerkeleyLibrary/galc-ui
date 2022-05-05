@@ -7,7 +7,8 @@ export const useGalcStore = defineStore('galc', {
     availability: {},
     facets: [],
     facetTermSelection: {},
-    searchPerformed: false
+    searchPerformed: false,
+    loading: false
   }),
   getters: {
     itemParams (state) {
@@ -42,14 +43,23 @@ export const useGalcStore = defineStore('galc', {
     performSearch () {
       const itemParams = this.itemParams
       console.log('performSearch: %o', itemParams)
+      this.startLoading()
       GalcAPI.items(itemParams)
         .then(this.updateResults)
         .catch((error) => console.log(error))
+        .finally(this.stopLoading)
+    },
+    startLoading () {
+      this.loading = true
+    },
+    stopLoading () {
+      this.loading = false
     },
     updateFacets ({ data, errors, meta, links }) {
       this.facets = data
     },
     updateResults ({ data, errors, meta, links }) {
+      console.log('availability: %o', meta.availability)
       this.$patch({
         searchPerformed: true,
         items: data,
