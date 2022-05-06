@@ -7,7 +7,6 @@ const galcStore = useGalcStore()
 
 const { performSearch } = galcStore
 
-// TODO: figure out why this doesn't work
 const { loading } = storeToRefs(galcStore)
 </script>
 
@@ -25,10 +24,18 @@ const { loading } = storeToRefs(galcStore)
         @search="apply()"
       >
       <input id="galc-search-terms-submit" type="submit" value="Search" @click="$event.target.blur(); performSearch();">
+      <Spinner v-if="loading"/>
     </form>
-    <Spinner v-if="loading"/>
   </div>
 </template>
 
-<style scoped>
+<style lang="scss">
+form#galc-search-form {
+  position: relative;
+  margin-bottom: 20px;
+
+  input {
+    margin-bottom: 0;
+  }
+}
 </style>

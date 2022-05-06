@@ -1,6 +1,10 @@
 import { defineStore } from 'pinia'
 import GalcAPI from '../api/index.js'
 
+function handleError (msg) {
+  return (error) => console.log(`${msg}: %o`, error)
+}
+
 export const useGalcStore = defineStore('galc', {
   state: () => ({
     items: [],
@@ -38,7 +42,7 @@ export const useGalcStore = defineStore('galc', {
     loadFacets () {
       GalcAPI.facets()
         .then(this.updateFacets)
-        .catch((error) => console.log(error))
+        .catch(handleError('loadFacets failed'))
     },
     performSearch () {
       const itemParams = this.itemParams
@@ -46,13 +50,15 @@ export const useGalcStore = defineStore('galc', {
       this.startLoading()
       GalcAPI.items(itemParams)
         .then(this.updateResults)
-        .catch((error) => console.log(error))
+        .catch(handleError('performSearch failed'))
         .finally(this.stopLoading)
     },
     startLoading () {
+      console.log('startLoading()')
       this.loading = true
     },
     stopLoading () {
+      console.log('stopLoading()')
       this.loading = false
     },
     updateFacets ({ data, errors, meta, links }) {
