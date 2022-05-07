@@ -23,6 +23,7 @@ const { loading } = storeToRefs(galcStore)
         @keyup.enter="apply()"
         @search="apply()"
       >
+      <!-- TODO: actually use search terms -->
       <input id="galc-search-terms-submit" type="submit" value="Search" @click="$event.target.blur(); performSearch();">
       <Spinner v-if="loading"/>
     </form>
