@@ -1,13 +1,12 @@
 <script setup>
 import { storeToRefs } from 'pinia'
 import { useGalcStore } from '../stores/galcStore'
-import Spinner from './Spinner.vue'
 
 const galcStore = useGalcStore()
 
 const { clearTermSelection, performSearch } = galcStore
 
-const { loading, keywords } = storeToRefs(galcStore)
+const { keywords } = storeToRefs(galcStore)
 
 function apply (event) {
   event.target.blur()
@@ -32,7 +31,6 @@ function apply (event) {
       >
       <!-- TODO: actually use search terms -->
       <input id="galc-search-terms-submit" type="submit" value="Search" @click="apply">
-      <Spinner v-if="loading"/>
     </form>
   </div>
 </template>

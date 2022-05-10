@@ -7,8 +7,8 @@ const { facets, searchPerformed } = storeToRefs(useGalcStore())
 
 </script>
 
-<!-- TODO: provide a way to clear all facets -->
-<!-- TODO: provide ways to clear individual facets -->
+<!-- TODO: provide a UI to clear all facets -->
+<!-- TODO: provide UI to clear individual facets -->
 
 <template>
   <form v-if="searchPerformed" class="galc-facet-form">
