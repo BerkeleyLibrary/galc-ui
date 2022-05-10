@@ -79,13 +79,16 @@ function getFacetName (term) {
   <section class="galc-result">
     <!-- {{ item.mmsId }} -->
     <div class="galc-result-thumbnail">
-      <img :key="thumbnailUrl" :src="thumbnailUrl" alt="thumbnail" class="galc-thumbnail">
+      <img :key="thumbnailUrl" :src="thumbnailUrl" :alt="`thumbnail of “${item.title}” by ${item.artist}`" class="galc-thumbnail">
     </div>
     <div class="galc-result-details">
       <div class="galc-result-header">
         <p class="galc-result-medium">{{ facetValue('Medium') }}</p>
         <h4 class="galc-result-title">{{ item.title }}</h4>
-        <p class="galc-result-artist">{{ item.artist }}</p>
+        <p class="galc-result-artist">
+          <a v-if="item.artistUrl" :href="item.artistUrl" target="_blank" rel="noopener">{{ item.artist }}</a>
+          <template v-else>{{ item.artist }}</template>
+        </p>
         <p class="galc-result-metadata">{{ item.description }}</p>
       </div>
       <div class="galc-result-body">
@@ -101,9 +104,6 @@ function getFacetName (term) {
             <td>{{ available }}</td>
           </tr>
         </table>
-        <p v-if="item.permalinkUri" class="galc-result-metadata">
-          <a href="{{ item.permalinkUri }}">View library catalog record</a>.
-        </p>
       </div>
       <div class="galc-result-actions">
         <!-- TODO: make this do something -->

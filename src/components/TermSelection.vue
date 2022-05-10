@@ -38,6 +38,7 @@ const currentSelection = computed({
     >
     <label :for="`term-${term.id}`">{{ term.value }}</label>
     <fieldset v-if="term.children" class="galc-facet-subterms">
+      <legend>{{ term.value }}</legend>
       <TermSelection v-for="child in term.children" :key="child.id" :facet="props.facet" :term="child"/>
     </fieldset>
   </div>

@@ -46,6 +46,7 @@ function onToggle (event) {
 
 <template>
   <fieldset class="galc-facet">
+    <legend>{{ facetName }}</legend>
     <details :open="expanded" @toggle="onToggle">
       <summary>{{ facetName }}</summary>
       <TermSelection v-for="term in rootTerms" :key="term.id" :facet="props.facet" :term="term"/>
@@ -56,6 +57,12 @@ function onToggle (event) {
 <style lang="scss">
 fieldset.galc-facet {
   display: contents;
+
+  legend {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+  }
 
   details {
     display: contents;
