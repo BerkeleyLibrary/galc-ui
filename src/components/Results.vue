@@ -1,6 +1,7 @@
 <script setup>
 import { storeToRefs } from 'pinia'
 import { useGalcStore } from '../stores/galcStore'
+import Facets from './Facets.vue'
 import Result from './Result.vue'
 import Spinner from './Spinner.vue'
 
@@ -12,7 +13,8 @@ const { items, loading, searchPerformed } = storeToRefs(galcStore)
 <template>
   <div class="galc-results">
     <Spinner v-if="loading"/>
-    <div v-if="searchPerformed && items.length === 0" class="galc-no-results">
+    <Facets class="galc-facets"/>
+    <div v-if="searchPerformed && items.length === 0" class="galc-results-list galc-no-results">
       <h3>Your search yielded no results</h3>
       <ul>
         <li>
@@ -33,6 +35,22 @@ const { items, loading, searchPerformed } = storeToRefs(galcStore)
 </template>
 
 <style lang="scss">
+div.galc-results {
+  position: relative;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: start;
+  min-height: 24px;
+
+  .galc-facets {
+    grid-column: 1;
+  }
+
+  .galc-results-list {
+    grid-column: 2;
+  }
+}
+
 div.galc-no-results {
   p, ul, li {
     line-height: 1.15em;

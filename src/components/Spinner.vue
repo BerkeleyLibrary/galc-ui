@@ -16,22 +16,28 @@ import spinnerUrl from '../assets/circle-notch.svg'
 }
 
 div.galc-spinner-overlay {
+
+  $img-size: 24px;
+
   position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
+  min-height: $img-size;
   display: flex;
   pointer-events: none;
 
+  backdrop-filter: contrast(0.25) brightness(2) grayscale(1);
+
   img {
-    height: 24px !important;
-    width: 24px !important;
+    height: $img-size !important;
+    width: $img-size !important;
     display: block;
-    margin: auto;
+    margin-left: auto;
+    margin-right: auto;
 
     animation: spin 1.5s linear infinite;
-    filter: invert(0.75);
+    //opacity: 1 !important;
+    //filter: invert(1);
   }
 }
 </style>

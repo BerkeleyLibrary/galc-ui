@@ -79,7 +79,7 @@ function getFacetName (term) {
   <section class="galc-result">
     <!-- {{ item.mmsId }} -->
     <div class="galc-result-thumbnail">
-      <img :src="thumbnailUrl" alt="thumbnail" class="galc-thumbnail">
+      <img :key="thumbnailUrl" :src="thumbnailUrl" alt="thumbnail" class="galc-thumbnail">
     </div>
     <div class="galc-result-details">
       <div class="galc-result-header">

@@ -3,7 +3,6 @@ import { onMounted, defineProps } from 'vue'
 import { useGalcStore } from './stores/galcStore'
 import { useConfigStore } from './stores/config'
 import Search from './components/Search.vue'
-import Facets from './components/Facets.vue'
 import Results from './components/Results.vue'
 
 const props = defineProps({
@@ -23,7 +22,6 @@ onMounted(() => {
   <section class="galc">
     <h2 class="galc-title">Search the collection</h2>
     <Search class="galc-search"/>
-    <Facets class="galc-facets"/>
     <Results class="galc-results"/>
   </section>
 </template>
