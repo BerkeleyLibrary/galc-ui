@@ -5,9 +5,15 @@ import Spinner from './Spinner.vue'
 
 const galcStore = useGalcStore()
 
-const { performSearch } = galcStore
+const { clearTermSelection, performSearch } = galcStore
 
-const { loading } = storeToRefs(galcStore)
+const { loading, keywords } = storeToRefs(galcStore)
+
+function apply (event) {
+  event.target.blur()
+  clearTermSelection()
+  performSearch()
+}
 </script>
 
 <template>
@@ -16,15 +22,16 @@ const { loading } = storeToRefs(galcStore)
       <label for="galc-search-terms">Search Terms</label>
       <input
         id="galc-search-terms"
+        v-model="keywords"
         name="search_terms"
         type="text"
         placeholder="Search by artist, title, genre, medium, size, etc."
         @keydown.enter.prevent
-        @keyup.enter="apply()"
-        @search="apply()"
+        @keyup.enter="apply"
+        @search="apply"
       >
       <!-- TODO: actually use search terms -->
-      <input id="galc-search-terms-submit" type="submit" value="Search" @click="$event.target.blur(); performSearch();">
+      <input id="galc-search-terms-submit" type="submit" value="Search" @click="apply">
       <Spinner v-if="loading"/>
     </form>
   </div>

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import GalcAPI from '../api/index.js'
+import GalcAPI from '../api/galcApi.js'
 
 function handleError (msg) {
   return (error) => console.log(`${msg}: %o`, error)
@@ -11,6 +11,7 @@ export const useGalcStore = defineStore('galc', {
     availability: {},
     facets: [],
     facetTermSelection: {},
+    keywords: '',
     searchPerformed: false,
     loading: false
   }),
@@ -21,6 +22,10 @@ export const useGalcStore = defineStore('galc', {
         if (termValues && termValues.length) {
           params[`filter[${facetName}]`] = termValues.join(',')
         }
+      }
+      const keywords = state.keywords && state.keywords.trim()
+      if (keywords) {
+        params['filter[keywords]'] = keywords
       }
       return params
     }
@@ -38,6 +43,9 @@ export const useGalcStore = defineStore('galc', {
     setTermSelection (facetName, termSelection) {
       this.facetTermSelection[facetName] = termSelection
       this.performSearch()
+    },
+    clearTermSelection () {
+      this.facetTermSelection = {}
     },
     loadFacets () {
       GalcAPI.facets()

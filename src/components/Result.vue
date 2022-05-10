@@ -47,6 +47,7 @@ const metadata = {
 
 function getFacetTerms () {
   const item = props.item
+  console.log(item)
   const terms = {}
   if (item.terms) {
     for (const term of item.terms) {
