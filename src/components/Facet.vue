@@ -26,19 +26,15 @@ const { facetExpanded } = galcStore
 const expanded = computed({
   get: () => {
     const rawValue = facetExpanded[facetName.value]
-    const value = !!rawValue
-    console.log('facetExpanded[%o] => %o => %o', facetName.value, rawValue, value)
-    return value
+    return !!rawValue
   },
   set: (v) => {
-    console.log('facetExpanded[%o] = %o', facetName.value, v)
     facetExpanded[facetName.value] = v
   }
 })
 
 // TODO: figure out why setting facetExpanded = false in galcStore.clearTermSelection() only works if we're also doing this
 function onToggle (event) {
-  console.log('onToggle(%o); expanded = %o', event, expanded.value)
   expanded.value = event.target.open
 }
 

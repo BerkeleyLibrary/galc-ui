@@ -9,6 +9,8 @@ export const useGalcStore = defineStore('galc', {
   state: () => ({
     items: [],
     availability: {},
+    pagination: {},
+    links: {},
     facets: [],
     facetTermSelection: {},
     facetExpanded: {},
@@ -80,10 +82,14 @@ export const useGalcStore = defineStore('galc', {
     },
     updateResults ({ data, errors, meta, links }) {
       console.log('availability: %o', meta.availability)
+      console.log('pagination', meta.pagination)
+      console.log('links', links)
       this.$patch({
         searchPerformed: true,
         items: data,
-        availability: meta.availability
+        availability: meta.availability,
+        pagination: meta.pagination,
+        links: links
       })
     }
   }
