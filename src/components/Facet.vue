@@ -1,5 +1,6 @@
 <script setup>
 import { computed, defineProps } from 'vue'
+import { useGalcStore } from '../stores/galcStore'
 import TermSelection from './TermSelection.vue'
 
 // ------------------------------------------------------------
@@ -14,11 +15,38 @@ const props = defineProps({
 
 const facetName = computed(() => props.facet.name)
 const rootTerms = computed(() => props.facet.terms.filter(t => !t.parent))
+
+// ------------------------------------------------------------
+// Store
+
+const galcStore = useGalcStore()
+const { facetExpanded } = galcStore
+
+// TODO: figure out why this is all more complicated than it ought to be
+const expanded = computed({
+  get: () => {
+    const rawValue = facetExpanded[facetName.value]
+    const value = !!rawValue
+    console.log('facetExpanded[%o] => %o => %o', facetName.value, rawValue, value)
+    return value
+  },
+  set: (v) => {
+    console.log('facetExpanded[%o] = %o', facetName.value, v)
+    facetExpanded[facetName.value] = v
+  }
+})
+
+// TODO: figure out why setting facetExpanded = false in galcStore.clearTermSelection() only works if we're also doing this
+function onToggle (event) {
+  console.log('onToggle(%o); expanded = %o', event, expanded.value)
+  expanded.value = event.target.open
+}
+
 </script>
 
 <template>
   <fieldset class="galc-facet">
-    <details>
+    <details :open="expanded" @toggle="onToggle">
       <summary>{{ facetName }}</summary>
       <TermSelection v-for="term in rootTerms" :key="term.id" :facet="props.facet" :term="term"/>
     </details>

@@ -11,6 +11,7 @@ export const useGalcStore = defineStore('galc', {
     availability: {},
     facets: [],
     facetTermSelection: {},
+    facetExpanded: {},
     keywords: '',
     searchPerformed: false,
     loading: false
@@ -31,21 +32,26 @@ export const useGalcStore = defineStore('galc', {
     }
   },
   actions: {
+    getAvailability (item) {
+      return this.availability[item.mmsId]
+    },
     getTermSelection (facetName) {
       if (!(facetName in this.facetTermSelection)) {
         return []
       }
       return this.facetTermSelection[facetName]
     },
-    getAvailability (item) {
-      return this.availability[item.mmsId]
-    },
     setTermSelection (facetName, termSelection) {
       this.facetTermSelection[facetName] = termSelection
       this.performSearch()
     },
     clearTermSelection () {
+      console.log('clearTermSelection()')
       this.facetTermSelection = {}
+      for (const facetName of this.facets.map(f => f.name)) {
+        console.log('this.facetExpanded[%o] = false', facetName)
+        this.facetExpanded[facetName] = false
+      }
     },
     loadFacets () {
       GalcAPI.facets()
