@@ -14,7 +14,9 @@ export default defineConfig({
       entry: path.resolve(__dirname, 'src/main.js'),
       name: 'GALC',
       filename: (fmt) => `galc.${fmt}.js`
-    }
+    },
+    minify: false,
+    sourcemap: true
   },
   plugins: [vue()]
 })

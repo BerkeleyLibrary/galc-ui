@@ -27,5 +27,17 @@
     "eslint-plugin-vue": "^8.6.0",
     "sass": "^1.50.1",
     "vite": "^2.9.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "module": "./dist/galc-ui.es.js",
+  "main": "./dist/galc-ui.umd.js",
+  "exports": {
+    ".": {
+      "import": "./dist/galc-ui.es.js",
+      "require": "./dist/galc-ui-umd.js"
+    },
+    "./css": "./dist/style.css"
   }
 }
