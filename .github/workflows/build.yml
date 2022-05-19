@@ -1,12 +1,20 @@
 name: Build
 on: [ push, pull_request, workflow_dispatch ]
+env:
+  BUILD_TAG: sha-${{ github.sha }}
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js for publishing to GitHub Packages
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+          registry-url: 'https://npm.pkg.github.com'
 
       - name: Cache node modules
         uses: actions/cache@v2
@@ -22,3 +30,15 @@ jobs:
 
       - name: Build
         run: yarn build
+
+      - name: Upload build output
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist/**
+
+      - name: Publish
+        run: yarn publish --tag ${{ env.BUILD_TAG }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
