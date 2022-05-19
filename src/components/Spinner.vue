@@ -25,6 +25,7 @@ div.galc-spinner-overlay {
   min-height: $img-size;
   display: flex;
   pointer-events: none;
+  padding-top: 0.375em;
 
   backdrop-filter: contrast(0.25) brightness(2) grayscale(1);
 
