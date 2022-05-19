@@ -60,6 +60,7 @@ export const useGalcStore = defineStore('galc', {
         .then(this.updateFacets)
         .catch(handleError('loadFacets failed'))
     },
+    // TODO: unify w/performRawSearch
     performSearch () {
       const itemParams = this.itemParams
       console.log('performSearch: %o', itemParams)
@@ -67,6 +68,15 @@ export const useGalcStore = defineStore('galc', {
       GalcAPI.items(itemParams)
         .then(this.updateResults)
         .catch(handleError('performSearch failed'))
+        .finally(this.stopLoading)
+    },
+    // TODO: unify w/performSearch
+    performRawSearch (searchParams) {
+      console.log('performRawSearch: %o', searchParams)
+      this.startLoading()
+      GalcAPI.items(searchParams)
+        .then(this.updateResults)
+        .catch(handleError('performRawSearch failed'))
         .finally(this.stopLoading)
     },
     startLoading () {
@@ -81,14 +91,19 @@ export const useGalcStore = defineStore('galc', {
       this.facets = data
     },
     updateResults ({ data, errors, meta, links }) {
-      console.log('availability: %o', meta.availability)
-      console.log('pagination', meta.pagination)
+      const availability = meta.availability
+      const pagination = meta.pagination
+      console.log('availability: %o', availability)
+      const paginationKeys = Object.keys(pagination)
+      console.log('paginationKeys: %o', paginationKeys)
+      const paginationKeyCount = paginationKeys.length
+      console.log('pagination (%o): %o', paginationKeyCount, pagination)
       console.log('links', links)
       this.$patch({
         searchPerformed: true,
         items: data,
-        availability: meta.availability,
-        pagination: meta.pagination,
+        availability: availability,
+        pagination: pagination,
         links: links
       })
     }

@@ -38,7 +38,7 @@ form.galc-facets {
   .galc-facet-title {
     white-space: nowrap;
     grid-column: 1 / 4;
-    margin-bottom: 0;
+    margin-bottom: 0.25em;
   }
 
   > fieldset {
@@ -65,6 +65,12 @@ form.galc-facets {
         label {
           grid-column: 3 / 4;
         }
+      }
+    }
+
+    &:not(:first-of-type) {
+      summary {
+        margin-top: 0.25em;
       }
     }
   }

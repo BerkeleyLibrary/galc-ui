@@ -2,6 +2,7 @@
 import { storeToRefs } from 'pinia'
 import { useGalcStore } from '../stores/galcStore'
 import Facets from './Facets.vue'
+import PageNav from './PageNav.vue'
 import Result from './Result.vue'
 import Spinner from './Spinner.vue'
 
@@ -26,11 +27,14 @@ const { items, loading, searchPerformed } = storeToRefs(galcStore)
         </li>
       </ul>
     </div>
-    <ul v-else class="galc-results-list">
-      <li v-for="item in items" :key="item.id">
-        <Result :item="item"/>
-      </li>
-    </ul>
+    <div v-else>
+      <PageNav class="galc-page-nav"/>
+      <ul class="galc-results-list">
+        <li v-for="item in items" :key="item.id">
+          <Result :item="item"/>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -49,6 +53,7 @@ div.galc-results {
   .galc-results-list {
     grid-column: 2;
   }
+
 }
 
 div.galc-no-results {
@@ -71,20 +76,11 @@ ul.galc-results-list {
 
   li {
     display: block;
+    border-top: 1px solid #ddd5c7;
+    padding-top: 0.5rem;
 
     &:not(:last-of-type) {
       margin-bottom: 1rem;
-
-      //border-bottom: 1px solid #ddd5c7;
-
-      .galc-result-details {
-        //margin-bottom: 1rem;
-      }
-    }
-
-    &:not(:first-of-type) {
-      border-top: 1px solid #ddd5c7;
-      padding-top: 0.5rem;
     }
   }
 }
