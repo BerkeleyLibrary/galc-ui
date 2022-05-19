@@ -17,5 +17,8 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Check style
+        run: yarn lint
+
       - name: Build
         run: yarn build
