@@ -29,7 +29,6 @@ function apply (event) {
         @keyup.enter="apply"
         @search="apply"
       >
-      <!-- TODO: actually use search terms -->
       <input id="galc-search-terms-submit" type="submit" value="Search" @click="apply">
     </form>
   </div>
