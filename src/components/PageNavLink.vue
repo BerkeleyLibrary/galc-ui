@@ -24,7 +24,7 @@ function navigateTo (link) {
 
 <template>
   <li class="page-nav-link">
-    <a v-if="link && active" href="#" :rel="rel" :title="title" @click="navigateTo(link)">{{ text }}</a>
+    <a v-if="link && active" href="#" :rel="rel" :title="title" @click.prevent="navigateTo(link)">{{ text }}</a>
     <template v-else>{{ text }}</template>
   </li>
 </template>
