@@ -1,6 +1,22 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+
 const path = require('path')
+const fs = require('fs')
+
+function stripDevCSS () {
+  return {
+    name: 'strip-dev-css',
+    resolveId (source) {
+      return source === 'virtual-module' ? source : null
+    },
+    renderStart (outputOptions, inputOptions) {
+      const outDir = outputOptions.dir
+      const cssDir = path.resolve(outDir, 'css')
+      fs.rmdir(cssDir, { recursive: true }, () => console.log(`Deleted ${cssDir}`))
+    }
+  }
+}
 
 // https://vitejs.dev/config/
 // noinspection JSUnusedGlobalSymbols
@@ -16,7 +32,10 @@ export default defineConfig({
       filename: (fmt) => `galc.${fmt}.js`
     },
     minify: false,
+    rollupOptions: {
+      external: (id) => id.startsWith('/css/')
+    },
     sourcemap: true
   },
-  plugins: [vue()]
+  plugins: [vue(), stripDevCSS()]
 })
