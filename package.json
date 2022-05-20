@@ -38,5 +38,6 @@
       "require": "./dist/galc-ui-umd.js"
     },
     "./css": "./dist/style.css"
-  }
+  },
+  "version": "0.0.0"
 }
