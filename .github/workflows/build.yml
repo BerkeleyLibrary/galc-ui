@@ -22,7 +22,7 @@ jobs:
           key: cache-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install
 
       - name: Check style
         run: yarn lint
