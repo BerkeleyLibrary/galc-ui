@@ -38,7 +38,20 @@ jobs:
           name: dist
           path: dist/**
 
-      - name: Publish package
+      - name: Delete latest build package if present
+        if: github.event_name == 'push'
+        continue-on-error: true
+        uses: actions/delete-package-versions@v3
+        with:
+          package-version-ids: 0.0.0
+
+      - name: Publish latest build
+        if: github.event_name == 'push'
+        run: yarn publish --new-version 0.0.0 --no-git-tag-version --tag @"${GITHUB_SHA:0:7}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish released package
         if: github.event_name == 'release' && github.event.action == 'created'
         run: yarn publish
         env:
