@@ -52,6 +52,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: dist
+          path: dist
 
       - name: Delete latest snapshot package if present
         continue-on-error: true
@@ -81,6 +82,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: dist
+          path: dist
 
       - name: Publish release package
         run: yarn npm publish
