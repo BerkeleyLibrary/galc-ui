@@ -12,6 +12,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '16.x'
+          # TODO: is this still needed with yarn v3?
           registry-url: 'https://npm.pkg.github.com'
 
       - name: Cache node modules
@@ -50,12 +51,14 @@ jobs:
           ignore-versions: '^(?!0\\.0\\.0).+$'
           min-versions-to-keep: 0
 
-
       - name: Publish latest build
         if: github.event_name == 'push'
-        run: yarn publish --new-version 0.0.0 --no-git-tag-version --tag @"${GITHUB_SHA:0:7}"
+        run: |
+          yarn version 0.0.0 --immediate
+          yarn npm publish --tag @"${GITHUB_SHA:0:7}"
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          YARN_NPM_PUBLISH_REGISTRY: 'https://npm.pkg.github.com'
+          YARN_NPM_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish released package
         if: github.event_name == 'release' && github.event.action == 'created'
