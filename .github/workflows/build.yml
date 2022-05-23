@@ -43,7 +43,13 @@ jobs:
         continue-on-error: true
         uses: actions/delete-package-versions@v3
         with:
-          package-version-ids: 0.0.0
+          # TODO: Determine this programmatically
+          package-name: galc-ui
+          # TODO: something less janky
+          # NOTE: There's no way to specify a specific version name -- see https://github.com/actions/delete-package-versions/issues/61
+          ignore-versions: '^(?!0\\.0\\.0).+$'
+          min-versions-to-keep: 0
+
 
       - name: Publish latest build
         if: github.event_name == 'push'
@@ -53,6 +59,6 @@ jobs:
 
       - name: Publish released package
         if: github.event_name == 'release' && github.event.action == 'created'
-        run: yarn publish
+        run: yarn npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
