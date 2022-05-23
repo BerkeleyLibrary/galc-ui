@@ -1,19 +1,18 @@
 name: Build
 on: [ push, pull_request, release, workflow_dispatch ]
+
+env:
+  YARN_NPM_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  YARN_NPM_PUBLISH_REGISTRY: 'https://npm.pkg.github.com'
+
 jobs:
+
   build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
-
-      - name: Set up Node.js for publishing to GitHub Packages
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16.x'
-          # TODO: is this still needed with yarn v3?
-          registry-url: 'https://npm.pkg.github.com'
 
       - name: Cache node modules
         uses: actions/cache@v2
@@ -39,28 +38,49 @@ jobs:
           name: dist
           path: dist/**
 
-      - name: Delete latest build package if present
-        if: github.event_name == 'push'
+  # TODO: stop hard-coding ref_name and package-name
+  publish-snapshot:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref_name == 'main' && github.event_name == 'push'
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Download distribution
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
+
+      - name: Delete latest snapshot package if present
         continue-on-error: true
         uses: actions/delete-package-versions@v3
         with:
-          # TODO: Determine this programmatically
           package-name: galc-ui
-          # NOTE: There's no way to specify a specific version name -- see https://github.com/actions/delete-package-versions/issues/61
-          ignore-versions: '^(?!0\.0\.0).+$'
+          # Delete only '0.0.0' -- see https://github.com/actions/delete-package-versions/issues/61
+          ignore-versions: '^(?!0\.0\.0$).+'
           min-versions-to-keep: 0
 
-      - name: Publish latest build
+      - name: Publish latest snapshot
         if: github.event_name == 'push'
         run: |
           yarn version 0.0.0 --immediate
-          yarn npm publish --tag @"${GITHUB_SHA:0:7}"
-        env:
-          YARN_NPM_PUBLISH_REGISTRY: 'https://npm.pkg.github.com'
-          YARN_NPM_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          yarn npm publish
 
-      - name: Publish released package
-        if: github.event_name == 'release' && github.event.action == 'created'
+  publish-release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'created'
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Download distribution
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
+
+      - name: Publish release package
         run: yarn npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
