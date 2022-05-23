@@ -45,7 +45,7 @@ jobs:
         uses: actions/delete-package-versions@v3
         with:
           package-name: galc-ui
-          # ignore-versions: '^(?!0\\.0\\.0).+$'
+          ignore-versions: '^(?!0\.0\.0).+$'
           num-old-versions-to-delete: 99
 
       - name: Publish latest build
