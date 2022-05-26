@@ -1,5 +1,7 @@
 <script setup>
-import { onMounted, defineProps } from 'vue'
+/* global defineProps */
+
+import { onMounted } from 'vue'
 import { useGalcStore } from './stores/galcStore'
 import { useConfigStore } from './stores/config'
 import Search from './components/Search.vue'

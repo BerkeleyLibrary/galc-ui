@@ -87,23 +87,15 @@ export const useGalcStore = defineStore('galc', {
       console.log('stopLoading()')
       this.loading = false
     },
-    updateFacets ({ data, errors, meta, links }) {
+    updateFacets ({ data }) {
       this.facets = data
     },
-    updateResults ({ data, errors, meta, links }) {
-      const availability = meta.availability
-      const pagination = meta.pagination
-      console.log('availability: %o', availability)
-      const paginationKeys = Object.keys(pagination)
-      console.log('paginationKeys: %o', paginationKeys)
-      const paginationKeyCount = paginationKeys.length
-      console.log('pagination (%o): %o', paginationKeyCount, pagination)
-      console.log('links', links)
+    updateResults ({ data, meta, links }) {
       this.$patch({
         searchPerformed: true,
         items: data,
-        availability: availability,
-        pagination: pagination,
+        availability: meta.availability,
+        pagination: meta.pagination,
         links: links
       })
     }

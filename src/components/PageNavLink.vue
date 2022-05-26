@@ -1,12 +1,12 @@
 <script setup>
-import { defineProps } from 'vue'
+/* global defineProps */
+
 import { useGalcStore } from '../stores/galcStore'
 
 const galcStore = useGalcStore()
 const { performRawSearch } = galcStore
 
-// eslint-disable-next-line no-unused-vars
-const props = defineProps({
+defineProps({
   active: { type: Boolean, default: false },
   rel: { type: String, default: null },
   title: { type: String, default: null },
