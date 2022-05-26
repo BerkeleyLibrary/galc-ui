@@ -1,6 +1,4 @@
 <script setup>
-/* global defineProps */
-
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useGalcStore } from '../stores/galcStore'

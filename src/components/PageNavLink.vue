@@ -1,6 +1,4 @@
 <script setup>
-/* global defineProps */
-
 import { useGalcStore } from '../stores/galcStore'
 
 const galcStore = useGalcStore()

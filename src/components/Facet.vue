@@ -1,6 +1,4 @@
 <script setup>
-/* global defineProps */
-
 import { computed } from 'vue'
 import { useGalcStore } from '../stores/galcStore'
 import TermSelection from './TermSelection.vue'
