@@ -48,10 +48,8 @@ export const useGalcStore = defineStore('galc', {
       this.performSearch()
     },
     clearTermSelection () {
-      console.log('clearTermSelection()')
       this.facetTermSelection = {}
       for (const facetName of this.facets.map(f => f.name)) {
-        console.log('this.facetExpanded[%o] = false', facetName)
         this.facetExpanded[facetName] = false
       }
     },
@@ -60,23 +58,11 @@ export const useGalcStore = defineStore('galc', {
         .then(this.updateFacets)
         .catch(handleError('loadFacets failed'))
     },
-    // TODO: unify w/performRawSearch
-    performSearch () {
-      const itemParams = this.itemParams
-      console.log('performSearch: %o', itemParams)
-      this.startLoading()
-      GalcAPI.items(itemParams)
-        .then(this.updateResults)
-        .catch(handleError('performSearch failed'))
-        .finally(this.stopLoading)
-    },
-    // TODO: unify w/performSearch
-    performRawSearch (searchParams) {
-      console.log('performRawSearch: %o', searchParams)
+    performSearch (searchParams = this.itemParams) {
       this.startLoading()
       GalcAPI.items(searchParams)
         .then(this.updateResults)
-        .catch(handleError('performRawSearch failed'))
+        .catch(handleError('performSearch failed'))
         .finally(this.stopLoading)
     },
     startLoading () {

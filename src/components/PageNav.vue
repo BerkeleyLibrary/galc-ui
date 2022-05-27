@@ -54,7 +54,7 @@ nav.page-nav {
   margin-top: 0.375em;
   margin-bottom: 0.625em;
 
-  p.page-nav-items {
+  ul, p.page-nav-items {
     font-size: 1rem;
     line-height: 1.25rem;
     font-variant-numeric: lining-nums;
@@ -64,11 +64,7 @@ nav.page-nav {
   ul {
     display: flex;
     gap: 0.5em;
-    margin: 0;
     padding: 0;
-    font-size: 1rem;
-    line-height: 1.25rem;
-    font-variant-numeric: lining-nums;
 
     li {
       display: inline-block;

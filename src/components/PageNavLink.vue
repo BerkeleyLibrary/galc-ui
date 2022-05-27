@@ -2,7 +2,7 @@
 import { useGalcStore } from '../stores/galcStore'
 
 const galcStore = useGalcStore()
-const { performRawSearch } = galcStore
+const { performSearch } = galcStore
 
 defineProps({
   active: { type: Boolean, default: false },
@@ -15,7 +15,7 @@ defineProps({
 function navigateTo (link) {
   const linkUrl = new URL(link)
   const linkParams = Object.fromEntries(linkUrl.searchParams)
-  performRawSearch(linkParams)
+  performSearch(linkParams)
 }
 
 </script>
