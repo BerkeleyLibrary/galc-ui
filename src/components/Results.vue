@@ -1,13 +1,13 @@
 <script setup>
 import { storeToRefs } from 'pinia'
-import { useGalcStore } from '../stores/galcStore'
+import { useResultStore } from '../stores/results'
 import Facets from './Facets.vue'
 import PageNav from './PageNav.vue'
 import Result from './Result.vue'
 import Spinner from './Spinner.vue'
 
-const galcStore = useGalcStore()
-const { items, loading, searchPerformed } = storeToRefs(galcStore)
+const results = useResultStore()
+const { items, loading, searchPerformed } = storeToRefs(results)
 
 </script>
 

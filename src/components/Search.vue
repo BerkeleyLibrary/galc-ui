@@ -1,12 +1,12 @@
 <script setup>
 import { storeToRefs } from 'pinia'
-import { useGalcStore } from '../stores/galcStore'
+import { useSearchStore } from '../stores/search'
 
-const galcStore = useGalcStore()
+const search = useSearchStore()
 
-const { clearTermSelection, performSearch } = galcStore
+const { clearTermSelection, performSearch } = search
 
-const { keywords } = storeToRefs(galcStore)
+const { keywords } = storeToRefs(search)
 
 function apply (event) {
   event.target.blur()

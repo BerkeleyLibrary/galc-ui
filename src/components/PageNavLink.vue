@@ -1,8 +1,8 @@
 <script setup>
-import { useGalcStore } from '../stores/galcStore'
+import { useSearchStore } from '../stores/search'
 
-const galcStore = useGalcStore()
-const { performSearch } = galcStore
+const search = useSearchStore()
+const { performSearch } = search
 
 defineProps({
   active: { type: Boolean, default: false },

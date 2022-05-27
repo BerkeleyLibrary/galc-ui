@@ -2,7 +2,7 @@
 /* global defineProps */
 
 import { onMounted } from 'vue'
-import { useGalcStore } from './stores/galcStore'
+import { useSearchStore } from './stores/search'
 import { useConfigStore } from './stores/config'
 import Search from './components/Search.vue'
 import Results from './components/Results.vue'
@@ -11,12 +11,12 @@ const props = defineProps({
   apiBaseUrl: { type: String, default: null }
 })
 
-const galc = useGalcStore()
+const search = useSearchStore()
 const config = useConfigStore()
 
 onMounted(() => {
   config.baseUrl = props.apiBaseUrl
-  galc.loadFacets()
+  search.loadFacets()
 })
 </script>
 

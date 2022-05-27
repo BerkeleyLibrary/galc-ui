@@ -1,15 +1,15 @@
 <script setup>
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
-import { useGalcStore } from '../stores/galcStore'
+import { useResultStore } from '../stores/results'
 
 import PageNavLink from './PageNavLink.vue'
 
 // ------------------------------------------------------------
 // Store
 
-const galcStore = useGalcStore()
-const { items, pagination, links } = storeToRefs(galcStore)
+const results = useResultStore()
+const { items, pagination, links } = storeToRefs(results)
 
 const fromItem = computed(() => {
   const paging = pagination.value
@@ -17,19 +17,8 @@ const fromItem = computed(() => {
   const itemsPerPage = paging.limit || 0
   return ((currentPage - 1) * itemsPerPage) + 1
 })
-
-const toItem = computed(() => {
-  console.log('fromItem: %o', fromItem)
-  console.log('items: %o', items)
-  console.log('items.value: %o', items.value)
-  console.log('items.value.length: %o', items.value.length)
-  return fromItem.value + items.value.length - 1
-})
-
-const totalItems = computed(() => {
-  const paging = pagination.value
-  return paging.records || 0
-})
+const toItem = computed(() => fromItem.value + items.value.length - 1)
+const totalItems = computed(() => pagination.value.records || 0)
 
 </script>
 

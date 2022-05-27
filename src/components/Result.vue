@@ -1,7 +1,8 @@
 <script setup>
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useGalcStore } from '../stores/galcStore'
+import { useResultStore } from '../stores/results'
+import { useSearchStore } from '../stores/search'
 
 // ------------------------------------------------------------
 // Misc. constants
@@ -12,9 +13,10 @@ const imageBase = 'https://digitalassets.lib.berkeley.edu/galc/ucb/images/'
 // ------------------------------------------------------------
 // Store
 
-const galcStore = useGalcStore()
-const { facets } = storeToRefs(galcStore)
-const { getAvailability } = galcStore
+const search = useSearchStore()
+const { facets } = storeToRefs(search)
+const results = useResultStore()
+const { getAvailability } = results
 
 // ------------------------------------------------------------
 // Properties

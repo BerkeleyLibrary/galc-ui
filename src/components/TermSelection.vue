@@ -1,8 +1,8 @@
 <script setup>
 import { computed } from 'vue'
-import { useGalcStore } from '../stores/galcStore'
+import { useSearchStore } from '../stores/search'
 
-const { getTermSelection, setTermSelection } = useGalcStore()
+const { getTermSelection, setTermSelection } = useSearchStore()
 
 // ------------------------------------------------------------
 // Properties

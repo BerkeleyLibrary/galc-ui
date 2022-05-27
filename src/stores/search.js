@@ -1,25 +1,20 @@
 import { defineStore } from 'pinia'
-import GalcAPI from '../api/galcApi.js'
+import { useResultStore } from './results.js'
+import GalcAPI from '../api/galcApi'
 
 function handleError (msg) {
   return (error) => console.log(`${msg}: %o`, error)
 }
 
-export const useGalcStore = defineStore('galc', {
+export const useSearchStore = defineStore('search', {
   state: () => ({
-    items: [],
-    availability: {},
-    pagination: {},
-    links: {},
     facets: [],
-    facetTermSelection: {},
-    facetExpanded: {},
-    keywords: '',
-    searchPerformed: false,
-    loading: false
+    facetTermSelection: {}, // private
+    facetExpanded: {}, // replace with getter?
+    keywords: ''
   }),
   getters: {
-    itemParams (state) {
+    searchParams (state) {
       const params = {}
       for (const [facetName, termValues] of Object.entries(state.facetTermSelection)) {
         if (termValues && termValues.length) {
@@ -34,9 +29,6 @@ export const useGalcStore = defineStore('galc', {
     }
   },
   actions: {
-    getAvailability (item) {
-      return this.availability[item.mmsId]
-    },
     getTermSelection (facetName) {
       if (!(facetName in this.facetTermSelection)) {
         return []
@@ -53,37 +45,21 @@ export const useGalcStore = defineStore('galc', {
         this.facetExpanded[facetName] = false
       }
     },
+    updateFacets ({ data }) {
+      this.facets = data
+    },
     loadFacets () {
       GalcAPI.facets()
         .then(this.updateFacets)
         .catch(handleError('loadFacets failed'))
     },
-    performSearch (searchParams = this.itemParams) {
-      this.startLoading()
+    performSearch (searchParams = this.searchParams) {
+      const results = useResultStore()
+      results.loading = true
       GalcAPI.items(searchParams)
-        .then(this.updateResults)
+        .then(results.updateResults)
         .catch(handleError('performSearch failed'))
-        .finally(this.stopLoading)
-    },
-    startLoading () {
-      console.log('startLoading()')
-      this.loading = true
-    },
-    stopLoading () {
-      console.log('stopLoading()')
-      this.loading = false
-    },
-    updateFacets ({ data }) {
-      this.facets = data
-    },
-    updateResults ({ data, meta, links }) {
-      this.$patch({
-        searchPerformed: true,
-        items: data,
-        availability: meta.availability,
-        pagination: meta.pagination,
-        links: links
-      })
+        .finally(() => (results.loading = false))
     }
   }
 })

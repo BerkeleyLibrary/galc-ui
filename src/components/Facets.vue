@@ -1,9 +1,11 @@
 <script setup>
 import { storeToRefs } from 'pinia'
-import { useGalcStore } from '../stores/galcStore'
+import { useResultStore } from '../stores/results'
 import Facet from './Facet.vue'
+import { useSearchStore } from '../stores/search'
 
-const { facets, searchPerformed } = storeToRefs(useGalcStore())
+const { facets } = storeToRefs(useSearchStore())
+const { searchPerformed } = storeToRefs(useResultStore())
 
 </script>
 

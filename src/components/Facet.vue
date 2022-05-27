@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { useGalcStore } from '../stores/galcStore'
+import { useSearchStore } from '../stores/search'
 import TermSelection from './TermSelection.vue'
 
 // ------------------------------------------------------------
@@ -19,8 +19,8 @@ const rootTerms = computed(() => props.facet.terms.filter(t => !t.parent))
 // ------------------------------------------------------------
 // Store
 
-const galcStore = useGalcStore()
-const { facetExpanded } = galcStore
+const search = useSearchStore()
+const { facetExpanded } = search
 
 // TODO: figure out why this is all more complicated than it ought to be
 const expanded = computed({
@@ -33,7 +33,7 @@ const expanded = computed({
   }
 })
 
-// TODO: figure out why setting facetExpanded = false in galcStore.clearTermSelection() only works if we're also doing this
+// TODO: figure out why setting facetExpanded = false in search.clearTermSelection() only works if we're also doing this
 function onToggle (event) {
   expanded.value = event.target.open
 }
