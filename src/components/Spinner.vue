@@ -26,8 +26,8 @@ div.galc-spinner-overlay {
   pointer-events: none;
   padding-top: 0.375em;
 
-  // TODO: figure out why this stopped working
   backdrop-filter: contrast(0.25) brightness(2) grayscale(1);
+  -webkit-backdrop-filter: contrast(0.25) brightness(2) grayscale(1);
 
   img {
     height: $img-size !important;
