@@ -1,8 +1,5 @@
 <script setup>
-import { useSearchStore } from '../stores/search'
-
-const search = useSearchStore()
-const { performSearch } = search
+import { performSearch } from '../api/galcApi'
 
 defineProps({
   active: { type: Boolean, default: false },

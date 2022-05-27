@@ -1,6 +1,7 @@
 <script setup>
 import { storeToRefs } from 'pinia'
 import { useResultStore } from '../stores/results'
+
 import Facets from './Facets.vue'
 import PageNav from './PageNav.vue'
 import Result from './Result.vue'

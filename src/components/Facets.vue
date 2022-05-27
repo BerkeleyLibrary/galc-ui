@@ -1,8 +1,9 @@
 <script setup>
 import { storeToRefs } from 'pinia'
 import { useResultStore } from '../stores/results'
-import Facet from './Facet.vue'
 import { useSearchStore } from '../stores/search'
+
+import Facet from './Facet.vue'
 
 const { facets } = storeToRefs(useSearchStore())
 const { searchPerformed } = storeToRefs(useResultStore())

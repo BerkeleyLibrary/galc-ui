@@ -1,6 +1,6 @@
 <script setup>
-import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useResultStore } from '../stores/results'
 
 import PageNavLink from './PageNavLink.vue'

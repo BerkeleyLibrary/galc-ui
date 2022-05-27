@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useSearchStore } from '../stores/search'
+
 import TermSelection from './TermSelection.vue'
 
 // ------------------------------------------------------------

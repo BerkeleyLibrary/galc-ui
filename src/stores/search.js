@@ -1,10 +1,5 @@
 import { defineStore } from 'pinia'
-import { useResultStore } from './results.js'
-import GalcAPI from '../api/galcApi'
-
-function handleError (msg) {
-  return (error) => console.log(`${msg}: %o`, error)
-}
+import { performSearch } from '../api/galcApi'
 
 export const useSearchStore = defineStore('search', {
   state: () => ({
@@ -37,7 +32,7 @@ export const useSearchStore = defineStore('search', {
     },
     setTermSelection (facetName, termSelection) {
       this.facetTermSelection[facetName] = termSelection
-      this.performSearch()
+      performSearch()
     },
     clearTermSelection () {
       this.facetTermSelection = {}
@@ -47,19 +42,6 @@ export const useSearchStore = defineStore('search', {
     },
     updateFacets ({ data }) {
       this.facets = data
-    },
-    loadFacets () {
-      GalcAPI.facets()
-        .then(this.updateFacets)
-        .catch(handleError('loadFacets failed'))
-    },
-    performSearch (searchParams = this.searchParams) {
-      const results = useResultStore()
-      results.loading = true
-      GalcAPI.items(searchParams)
-        .then(results.updateResults)
-        .catch(handleError('performSearch failed'))
-        .finally(() => (results.loading = false))
     }
   }
 })

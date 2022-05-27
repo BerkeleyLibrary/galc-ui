@@ -1,11 +1,10 @@
 <script setup>
 import { storeToRefs } from 'pinia'
+import { performSearch } from '../api/galcApi'
 import { useSearchStore } from '../stores/search'
 
 const search = useSearchStore()
-
-const { clearTermSelection, performSearch } = search
-
+const { clearTermSelection } = search
 const { keywords } = storeToRefs(search)
 
 function apply (event) {

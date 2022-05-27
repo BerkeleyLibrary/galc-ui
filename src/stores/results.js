@@ -21,6 +21,6 @@ export const useResultStore = defineStore('results', {
         pagination: meta.pagination,
         links: links
       })
-    },
+    }
   }
 })
