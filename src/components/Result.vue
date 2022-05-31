@@ -105,7 +105,7 @@ function getFacetName (term) {
       </div>
       <div class="galc-result-actions">
         <!-- TODO: make this do something -->
-        <button v-if="available">Request this item</button>
+        <button v-if="available">Reserve print</button>
         <button v-else disabled>Item unavailable</button>
       </div>
     </div>
