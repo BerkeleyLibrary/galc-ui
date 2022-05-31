@@ -9,7 +9,7 @@ const { keywords } = storeToRefs(search)
 
 function apply (event) {
   event.target.blur()
-  clearTermSelection()
+  clearTermSelection() // TODO: don't depend on side effect to update query string
   performSearch()
 }
 </script>
