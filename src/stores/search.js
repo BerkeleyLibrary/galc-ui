@@ -11,6 +11,7 @@ export const useSearchStore = defineStore('search', {
   getters: {
     searchParams (state) {
       const params = {}
+      // TODO: centralize parameter-management code
       for (const [facetName, termValues] of Object.entries(state.facetTermSelection)) {
         if (termValues && termValues.length) {
           params[`filter[${facetName}]`] = termValues.join(',')
@@ -34,9 +35,26 @@ export const useSearchStore = defineStore('search', {
       this.facetTermSelection[facetName] = termSelection
       performSearch()
     },
+    // TODO: centralize parameter-management code
+    setFromQueryParams (params) {
+      const facetExpanded = { ...this.facetExpanded }
+      const facetTermSelection = {}
+      for (const facet of this.facets) {
+        const facetName = facet.name
+        const paramValue = params.get(facetName)
+        if (paramValue) {
+          facetTermSelection[facetName] = paramValue.split(',')
+          facetExpanded[facetName] = true
+        }
+      }
+      const keywords = params.get('keywords') || ''
+      this.$patch({ facetTermSelection, facetExpanded, keywords })
+      performSearch()
+    },
     clearTermSelection () {
       this.facetTermSelection = {}
-      for (const facetName of this.facets.map(f => f.name)) {
+      for (const facet of this.facets) {
+        const facetName = facet.name
         this.facetExpanded[facetName] = false
       }
     },

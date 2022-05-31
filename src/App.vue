@@ -4,6 +4,7 @@
 import { onMounted } from 'vue'
 import { loadFacets } from './api/galcApi'
 import { useConfigStore } from './stores/config'
+import { useSearchStore } from './stores/search'
 import Search from './components/Search.vue'
 import Results from './components/Results.vue'
 
@@ -13,9 +14,17 @@ const props = defineProps({
 
 const config = useConfigStore()
 
+function setSearchState () {
+  const params = (new URL(window.location)).searchParams
+  if (params) {
+    const search = useSearchStore()
+    search.setFromQueryParams(params)
+  }
+}
+
 onMounted(() => {
   config.baseUrl = props.apiBaseUrl
-  loadFacets()
+  loadFacets().then(() => { setSearchState() })
 })
 </script>
 
