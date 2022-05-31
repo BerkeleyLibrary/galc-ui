@@ -101,10 +101,6 @@ function getFacetName (term) {
               <td>{{ v }}</td>
             </tr>
           </template>
-          <tr>
-            <th>Available</th>
-            <td>{{ available }}</td>
-          </tr>
         </table>
       </div>
       <div class="galc-result-actions">
