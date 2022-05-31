@@ -19,14 +19,22 @@ function navigateTo (link) {
 
 <template>
   <li class="page-nav-link">
-    <a v-if="link && active" href="#" :rel="rel" :title="title" @click.prevent="navigateTo(link)">{{ text }}</a>
-    <template v-else>{{ text }}</template>
+    <a v-if="link && active" href="#" :rel="rel" :title="title" @click.prevent="navigateTo(link)"><div class="galc-nav-icon">{{ text }}</div></a>
   </li>
 </template>
 
 <style lang="scss">
 li.page-nav-link {
-  position: relative;
-  top: -0.0625em;
+  a {
+    display: block;
+    width: 1em;
+    text-align: center;
+    padding-bottom: 3px;
+
+    .galc-nav-icon {
+      font-weight: bold;
+      margin-top: -2px;
+    }
+  }
 }
 </style>

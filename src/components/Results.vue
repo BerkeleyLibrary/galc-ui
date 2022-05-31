@@ -35,6 +35,7 @@ const { items, loading, searchPerformed } = storeToRefs(results)
           <Result :item="item"/>
         </li>
       </ul>
+      <PageNav class="galc-page-nav"/>
     </div>
   </div>
 </template>
@@ -77,8 +78,8 @@ ul.galc-results-list {
 
   li {
     display: block;
-    border-top: 1px solid #ddd5c7;
-    padding-top: 0.5rem;
+    border-bottom: 1px solid #ddd5c7;
+    padding-bottom: 0.5rem;
 
     &:not(:last-of-type) {
       margin-bottom: 1rem;
