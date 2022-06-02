@@ -1,16 +1,17 @@
 <script setup>
-import { storeToRefs } from 'pinia'
-import { performSearch } from '../api/galcApi'
 import { useSearchStore } from '../stores/search'
+import { ref } from 'vue'
 
-const search = useSearchStore()
-const { clearTermSelection } = search
-const { keywords } = storeToRefs(search)
+const query = useSearchStore()
+const { newKeywordSearch } = query
+
+// NOTE: We deliberately don't bind to the stored keyword value,
+//       as we only want to update it on an explicit submit
+const keywords = ref(query.keywords || '')
 
 function apply (event) {
   event.target.blur()
-  clearTermSelection() // TODO: don't depend on side effect to update query string
-  performSearch()
+  newKeywordSearch(keywords.value)
 }
 </script>
 

@@ -1,95 +1,138 @@
-import { defineStore } from 'pinia'
-import { performSearch } from '../api/galcApi'
+import { defineStore, storeToRefs } from 'pinia'
+import { computed } from 'vue'
+import { useFacetStore } from './facets'
 
-// TODO: include paging in query string maniuplation (move paging to search store?)
+// ------------------------------------------------------------
+// Store definition
 
-function setWindowQueryParams (queryParams) {
-  const url = new URL(window.location)
-  url.search = queryParams.toString()
-  window.history.pushState(null, '', url)
-}
+// TODO: missing functionality?
 
 export const useSearchStore = defineStore('search', {
-  state: () => ({
-    facets: [],
-    facetTermSelection: {}, // private
-    facetExpanded: {}, // replace with getter?
-    keywords: ''
-  }),
+  state: () => {
+    const params = new URL(window.location).searchParams
+
+    return {
+      search: searchFrom(params),
+      page: pageFrom(params)
+    }
+  },
   getters: {
-    // TODO: centralize parameter-management code
-    searchParams (state) {
-      const params = {}
-      const queryParams = state.queryParams
-      queryParams.forEach((value, key) => {
-        params[`filter[${key}]`] = value
+    selectedTerms (state) {
+      return (facetName) => computed({
+        get () {
+          return state.search[facetName] || []
+        },
+        set (v) {
+          state.search[facetName] = v
+        }
       })
-      // for (const [facetName, termValues] of Object.entries(state.facetTermSelection)) {
-      //   if (termValues && termValues.length) {
-      //     params[`filter[${facetName}]`] = termValues.join(',')
-      //   }
-      // }
-      // const keywords = state.keywords && state.keywords.trim()
-      // if (keywords) {
-      //   params['filter[keywords]'] = keywords
-      // }
+    },
+    windowQueryParams (state) {
+      const params = searchParamsFrom(state.search)
+      addPageParam(params, state.page)
       return params
     },
-    queryParams (state) {
-      const params = new URLSearchParams()
-      for (const [facetName, termValues] of Object.entries(state.facetTermSelection)) {
-        if (termValues && termValues.length) {
-          params.set(facetName, termValues.join(','))
-        }
-      }
-      const keywords = state.keywords && state.keywords.trim()
-      if (keywords) {
-        params.set('keywords', keywords)
-      }
+    apiQueryParams (state) {
+      const params = filterParamsFrom(state.search)
+      addPageNumber(params, state.page)
       return params
     }
   },
   actions: {
-    getTermSelection (facetName) {
-      if (!(facetName in this.facetTermSelection)) {
-        return []
+    newKeywordSearch (keywords) {
+      // TODO: collapse facets?
+      this.$state = {
+        search: { keywords },
+        page: DEFAULT_PAGE
       }
-      return this.facetTermSelection[facetName]
     },
-    setTermSelection (facetName, termSelection) {
-      this.facetTermSelection[facetName] = termSelection
-      this.updateQueryString() // TODO: better way to trigger this
-      performSearch() // TODO: better way to trigger this
-    },
-    // TODO: centralize parameter-management code
-    setFromQueryParams (params) {
-      const facetExpanded = { ...this.facetExpanded }
-      const facetTermSelection = {}
-      for (const facet of this.facets) {
-        const facetName = facet.name
-        const paramValue = params.get(facetName)
-        if (paramValue) {
-          facetTermSelection[facetName] = paramValue.split(',')
-          facetExpanded[facetName] = true
-        }
-      }
-      const keywords = params.get('keywords') || ''
-      this.$patch({ facetTermSelection, facetExpanded, keywords })
-      performSearch() // TODO: better way to trigger this
-    },
-    updateQueryString () {
-      setWindowQueryParams(this.queryParams)
-    },
-    clearTermSelection () {
-      this.facetTermSelection = {}
-      for (const facet of this.facets) {
-        const facetName = facet.name
-        this.facetExpanded[facetName] = false
-      }
-      this.updateQueryString() // TODO: better way to trigger this
-    },
-    updateFacets ({ data }) {
-      this.facets = data
+    writeWindowLocation () {
+      const url = new URL(window.location)
+      url.search = this.windowQueryParams.toString()
+      window.history.pushState(null, '', url)
     }
   }
 })
+
+// ------------------------------------------------------------
+// Misc. constants
+
+const DEFAULT_PAGE = 1
+const KEYWORDS_PARAM = 'keywords'
+const PAGE_PARAM = 'page'
+
+// ------------------------------------------------------------
+// External state
+function getFacetNames () {
+  const { facetNames } = storeToRefs(useFacetStore())
+  return facetNames.value // TODO: do we really need to unwrap this?
+}
+
+// ------------------------------------------------------------
+// Window location query parsing
+
+function searchFrom (urlSearchParams) {
+  const newSearch = {}
+
+  const keywordsVal = urlSearchParams.get(KEYWORDS_PARAM)
+  if (keywordsVal) {
+    newSearch.keywords = keywordsVal
+  }
+
+  for (const facetName of getFacetNames()) {
+    const facetVal = urlSearchParams.get(facetName)
+    if (facetVal) {
+      newSearch[facetName] = facetVal.split(',')
+    }
+  }
+
+  return newSearch
+}
+
+function pageFrom (urlSearchParams) {
+  const pageVal = urlSearchParams.get(PAGE_PARAM)
+  return parseInt(pageVal) || DEFAULT_PAGE
+}
+
+// ------------------------------------------------------------
+// Window location query creation
+
+function searchParamsFrom (search) {
+  const params = new URLSearchParams()
+  const keywordsVal = search.keywords
+  if (keywordsVal) {
+    params.set(KEYWORDS_PARAM, keywordsVal)
+  }
+
+  for (const facetName of getFacetNames()) {
+    const termValues = search[facetName]
+    if (termValues) {
+      params.set(facetName, termValues.join(','))
+    }
+  }
+  return params
+}
+
+function addPageParam (params, page) {
+  if (page !== DEFAULT_PAGE) {
+    params.set(PAGE_PARAM, page)
+  }
+}
+
+// ------------------------------------------------------------
+// API query creation
+
+function filterParamsFrom (search) {
+  const filterParams = {}
+  const searchParams = searchParamsFrom(search)
+  searchParams.forEach((value, key) => {
+    filterParams[`filter[${key}]`] = value
+  })
+  return filterParams
+}
+
+function addPageNumber (params, page) {
+  if (page !== DEFAULT_PAGE) {
+    params['page[number]'] = page
+  }
+}

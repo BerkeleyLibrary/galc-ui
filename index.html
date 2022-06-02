@@ -14,8 +14,12 @@
 <main>
 <div class="layout-content">
   <div class="region region-content">
+    <form method="post" action="http://localhost:3000/auth/calnet">
+      <input type="hidden" name="origin" value="http://localhost:4000"/>
+      <input type="submit"/>
+    </form>
     <div id="galc-app" data-api-base-url="http://localhost:3000" class="block-views"></div>
-  </div>
+  </div> <!-- http://localhost:3000/items?include=terms&filter[Appearance]=Color -->
 </div>
 </main>
 </body>

@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useResultStore } from '../stores/results'
-import { useSearchStore } from '../stores/search'
+import { useFacetStore } from '../stores/facets'
 
 // ------------------------------------------------------------
 // Misc. constants
@@ -13,8 +13,7 @@ const imageBase = 'https://digitalassets.lib.berkeley.edu/galc/ucb/images/'
 // ------------------------------------------------------------
 // Store
 
-const search = useSearchStore()
-const { facets } = storeToRefs(search)
+const { facets } = storeToRefs(useFacetStore())
 const results = useResultStore()
 const { getAvailability } = results
 

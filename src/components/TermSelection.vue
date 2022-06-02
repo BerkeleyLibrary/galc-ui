@@ -1,8 +1,5 @@
 <script setup>
-import { computed } from 'vue'
 import { useSearchStore } from '../stores/search'
-
-const { getTermSelection, setTermSelection } = useSearchStore()
 
 // ------------------------------------------------------------
 // Properties
@@ -15,16 +12,10 @@ const props = defineProps({
 // ------------------------------------------------------------
 // Local state
 
-const facetName = computed(() => props.facet.name)
-const term = computed(() => props.term)
-const currentSelection = computed({
-  get () {
-    return getTermSelection(facetName.value)
-  },
-  set (selection) {
-    setTermSelection(facetName.value, selection)
-  }
-})
+const search = useSearchStore()
+
+// TODO: figure out how to cache this so it's called once per facet instead of once per term
+const selectedTerms = search.selectedTerms(props.facet.name)
 
 </script>
 
@@ -32,7 +23,7 @@ const currentSelection = computed({
   <div class="galc-term-selection">
     <input
       :id="`term-${term.id}`"
-      v-model="currentSelection"
+      v-model="selectedTerms"
       :value="term.value"
       type="checkbox"
     >
