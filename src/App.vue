@@ -2,29 +2,37 @@
 /* global defineProps */
 
 import { onMounted } from 'vue'
-import { loadFacets } from './api/galcApi'
-import { useConfigStore } from './stores/config'
 import { useSearchStore } from './stores/search'
+import { createClient } from './api/galcApi'
 import Search from './components/Search.vue'
 import Results from './components/Results.vue'
+import { useConfigStore } from './stores/config'
 
 const props = defineProps({
   apiBaseUrl: { type: String, default: null }
 })
 
-const config = useConfigStore()
-
-function setSearchState () {
-  const params = (new URL(window.location)).searchParams
-  if (params) {
-    const search = useSearchStore()
-    search.setFromQueryParams(params)
-  }
-}
-
 onMounted(() => {
-  config.baseUrl = props.apiBaseUrl
-  loadFacets().then(() => { setSearchState() })
+  // TODO: find a better way to initialize/inject API client
+
+  const apiClient = createClient(props.apiBaseUrl)
+  const config = useConfigStore()
+  config.apiClient = apiClient
+
+  apiClient.loadFacets()
+
+  // TODO: seriously, shouldn't this be in the store?
+  const query = useSearchStore()
+
+  // TODO: can we just watch(apiQueryParams)?
+  query.$subscribe((mutation, state) => {
+    const params = state.apiQueryParams
+    apiClient.findItems(params)
+  })
+
+  query.$subscribe((mutation, state) => {
+    query.writeWindowLocation()
+  })
 })
 </script>
 

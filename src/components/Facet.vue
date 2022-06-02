@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { useSearchStore } from '../stores/search'
+import { useFacetStore } from '../stores/facets'
 
 import TermSelection from './TermSelection.vue'
 
@@ -20,21 +20,10 @@ const rootTerms = computed(() => props.facet.terms.filter(t => !t.parent))
 // ------------------------------------------------------------
 // Store
 
-const search = useSearchStore()
-const { facetExpanded } = search
+const facets = useFacetStore()
+const expanded = facets.expanded(facetName.value)
 
-// TODO: figure out why this is all more complicated than it ought to be
-const expanded = computed({
-  get: () => {
-    const rawValue = facetExpanded[facetName.value]
-    return !!rawValue
-  },
-  set: (v) => {
-    facetExpanded[facetName.value] = v
-  }
-})
-
-// TODO: figure out why setting facetExpanded = false in search.clearTermSelection() only works if we're also doing this
+// TODO: do we need this?
 function onToggle (event) {
   expanded.value = event.target.open
 }

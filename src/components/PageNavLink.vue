@@ -1,5 +1,8 @@
 <script setup>
-import { performSearch } from '../api/galcApi'
+import { storeToRefs } from 'pinia'
+import { useConfigStore } from '../stores/config'
+
+const { apiClient } = storeToRefs(useConfigStore())
 
 defineProps({
   active: { type: Boolean, default: false },
@@ -12,7 +15,7 @@ defineProps({
 function navigateTo (link) {
   const linkUrl = new URL(link)
   const linkParams = Object.fromEntries(linkUrl.searchParams)
-  performSearch(linkParams)
+  apiClient.findItems(linkParams) // TODO: make this update search store
 }
 
 </script>

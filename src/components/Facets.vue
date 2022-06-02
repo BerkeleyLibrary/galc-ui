@@ -1,17 +1,14 @@
 <script setup>
 import { storeToRefs } from 'pinia'
 import { useResultStore } from '../stores/results'
-import { useSearchStore } from '../stores/search'
+import { useFacetStore } from '../stores/facets'
 
 import Facet from './Facet.vue'
 
-const { facets } = storeToRefs(useSearchStore())
+const { facets } = storeToRefs(useFacetStore())
 const { searchPerformed } = storeToRefs(useResultStore())
 
 </script>
-
-<!-- TODO: provide a UI to clear all facets -->
-<!-- TODO: provide UI to clear individual facets -->
 
 <template>
   <form v-if="searchPerformed" class="galc-facet-form">

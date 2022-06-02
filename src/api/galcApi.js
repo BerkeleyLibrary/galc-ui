@@ -1,73 +1,43 @@
 import JsonApi from 'devour-client'
-import { useConfigStore } from '../stores/config'
-import { useSearchStore } from '../stores/search'
-import { useResultStore } from '../stores/results'
-
 import camelcaseKeys from 'camelcase-keys'
 
-const client = initClient()
+import { useFacetStore } from '../stores/facets'
+import { useResultStore } from '../stores/results'
 
-function loadFacets () {
-  return client.loadFacets()
-}
+export function createClient (apiUrl) {
+  const jsonApi = newJsonApi(apiUrl)
 
-function performSearch (params = client.searchParams) {
-  return client.performSearch(params)
-}
-
-export { loadFacets, performSearch }
-
-function initClient () {
   return {
-    get search () {
-      delete this.search
-      return (this.search = useSearchStore())
+    handleError (msg) {
+      return (error) => {
+        console.log(`${msg}: %o`, error)
+        return Promise.resolve({})
+      }
     },
-
-    get results () {
-      delete this.results
-      return (this.results = useResultStore())
-    },
-
-    get jsonApi () {
-      delete this.jsonApi
-      const jsonApi = initJsonApi()
-      return (this.jsonApi = jsonApi)
-    },
-
-    get searchParams () {
-      return this.search.searchParams
-    },
-
     loadFacets () {
-      const search = this.search
-
-      return this.jsonApi
+      const facets = useFacetStore()
+      jsonApi
         .findAll('facets', { include: 'terms' })
-        .then(search.updateFacets)
+        .then(({ data }) => { facets.facets = data })
         .catch(this.handleError('loadFacets failed'))
     },
-
-    performSearch (params) {
-      const results = this.results
-
+    findItems (params) {
+      const results = useResultStore()
       results.loading = true
-      return this.jsonApi
+      return jsonApi
         .findAll('items', { include: 'terms', ...params })
         .then(results.updateResults)
-        .catch(this.handleError('performSearch failed'))
+        .catch(this.handleError('findItems failed'))
         .finally(() => { results.loading = false })
-    },
-
-    handleError (msg) {
-      return (error) => console.log(`${msg}: %o`, error)
     }
   }
 }
 
-function initJsonApi () {
-  const config = useConfigStore()
-  const jsonApi = new JsonApi({ apiUrl: config.baseUrl })
+// ------------------------------------------------------------
+// Private implementation
+
+function newJsonApi (apiUrl) {
+  const jsonApi = new JsonApi({ apiUrl: apiUrl })
   jsonApi.insertMiddlewareBefore('response', camelcaseMiddleware)
   for (const [name, attrs] of Object.entries(models)) {
     jsonApi.define(name, attrs)
