@@ -12,10 +12,10 @@ const props = defineProps({
 // ------------------------------------------------------------
 // Local state
 
-const search = useSearchStore()
+const { selectedTerms } = useSearchStore()
 
-// TODO: figure out how to cache this so it's called once per facet instead of once per term
-const selectedTerms = search.selectedTerms(props.facet.name)
+// TODO: pass this down from Facet so it's not called once per term
+const selected = selectedTerms(props.facet.name)
 
 </script>
 
@@ -23,7 +23,7 @@ const selectedTerms = search.selectedTerms(props.facet.name)
   <div class="galc-term-selection">
     <input
       :id="`term-${term.id}`"
-      v-model="selectedTerms"
+      v-model="selected"
       :value="term.value"
       type="checkbox"
     >

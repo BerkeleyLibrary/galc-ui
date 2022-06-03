@@ -1,57 +1,106 @@
 import { defineStore, storeToRefs } from 'pinia'
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useFacetStore } from './facets'
+import { useConfigStore } from './config'
 
 // ------------------------------------------------------------
 // Store definition
 
 // TODO: missing functionality?
 
-export const useSearchStore = defineStore('search', {
-  state: () => {
-    const params = new URL(window.location).searchParams
+export const useSearchStore = defineStore('search', () => {
 
+  // --------------------------------------------------
+  // Exported functions and properties
+
+  function init () {
+    const initState = readWindowLocation()
+    console.log('search.init(): initState = %o', initState)
+
+    state.value = initState
+
+    // On page load, we only perform a search if we have a non-empty query
+    if (Object.keys(initState.search).length > 0 || initState.page !== DEFAULT_PAGE) {
+      console.log('performing initial search')
+      doSearch()
+    }
+
+    watch(state, (state) => {
+      console.log('search: state changed: %o', state)
+      writeWindowLocation()
+      doSearch()
+    })
+  }
+
+  const keywords = computed({
+    get () {
+      return search.value.keywords
+    },
+    set (v) {
+      state.value = {
+        search: { keywords },
+        page: DEFAULT_PAGE
+      }
+    }
+  })
+
+  const selectedTerms = computed(() => {
+    return (facetName) => computed({
+      get () {
+        return search.value[facetName] || []
+      },
+      set (v) {
+        search.value[facetName] = v
+      }
+    })
+  })
+
+  const exported = { init, keywords, selectedTerms }
+
+  // --------------------------------------------------
+  // Internal functions and properties
+
+  // ------------------------------
+  // State
+
+  const state = ref({
+    search: {},
+    page: DEFAULT_PAGE
+  })
+
+  const search = computed(() => state.value.search)
+  const page = computed(() => state.value.page)
+
+  function readWindowLocation () {
+    const params = new URL(window.location).searchParams
     return {
       search: searchFrom(params),
       page: pageFrom(params)
     }
-  },
-  getters: {
-    selectedTerms (state) {
-      return (facetName) => computed({
-        get () {
-          return state.search[facetName] || []
-        },
-        set (v) {
-          state.search[facetName] = v
-        }
-      })
-    },
-    windowQueryParams (state) {
-      const params = searchParamsFrom(state.search)
-      addPageParam(params, state.page)
-      return params
-    },
-    apiQueryParams (state) {
-      const params = filterParamsFrom(state.search)
-      addPageNumber(params, state.page)
-      return params
-    }
-  },
-  actions: {
-    newKeywordSearch (keywords) {
-      // TODO: collapse facets?
-      this.$state = {
-        search: { keywords },
-        page: DEFAULT_PAGE
-      }
-    },
-    writeWindowLocation () {
-      const url = new URL(window.location)
-      url.search = this.windowQueryParams.toString()
-      window.history.pushState(null, '', url)
-    }
   }
+
+  function writeWindowLocation () {
+    const params = searchParamsFrom(search.value)
+    addPageParam(params, page.value)
+
+    const url = new URL(window.location)
+    url.search = params.toString()
+
+    window.history.pushState(null, '', url)
+  }
+
+  function doSearch () {
+    const params = filterParamsFrom(search.value)
+    addPageNumber(params, page.value)
+
+    const api = useConfigStore()
+    api.performSearch(params)
+  }
+
+  // --------------------------------------------------
+  // Store definition
+
+  return exported
 })
 
 // ------------------------------------------------------------
@@ -113,6 +162,7 @@ function searchParamsFrom (search) {
   return params
 }
 
+// TODO: better naming (see addPageNumber)
 function addPageParam (params, page) {
   if (page !== DEFAULT_PAGE) {
     params.set(PAGE_PARAM, page)
@@ -131,6 +181,7 @@ function filterParamsFrom (search) {
   return filterParams
 }
 
+// TODO: better naming (see addPageParam)
 function addPageNumber (params, page) {
   if (page !== DEFAULT_PAGE) {
     params['page[number]'] = page

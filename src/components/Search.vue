@@ -1,17 +1,18 @@
 <script setup>
 import { useSearchStore } from '../stores/search'
-import { ref } from 'vue'
-
-const query = useSearchStore()
-const { newKeywordSearch } = query
+import { ref, watchEffect } from 'vue'
 
 // NOTE: We deliberately don't bind to the stored keyword value,
 //       as we only want to update it on an explicit submit
-const keywords = ref(query.keywords || '')
+const search = useSearchStore()
+const keywords = ref('')
+watchEffect(() => {
+  keywords.value = search.keywords
+})
 
 function apply (event) {
   event.target.blur()
-  newKeywordSearch(keywords.value)
+  search.keywords = keywords.value
 }
 </script>
 
