@@ -8,6 +8,10 @@ import { useResultStore } from './results'
 // ------------------------------------------------------------
 // Store definition
 
+// TODO: is there an advantage to using a Pinia store over a globally
+//       exported constant?
+
+// TODO: get rid of apiClient, just use jsonApi (and setup function)
 export const useApiStore = defineStore('api', {
   state: () => ({
     apiClient: null
@@ -39,18 +43,12 @@ function createClient (apiUrl) {
   const jsonApi = newJsonApi(apiUrl)
 
   return {
-    handleError (msg) {
-      return (error) => {
-        console.log(`${msg}: %o`, error)
-        return Promise.resolve({})
-      }
-    },
     loadFacets () {
       const facets = useFacetStore()
       jsonApi
         .findAll('facets', { include: 'terms' })
         .then(({ data }) => { facets.facets = data })
-        .catch(this.handleError('loadFacets failed'))
+        .catch(handleError('loadFacets failed'))
     },
     findItems (params) {
       const results = useResultStore()
@@ -58,7 +56,7 @@ function createClient (apiUrl) {
       return jsonApi
         .findAll('items', { include: 'terms', ...params })
         .then(results.updateResults)
-        .catch(this.handleError('findItems failed'))
+        .catch(handleError('findItems failed'))
         .finally(() => { results.loading = false })
     }
   }
@@ -115,5 +113,12 @@ const camelcaseMiddleware = {
     const axiosData = payload.res.data
     axiosData.data = camelcaseKeys(axiosData.data, { deep: true })
     return payload
+  }
+}
+
+function handleError (msg) {
+  return (error) => {
+    console.log(`${msg}: %o`, error)
+    return Promise.resolve({})
   }
 }

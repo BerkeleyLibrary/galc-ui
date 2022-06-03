@@ -14,18 +14,14 @@ export const useSearchStore = defineStore('search', () => {
 
   function init () {
     const initState = readWindowLocation()
-    console.log('search.init(): initState = %o', initState)
-
     state.value = initState
 
     // On page load, we only perform a search if we have a non-empty query
     if (Object.keys(initState.search).length > 0 || initState.page !== DEFAULT_PAGE) {
-      console.log('performing initial search')
       doSearch()
     }
 
     watch(state, (state) => {
-      console.log('search: state changed: %o', state)
       writeWindowLocation()
       doSearch()
     })
@@ -43,6 +39,7 @@ export const useSearchStore = defineStore('search', () => {
     }
   })
 
+  // TODO: why isn't this working?
   const selectedTerms = computed(() => {
     return (facetName) => computed({
       get () {
