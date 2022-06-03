@@ -1,10 +1,41 @@
 import JsonApi from 'devour-client'
 import camelcaseKeys from 'camelcase-keys'
+import { defineStore } from 'pinia'
 
-import { useFacetStore } from '../stores/facets'
-import { useResultStore } from '../stores/results'
+import { useFacetStore } from './facets'
+import { useResultStore } from './results'
 
-export function createClient (apiUrl) {
+// ------------------------------------------------------------
+// Store definition
+
+export const useApiStore = defineStore('api', {
+  state: () => ({
+    apiClient: null
+  }),
+  actions: {
+    init (apiUrl) {
+      this.apiClient = createClient(apiUrl)
+      this.loadFacets()
+    },
+    loadFacets () {
+      const apiClient = this.apiClient
+      if (apiClient) {
+        apiClient.loadFacets()
+      }
+    },
+    performSearch (params) {
+      const apiClient = this.apiClient
+      if (apiClient) {
+        apiClient.findItems(params)
+      }
+    }
+  }
+})
+
+// ------------------------------------------------------------
+// Private implementation
+
+function createClient (apiUrl) {
   const jsonApi = newJsonApi(apiUrl)
 
   return {
@@ -33,11 +64,8 @@ export function createClient (apiUrl) {
   }
 }
 
-// ------------------------------------------------------------
-// Private implementation
-
 function newJsonApi (apiUrl) {
-  const jsonApi = new JsonApi({ apiUrl: apiUrl })
+  const jsonApi = new JsonApi({ apiUrl })
   jsonApi.insertMiddlewareBefore('response', camelcaseMiddleware)
   for (const [name, attrs] of Object.entries(models)) {
     jsonApi.define(name, attrs)

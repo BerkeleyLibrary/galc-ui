@@ -1,7 +1,7 @@
 import { defineStore, storeToRefs } from 'pinia'
 import { computed, ref, watch } from 'vue'
 import { useFacetStore } from './facets'
-import { useConfigStore } from './config'
+import { useApiStore } from './api'
 
 // ------------------------------------------------------------
 // Store definition
@@ -9,7 +9,6 @@ import { useConfigStore } from './config'
 // TODO: missing functionality?
 
 export const useSearchStore = defineStore('search', () => {
-
   // --------------------------------------------------
   // Exported functions and properties
 
@@ -93,7 +92,7 @@ export const useSearchStore = defineStore('search', () => {
     const params = filterParamsFrom(search.value)
     addPageNumber(params, page.value)
 
-    const api = useConfigStore()
+    const api = useApiStore()
     api.performSearch(params)
   }
 
@@ -112,6 +111,7 @@ const PAGE_PARAM = 'page'
 
 // ------------------------------------------------------------
 // External state
+
 function getFacetNames () {
   const { facetNames } = storeToRefs(useFacetStore())
   return facetNames.value // TODO: do we really need to unwrap this?
