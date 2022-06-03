@@ -1,8 +1,7 @@
 <script setup>
-import { storeToRefs } from 'pinia'
-import { useConfigStore } from '../stores/config'
+import { useApiStore } from '../stores/api'
 
-const { apiClient } = storeToRefs(useConfigStore())
+const api = useApiStore()
 
 defineProps({
   active: { type: Boolean, default: false },
@@ -15,7 +14,8 @@ defineProps({
 function navigateTo (link) {
   const linkUrl = new URL(link)
   const linkParams = Object.fromEntries(linkUrl.searchParams)
-  apiClient.findItems(linkParams) // TODO: make this update search store
+  // TODO: make this update search store instead of hitting the API directly
+  api.performSearch(linkParams)
 }
 
 </script>

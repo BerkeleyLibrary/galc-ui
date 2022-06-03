@@ -2,9 +2,8 @@
 /* global defineProps */
 
 import { onMounted } from 'vue'
-import { createClient } from './api/galcApi'
 import { useSearchStore } from './stores/search'
-import { useConfigStore } from './stores/config'
+import { useApiStore } from './stores/api'
 import Search from './components/Search.vue'
 import Results from './components/Results.vue'
 
@@ -13,10 +12,8 @@ const props = defineProps({
 })
 
 onMounted(() => {
-  const config = useConfigStore()
-  config.apiClient = createClient(props.apiBaseUrl)
-
-  config.loadFacets()
+  const api = useApiStore()
+  api.init(props.apiBaseUrl)
 
   const search = useSearchStore()
   search.init()
