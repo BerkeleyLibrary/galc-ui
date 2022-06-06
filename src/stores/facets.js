@@ -10,23 +10,39 @@ export const useFacetStore = defineStore('facets', () => {
 
   const facets = ref([])
   const facetExpanded = ref({})
+  const computedExpansionState = {}
 
   // ------------------------------
-  // Getters
-
-  const expanded = (facetName) => computed({
-    get () {
-      return !!facetExpanded.value[facetName]
-    },
-    set (v) {
-      facetExpanded.value[facetName] = !!v
-    }
-  })
+  // Computed properties
 
   const facetNames = computed(() => { return facets.value.map(f => f.name) })
 
+  function expanded (facetName) {
+    let expansionState = computedExpansionState[facetName]
+    if (!expansionState) {
+      expansionState = computed({
+        get () {
+          return !!facetExpanded.value[facetName]
+        },
+        set (v) {
+          facetExpanded.value[facetName] = !!v
+        }
+      })
+      computedExpansionState[facetName] = expansionState
+    }
+    return expansionState
+  }
+
   // ------------------------------
   // Actions
+
+  function expandAll (expandedNames = facetNames.value) {
+    const expanded = { ...facetExpanded.value }
+    for (const facetName of expandedNames) {
+      expanded[facetName] = true
+    }
+    facetExpanded.value = expanded
+  }
 
   function collapseAll () {
     facetExpanded.value = {}
@@ -35,5 +51,5 @@ export const useFacetStore = defineStore('facets', () => {
   // ------------------------------
   // Store
 
-  return { facets, expanded, facetNames, collapseAll }
+  return { facets, expanded, facetNames, expandAll, collapseAll }
 })
