@@ -14,7 +14,6 @@ const props = defineProps({
 
 const { selectedTerms } = useSearchStore()
 
-// TODO: pass this down from Facet so it's not called once per term
 const selected = selectedTerms(props.facet.name)
 
 </script>

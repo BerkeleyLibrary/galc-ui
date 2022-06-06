@@ -39,19 +39,24 @@ export const useSearchStore = defineStore('search', () => {
     }
   })
 
-  const selectedTerms = computed(() => {
-    return (facetName) => computed({
-      get () {
-        const terms = state.value.search[facetName] || []
-        console.log('selectedTerms(%o).get() => %o', facetName, terms)
-        return terms
-      },
-      set (v) {
-        console.log('selectedTerms(%o).set(%o)', facetName, v)
-        state.value.search[facetName] = v
-      }
-    })
-  })
+  function selectedTerms (facetName) {
+    let termSelection = computedTermSelections[facetName]
+    if (!termSelection) {
+      termSelection = computed({
+        get () {
+          const terms = state.value.search[facetName] || []
+          console.log('selectedTerms(%o).get() => %o', facetName, terms)
+          return terms
+        },
+        set (v) {
+          console.log('selectedTerms(%o).set(%o)', facetName, v)
+          state.value.search[facetName] = v
+        }
+      })
+      computedTermSelections[facetName] = termSelection
+    }
+    return termSelection
+  }
 
   const exported = { init, keywords, selectedTerms }
 
@@ -65,6 +70,8 @@ export const useSearchStore = defineStore('search', () => {
     search: {},
     page: DEFAULT_PAGE
   })
+
+  const computedTermSelections = {}
 
   // ------------------------------
   // Internal functions
