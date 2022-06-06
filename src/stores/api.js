@@ -27,8 +27,6 @@ export const useApiStore = defineStore('api', () => {
       return
     }
 
-    console.log('loadFacets()')
-
     const facets = useFacetStore()
     return api
       .findAll('facets', { include: 'terms' })
@@ -42,8 +40,6 @@ export const useApiStore = defineStore('api', () => {
       console.log('performSearch(): API not initialized')
       return
     }
-
-    console.log('performSearch(%o)', params)
 
     const results = useResultStore()
     results.loading = true

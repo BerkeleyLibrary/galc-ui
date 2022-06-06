@@ -7,13 +7,11 @@ import { ref, watchEffect } from 'vue'
 const search = useSearchStore()
 const keywords = ref('')
 watchEffect(() => {
-  console.log('keywords.value = %o', search.keywords)
   keywords.value = search.keywords
 })
 
 function apply (event) {
   event.target.blur()
-  console.log('apply(): search.keywords = %o', keywords.value)
   search.keywords = keywords.value
 }
 </script>
