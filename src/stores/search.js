@@ -7,13 +7,12 @@ import { useApiStore } from './api'
 // Store definition
 
 export const useSearchStore = defineStore('search', () => {
-
   // --------------------------------------------------
   // External state
 
   const facets = useFacetStore()
   const { facetNames } = storeToRefs(facets)
-  const { expandAll } = facets
+  const { expandAll, collapseAll } = facets
 
   // --------------------------------------------------
   // State
@@ -35,11 +34,15 @@ export const useSearchStore = defineStore('search', () => {
 
     expandAll(activeFacetNames.value)
 
-    watch(state, (state) => {
-      console.log('search.state => %o', state)
-      writeWindowLocation()
-      doSearch()
-    }, { deep: true, immediate: true, flush: 'post' })
+    watch(
+      state,
+      (state) => {
+        console.log('search.state => %o', state)
+        writeWindowLocation()
+        doSearch()
+      },
+      { deep: true, immediate: true, flush: 'post' }
+    )
   }
 
   const keywords = computed({
@@ -54,6 +57,7 @@ export const useSearchStore = defineStore('search', () => {
         page: DEFAULT_PAGE
       }
       console.log('new state: %o', state.value)
+      collapseAll()
     }
   })
 
