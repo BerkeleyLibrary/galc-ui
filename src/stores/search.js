@@ -17,6 +17,7 @@ export const useSearchStore = defineStore('search', () => {
   // --------------------------------------------------
   // State
 
+  // TODO: separate keywords from terms?
   const state = ref({
     search: {},
     page: DEFAULT_PAGE
@@ -56,6 +57,15 @@ export const useSearchStore = defineStore('search', () => {
     }
   })
 
+  const page = computed({
+    get () {
+      return state.value.page || DEFAULT_PAGE
+    },
+    set (v) {
+      state.value.page = parseInt(v) || DEFAULT_PAGE
+    }
+  })
+
   function selectedTerms (facetName) {
     let termSelection = computedTermSelections[facetName]
     if (!termSelection) {
@@ -65,7 +75,12 @@ export const useSearchStore = defineStore('search', () => {
           return terms
         },
         set (v) {
-          state.value.search[facetName] = v
+          const search = { ...state.value.search }
+          search[facetName] = v
+          state.value = {
+            search: search,
+            page: DEFAULT_PAGE
+          }
         }
       })
       computedTermSelections[facetName] = termSelection
@@ -73,7 +88,7 @@ export const useSearchStore = defineStore('search', () => {
     return termSelection
   }
 
-  const exported = { init, keywords, selectedTerms }
+  const exported = { init, keywords, page, selectedTerms }
 
   // --------------------------------------------------
   // Internal functions and properties

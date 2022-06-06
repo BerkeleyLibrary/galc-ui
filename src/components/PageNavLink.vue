@@ -1,28 +1,33 @@
 <script setup>
-import { useApiStore } from '../stores/api'
+import { storeToRefs } from 'pinia'
+import { useSearchStore } from '../stores/search'
+import { computed } from 'vue'
 
-const api = useApiStore()
-
-defineProps({
+const props = defineProps({
   active: { type: Boolean, default: false },
   rel: { type: String, default: null },
   title: { type: String, default: null },
-  link: { type: String, default: null },
-  text: { type: String, default: null }
+  text: { type: String, default: null },
+  page: { type: Number, default: 1 }
 })
 
-function navigateTo (link) {
-  const linkUrl = new URL(link)
-  const linkParams = Object.fromEntries(linkUrl.searchParams)
-  // TODO: make this update search store instead of hitting the API directly
-  api.performSearch(linkParams)
+const linkUrl = computed(() => {
+  const url = new URL(window.location)
+  const params = url.searchParams
+  params.set('page', props.page)
+  return url
+})
+
+function navigateTo (newPage) {
+  const { page } = storeToRefs(useSearchStore())
+  page.value = newPage
 }
 
 </script>
 
 <template>
   <li class="page-nav-link">
-    <a v-if="link && active" href="#" :rel="rel" :title="title" @click.prevent="navigateTo(link)"><div class="galc-nav-icon">{{ text }}</div></a>
+    <a v-if="page && active" :href="linkUrl" :rel="rel" :title="title" @click.prevent="navigateTo(page)"><div class="galc-nav-icon">{{ text }}</div></a>
   </li>
 </template>
 
