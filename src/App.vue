@@ -13,10 +13,10 @@ const props = defineProps({
 
 onMounted(() => {
   const api = useApiStore()
-  api.init(props.apiBaseUrl)
-
-  const search = useSearchStore()
-  search.init()
+  api.init(props.apiBaseUrl).then(() => {
+    const search = useSearchStore()
+    search.init()
+  })
 })
 </script>
 

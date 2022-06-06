@@ -15,39 +15,40 @@ export const useSearchStore = defineStore('search', () => {
   function init () {
     const initState = readWindowLocation()
     state.value = initState
-
-    // On page load, we only perform a search if we have a non-empty query
-    if (Object.keys(initState.search).length > 0 || initState.page !== DEFAULT_PAGE) {
-      doSearch()
-    }
+    console.log('search.init(): initState = %o', initState)
 
     watch(state, (state) => {
       console.log('search.state => %o', state)
       writeWindowLocation()
       doSearch()
-    }, { immediate: true, flush: 'post' })
+    }, { deep: true, immediate: true, flush: 'post' })
   }
 
   const keywords = computed({
     get () {
-      return search.value.keywords
+      console.log('search.keywords.get() => %o', state.value.search.keywords)
+      return state.value.search.keywords
     },
     set (v) {
+      console.log('search.keywords.set(%o)', v)
       state.value = {
-        search: { keywords },
+        search: { keywords: v },
         page: DEFAULT_PAGE
       }
+      console.log('new state: %o', state.value)
     }
   })
 
-  // TODO: why isn't this working?
   const selectedTerms = computed(() => {
     return (facetName) => computed({
       get () {
-        return search.value[facetName] || []
+        const terms = state.value.search[facetName] || []
+        console.log('selectedTerms(%o).get() => %o', facetName, terms)
+        return terms
       },
       set (v) {
-        search.value[facetName] = v
+        console.log('selectedTerms(%o).set(%o)', facetName, v)
+        state.value.search[facetName] = v
       }
     })
   })
@@ -58,15 +59,15 @@ export const useSearchStore = defineStore('search', () => {
   // Internal functions and properties
 
   // ------------------------------
-  // State
+  // Internal state
 
   const state = ref({
     search: {},
     page: DEFAULT_PAGE
   })
 
-  const search = computed(() => state.value.search)
-  const page = computed(() => state.value.page)
+  // ------------------------------
+  // Internal functions
 
   function readWindowLocation () {
     const params = new URL(window.location).searchParams
@@ -77,8 +78,8 @@ export const useSearchStore = defineStore('search', () => {
   }
 
   function writeWindowLocation () {
-    const params = searchParamsFrom(search.value)
-    addPageParam(params, page.value)
+    const params = searchParamsFrom(state.value.search)
+    addPageParam(params, state.value.page)
     const newSearch = params.toString()
     console.log('writeWindowLocation(): newSearch = %o', newSearch)
 
@@ -94,8 +95,8 @@ export const useSearchStore = defineStore('search', () => {
   }
 
   function doSearch () {
-    const params = filterParamsFrom(search.value)
-    addPageNumber(params, page.value)
+    const params = filterParamsFrom(state.value.search)
+    addPageNumber(params, state.value.page)
 
     const api = useApiStore()
     api.performSearch(params)
@@ -115,14 +116,6 @@ const KEYWORDS_PARAM = 'keywords'
 const PAGE_PARAM = 'page'
 
 // ------------------------------------------------------------
-// External state
-
-function getFacetNames () {
-  const { facetNames } = storeToRefs(useFacetStore())
-  return facetNames.value // TODO: do we really need to unwrap this?
-}
-
-// ------------------------------------------------------------
 // Window location query parsing
 
 function searchFrom (urlSearchParams) {
@@ -133,7 +126,8 @@ function searchFrom (urlSearchParams) {
     newSearch.keywords = keywordsVal
   }
 
-  for (const facetName of getFacetNames()) {
+  const { facetNames } = storeToRefs(useFacetStore())
+  for (const facetName of facetNames.value) {
     const facetVal = urlSearchParams.get(facetName)
     if (facetVal) {
       newSearch[facetName] = facetVal.split(',')
@@ -158,9 +152,10 @@ function searchParamsFrom (search) {
     params.set(KEYWORDS_PARAM, keywordsVal)
   }
 
-  for (const facetName of getFacetNames()) {
+  const { facetNames } = storeToRefs(useFacetStore())
+  for (const facetName of facetNames.value) {
     const termValues = search[facetName]
-    if (termValues) {
+    if (termValues && termValues.length > 0) {
       params.set(facetName, termValues.join(','))
     }
   }

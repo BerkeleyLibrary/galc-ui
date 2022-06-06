@@ -17,7 +17,7 @@ export const useApiStore = defineStore('api', () => {
 
   function init (apiUrl) {
     jsonApi.value = newJsonApi(apiUrl)
-    loadFacets()
+    return loadFacets()
   }
 
   function loadFacets () {
