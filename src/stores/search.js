@@ -22,9 +22,10 @@ export const useSearchStore = defineStore('search', () => {
     }
 
     watch(state, (state) => {
+      console.log('search.state => %o', state)
       writeWindowLocation()
       doSearch()
-    })
+    }, { immediate: true, flush: 'post' })
   }
 
   const keywords = computed({
@@ -78,11 +79,18 @@ export const useSearchStore = defineStore('search', () => {
   function writeWindowLocation () {
     const params = searchParamsFrom(search.value)
     addPageParam(params, page.value)
+    const newSearch = params.toString()
+    console.log('writeWindowLocation(): newSearch = %o', newSearch)
 
     const url = new URL(window.location)
-    url.search = params.toString()
+    if (url.search !== newSearch) {
+      url.search = newSearch
+      console.log('pushing new state to window history: %o', url)
 
-    window.history.pushState(null, '', url)
+      window.history.pushState(null, '', url)
+    } else {
+      console.log('search is unchanged; window history not modified')
+    }
   }
 
   function doSearch () {
