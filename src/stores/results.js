@@ -5,7 +5,7 @@ export const useResultStore = defineStore('results', {
     items: [],
     availability: {},
     pagination: {},
-    links: {},
+    links: {}, // TODO: remove links
     searchPerformed: false, // TODO: rename or move this
     loading: false
   }),

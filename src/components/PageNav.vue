@@ -9,7 +9,7 @@ import PageNavLink from './PageNavLink.vue'
 // Store
 
 const results = useResultStore()
-const { items, pagination, links } = storeToRefs(results)
+const { items, pagination } = storeToRefs(results)
 
 const fromItem = computed(() => {
   const paging = pagination.value
@@ -26,11 +26,11 @@ const totalItems = computed(() => pagination.value.records || 0)
   <nav v-if="totalItems > 0" class="page-nav">
     <p class="page-nav-items"><span class="page-nav-items-total">{{ totalItems }}</span> records found</p>
     <ul>
-      <PageNavLink text="«" :active="pagination.current > 1" rel="first" title="First page" :link="links.first"/>
-      <PageNavLink text="‹" :active="pagination.current > 1" rel="prev" title="Previous page" :link="links.prev"/>
+      <PageNavLink text="«" :active="pagination.current > 1" rel="first" title="First page" :page="1"/>
+      <PageNavLink text="‹" :active="pagination.current > 1" rel="prev" title="Previous page" :page="pagination.prev"/>
       <li>{{ fromItem }}–{{ toItem }}</li>
-      <PageNavLink text="›" :active="pagination.current < pagination.last" rel="next" title="Next page" :link="links.next"/>
-      <PageNavLink text="»" :active="pagination.current < pagination.last" rel="last" title="Last page" :link="links.last"/>
+      <PageNavLink text="›" :active="pagination.current < pagination.last" rel="next" title="Next page" :page="pagination.next"/>
+      <PageNavLink text="»" :active="pagination.current < pagination.last" rel="last" title="Last page" :page="pagination.last"/>
     </ul>
   </nav>
 </template>
