@@ -23,9 +23,11 @@ const rootTerms = computed(() => props.facet.terms.filter(t => !t.parent))
 const facets = useFacetStore()
 const expanded = facets.expanded(facetName.value)
 
-// TODO: do we need this?
 function onToggle (event) {
-  expanded.value = event.target.open
+  const open = event.target.open
+  if (expanded.value !== open) {
+    expanded.value = open
+  }
 }
 
 </script>
