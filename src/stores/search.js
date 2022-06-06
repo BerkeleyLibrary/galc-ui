@@ -30,14 +30,12 @@ export const useSearchStore = defineStore('search', () => {
   function init () {
     const initState = readWindowLocation()
     state.value = initState
-    console.log('search.init(): initState = %o', initState)
 
     expandAll(activeFacetNames.value)
 
     watch(
       state,
       (state) => {
-        console.log('search.state => %o', state)
         writeWindowLocation()
         doSearch()
       },
@@ -47,16 +45,13 @@ export const useSearchStore = defineStore('search', () => {
 
   const keywords = computed({
     get () {
-      console.log('search.keywords.get() => %o', state.value.search.keywords)
       return state.value.search.keywords
     },
     set (v) {
-      console.log('search.keywords.set(%o)', v)
       state.value = {
         search: { keywords: v },
         page: DEFAULT_PAGE
       }
-      console.log('new state: %o', state.value)
       collapseAll()
     }
   })
@@ -67,11 +62,9 @@ export const useSearchStore = defineStore('search', () => {
       termSelection = computed({
         get () {
           const terms = state.value.search[facetName] || []
-          console.log('selectedTerms(%o).get() => %o', facetName, terms)
           return terms
         },
         set (v) {
-          console.log('selectedTerms(%o).set(%o)', facetName, v)
           state.value.search[facetName] = v
         }
       })
@@ -105,16 +98,11 @@ export const useSearchStore = defineStore('search', () => {
     const params = searchParamsFrom(state.value.search)
     addPageParam(params, state.value.page)
     const newSearch = params.toString()
-    console.log('writeWindowLocation(): newSearch = %o', newSearch)
 
     const url = new URL(window.location)
     if (url.search !== newSearch) {
       url.search = newSearch
-      console.log('pushing new state to window history: %o', url)
-
       window.history.pushState(null, '', url)
-    } else {
-      console.log('search is unchanged; window history not modified')
     }
   }
 
