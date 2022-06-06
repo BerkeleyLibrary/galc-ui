@@ -4,6 +4,7 @@ import { defineStore } from 'pinia'
 
 import { useFacetStore } from './facets'
 import { useResultStore } from './results'
+import { ref } from 'vue'
 
 // ------------------------------------------------------------
 // Store definition
@@ -11,56 +12,53 @@ import { useResultStore } from './results'
 // TODO: is there an advantage to using a Pinia store over a globally
 //       exported constant?
 
-// TODO: get rid of apiClient, just use jsonApi (and setup function)
-export const useApiStore = defineStore('api', {
-  state: () => ({
-    apiClient: null
-  }),
-  actions: {
-    init (apiUrl) {
-      this.apiClient = createClient(apiUrl)
-      this.loadFacets()
-    },
-    loadFacets () {
-      const apiClient = this.apiClient
-      if (apiClient) {
-        apiClient.loadFacets()
-      }
-    },
-    performSearch (params) {
-      const apiClient = this.apiClient
-      if (apiClient) {
-        apiClient.findItems(params)
-      }
-    }
+export const useApiStore = defineStore('api', () => {
+  const jsonApi = ref(null)
+
+  function init (apiUrl) {
+    jsonApi.value = newJsonApi(apiUrl)
+    loadFacets()
   }
+
+  function loadFacets () {
+    const api = jsonApi.value
+    if (!api) {
+      console.log('loadFacets(): API not initialized')
+      return
+    }
+
+    console.log('loadFacets()')
+
+    const facets = useFacetStore()
+    return api
+      .findAll('facets', { include: 'terms' })
+      .then(({ data }) => { facets.facets = data })
+      .catch(handleError('loadFacets() failed'))
+  }
+
+  function performSearch (params) {
+    const api = jsonApi.value
+    if (!api) {
+      console.log('performSearch(): API not initialized')
+      return
+    }
+
+    console.log('performSearch(%o)', params)
+
+    const results = useResultStore()
+    results.loading = true
+    return api
+      .findAll('items', { include: 'terms', ...params })
+      .then(results.updateResults)
+      .catch(handleError('performSearch() failed'))
+      .finally(() => { results.loading = false })
+  }
+
+  return { init, loadFacets, performSearch }
 })
 
 // ------------------------------------------------------------
 // Private implementation
-
-function createClient (apiUrl) {
-  const jsonApi = newJsonApi(apiUrl)
-
-  return {
-    loadFacets () {
-      const facets = useFacetStore()
-      jsonApi
-        .findAll('facets', { include: 'terms' })
-        .then(({ data }) => { facets.facets = data })
-        .catch(handleError('loadFacets failed'))
-    },
-    findItems (params) {
-      const results = useResultStore()
-      results.loading = true
-      return jsonApi
-        .findAll('items', { include: 'terms', ...params })
-        .then(results.updateResults)
-        .catch(handleError('findItems failed'))
-        .finally(() => { results.loading = false })
-    }
-  }
-}
 
 function newJsonApi (apiUrl) {
   const jsonApi = new JsonApi({ apiUrl })
@@ -116,6 +114,7 @@ const camelcaseMiddleware = {
   }
 }
 
+// TODO: display errors
 function handleError (msg) {
   return (error) => {
     console.log(`${msg}: %o`, error)
