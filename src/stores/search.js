@@ -6,9 +6,25 @@ import { useApiStore } from './api'
 // ------------------------------------------------------------
 // Store definition
 
-// TODO: missing functionality?
-
 export const useSearchStore = defineStore('search', () => {
+
+  // --------------------------------------------------
+  // External state
+
+  const facets = useFacetStore()
+  const { facetNames } = storeToRefs(facets)
+  const { expandAll } = facets
+
+  // --------------------------------------------------
+  // State
+
+  const state = ref({
+    search: {},
+    page: DEFAULT_PAGE
+  })
+
+  const computedTermSelections = {}
+
   // --------------------------------------------------
   // Exported functions and properties
 
@@ -16,6 +32,8 @@ export const useSearchStore = defineStore('search', () => {
     const initState = readWindowLocation()
     state.value = initState
     console.log('search.init(): initState = %o', initState)
+
+    expandAll(activeFacetNames.value)
 
     watch(state, (state) => {
       console.log('search.state => %o', state)
@@ -63,18 +81,13 @@ export const useSearchStore = defineStore('search', () => {
   // --------------------------------------------------
   // Internal functions and properties
 
-  // ------------------------------
-  // Internal state
-
-  const state = ref({
-    search: {},
-    page: DEFAULT_PAGE
+  const activeFacetNames = computed(() => {
+    const currentSearch = state.value.search
+    return facetNames.value.filter((facetName) => {
+      const termValues = currentSearch[facetName]
+      return termValues && termValues.length
+    })
   })
-
-  const computedTermSelections = {}
-
-  // ------------------------------
-  // Internal functions
 
   function readWindowLocation () {
     const params = new URL(window.location).searchParams
@@ -106,7 +119,7 @@ export const useSearchStore = defineStore('search', () => {
     addPageNumber(params, state.value.page)
 
     const api = useApiStore()
-    api.performSearch(params)
+    return api.performSearch(params)
   }
 
   // --------------------------------------------------
