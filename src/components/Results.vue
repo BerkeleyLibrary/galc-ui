@@ -8,7 +8,7 @@ import Result from './Result.vue'
 import Spinner from './Spinner.vue'
 
 const results = useResultStore()
-const { items, loading, searchPerformed } = storeToRefs(results)
+const { items, loading, emptyResult } = storeToRefs(results)
 
 </script>
 
@@ -16,7 +16,7 @@ const { items, loading, searchPerformed } = storeToRefs(results)
   <div class="galc-results">
     <Spinner v-if="loading"/>
     <Facets class="galc-facets"/>
-    <div v-if="searchPerformed && items.length === 0" class="galc-results-list galc-no-results">
+    <div v-if="emptyResult" class="galc-results-list galc-no-results">
       <h3>Your search yielded no results</h3>
       <ul>
         <li>

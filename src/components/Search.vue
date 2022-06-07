@@ -10,6 +10,8 @@ watchEffect(() => {
   keywords.value = search.keywords
 })
 
+// TODO: make this work when somebody doesn't hit "search"
+//       (e.g. type keywords, then click facets)
 function apply (event) {
   event.target.blur()
   search.keywords = keywords.value

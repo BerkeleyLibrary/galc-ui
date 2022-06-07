@@ -1,17 +1,15 @@
 <script setup>
 import { storeToRefs } from 'pinia'
-import { useResultStore } from '../stores/results'
 import { useFacetStore } from '../stores/facets'
 
 import Facet from './Facet.vue'
 
 const { facets } = storeToRefs(useFacetStore())
-const { searchPerformed } = storeToRefs(useResultStore())
 
 </script>
 
 <template>
-  <form v-if="searchPerformed" class="galc-facet-form">
+  <form class="galc-facet-form">
     <h3 class="galc-facet-title">Refine your results</h3>
     <Facet
       v-for="facet in facets"

@@ -5,21 +5,20 @@ export const useResultStore = defineStore('results', {
     items: [],
     availability: {},
     pagination: {},
-    links: {}, // TODO: remove links
-    searchPerformed: false, // TODO: rename or move this
+    emptyResult: false,
     loading: false
   }),
   actions: {
     getAvailability (item) {
       return this.availability[item.mmsId]
     },
-    updateResults ({ data, meta, links }) {
+    updateResults ({ data, meta }) {
+      const emptyResult = !(Array.isArray(data) && data.length > 0)
       this.$patch({
-        searchPerformed: true,
         items: data,
         availability: meta.availability,
         pagination: meta.pagination,
-        links: links
+        emptyResult: emptyResult
       })
     }
   }
