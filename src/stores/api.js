@@ -1,10 +1,13 @@
 import JsonApi from 'devour-client'
-import camelcaseKeys from 'camelcase-keys'
 import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
+import { useMachine } from 'xstate-vue'
+import camelcaseKeys from 'camelcase-keys'
 
 import { useFacetStore } from './facets'
 import { useResultStore } from './results'
-import { ref } from 'vue'
+import { useSearchStore } from './search'
+import { apiMachine } from '../state/api'
 
 // ------------------------------------------------------------
 // Store definition
@@ -13,44 +16,73 @@ import { ref } from 'vue'
 //       exported constant?
 
 export const useApiStore = defineStore('api', () => {
+  // --------------------------------------------------
+  // State
+
   const jsonApi = ref(null)
+  const apiState = useMachine(apiMachine)
+  const service = apiState.service
+  service.onTransition((state) => console.log('apiState.onTransition(%o)', state.value))
+  service.start()
+
+  // --------------------------------------------------
+  // Exported functions and properties
+
+  const loading = computed(() => !apiState.state.value.matches('idle'))
 
   function init (apiUrl) {
     jsonApi.value = newJsonApi(apiUrl)
-    return loadFacets()
+
+    return loadFacets().then(() => {
+      const search = useSearchStore()
+      search.init() // TODO: should this live here instead?
+    })
   }
 
   function loadFacets () {
-    const api = jsonApi.value
-    if (!api) {
-      console.log('loadFacets(): API not initialized')
-      return
-    }
+    apiState.send('FACET_LOAD_STARTED')
 
-    const facets = useFacetStore()
+    const api = jsonApi.value
     return api
       .findAll('facets', { include: 'terms' })
-      .then(({ data }) => { facets.facets = data })
+      .then(facetsLoaded)
       .catch(handleError('loadFacets() failed'))
   }
 
   function performSearch (params) {
-    const api = jsonApi.value
-    if (!api) {
-      console.log('performSearch(): API not initialized')
-      return
-    }
+    apiState.send('SEARCH_STARTED')
 
-    const results = useResultStore()
-    results.loading = true
+    const api = jsonApi.value
+
     return api
       .findAll('items', { include: 'terms', ...params })
-      .then(results.updateResults)
+      .then(resultsFound)
       .catch(handleError('performSearch() failed'))
-      .finally(() => { results.loading = false })
   }
 
-  return { init, loadFacets, performSearch }
+  const exported = { init, loading, loadFacets, performSearch }
+
+  // --------------------------------------------------
+  // Internal functions and properties
+
+  function resultsFound (payload) {
+    const { updateResults } = useResultStore()
+    updateResults(payload)
+
+    apiState.send('SEARCH_COMPLETE')
+  }
+
+  function facetsLoaded ({ data }) {
+    const facets = useFacetStore()
+    facets.facets = data
+
+    apiState.send('FACETS_READY')
+  }
+
+  // --------------------------------------------------
+  // Store definition
+
+  return exported
 })
 
 // ------------------------------------------------------------
@@ -112,6 +144,7 @@ const camelcaseMiddleware = {
 
 // TODO: display errors
 function handleError (msg) {
+  // TODO: transition to error state
   return (error) => {
     console.log(`${msg}: %o`, error)
     return Promise.resolve({})

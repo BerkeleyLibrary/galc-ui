@@ -15,7 +15,9 @@
     "devour-client": "^3.0.0",
     "eslint-plugin-n": "^15.2.0",
     "pinia": "^2.0.13",
-    "vue": "^3.2.25"
+    "vue": "^3.2.25",
+    "xstate": "^4.32.1",
+    "xstate-vue": "^1.0.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.3.0",

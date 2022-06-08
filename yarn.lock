@@ -52,6 +52,8 @@ __metadata:
     sass: ^1.50.1
     vite: ^2.9.0
     vue: ^3.2.25
+    xstate: ^4.32.1
+    xstate-vue: ^1.0.1
   languageName: unknown
   linkType: soft
 
@@ -3107,6 +3109,23 @@ __metadata:
   version: 4.0.0
   resolution: "xml-name-validator@npm:4.0.0"
   checksum: af100b79c29804f05fa35aa3683e29a321db9b9685d5e5febda3fa1e40f13f85abc40f45a6b2bf7bee33f68a1dc5e8eaef4cec100a304a9db565e6061d4cb5ad
+  languageName: node
+  linkType: hard
+
+"xstate-vue@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "xstate-vue@npm:1.0.1"
+  peerDependencies:
+    vue: ^3.0.0
+    xstate: ^4.15.1
+  checksum: 0d38d06119ab0b40d39947c521b3d39c5ce87e57883906b11eb5b1b1e4aea4748eb58110f2218df92ca5cfad41f28d284285afddade792c80bff4c5c7377f838
+  languageName: node
+  linkType: hard
+
+"xstate@npm:^4.32.1":
+  version: 4.32.1
+  resolution: "xstate@npm:4.32.1"
+  checksum: c16298b2b3dab7689da99d5b1e5128d2ca3bf381f37c8cb95e4af83bb1044b9251629fc00758f7f31785a72c2ddddd26f602b2801e6068cd78373b7f6dd6c28b
   languageName: node
   linkType: hard
 

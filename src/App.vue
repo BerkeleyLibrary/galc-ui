@@ -2,7 +2,6 @@
 /* global defineProps */
 
 import { onMounted } from 'vue'
-import { useSearchStore } from './stores/search'
 import { useApiStore } from './stores/api'
 import Search from './components/Search.vue'
 import Results from './components/Results.vue'
@@ -13,10 +12,7 @@ const props = defineProps({
 
 onMounted(() => {
   const api = useApiStore()
-  api.init(props.apiBaseUrl).then(() => {
-    const search = useSearchStore()
-    search.init()
-  })
+  api.init(props.apiBaseUrl)
 })
 </script>
 
