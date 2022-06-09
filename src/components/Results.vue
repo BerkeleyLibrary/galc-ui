@@ -10,14 +10,14 @@ import Result from './Result.vue'
 import Spinner from './Spinner.vue'
 
 // TODO: do getters need storeToRefs?
-const { items, hasResults, showingResults } = storeToRefs(useResultStore())
+const { items, hasResults, searchPerformed } = storeToRefs(useResultStore())
 const { loading } = storeToRefs(useApiStore())
 </script>
 
 <template>
   <div class="galc-results">
     <Spinner v-if="loading"/>
-    <template v-if="showingResults">
+    <template v-if="searchPerformed">
       <Facets class="galc-facets"/>
       <div v-if="hasResults">
         <PageNav class="galc-page-nav"/>

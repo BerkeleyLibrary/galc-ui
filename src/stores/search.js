@@ -17,8 +17,10 @@ export const useSearchStore = defineStore('search', () => {
   // --------------------------------------------------
   // State
 
-  // TODO: separate keywords from terms?
+  // NOTE: We encapsulate the search state in one ref() so we can update it atomically
+  // TODO: Is that really necessary?
   const state = ref({
+    // TODO: separate keywords from terms?
     search: {},
     page: DEFAULT_PAGE
   })

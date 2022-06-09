@@ -8,7 +8,7 @@ import { useFacetStore } from '../stores/facets'
 // Misc. constants
 
 // TODO: make this configurable
-const imageBase = 'https://digitalassets.lib.berkeley.edu/galc/ucb/images/'
+const IMAGE_BASE = 'https://digitalassets.lib.berkeley.edu/galc/ucb/images/'
 
 // ------------------------------------------------------------
 // Store
@@ -30,8 +30,17 @@ const props = defineProps({
 // TODO: does this need to be reactive?
 const facetTerms = getFacetTerms()
 
-const thumbnailUrl = new URL(props.item.image, imageBase)
 const available = computed(() => getAvailability(props.item))
+
+// const imageUrl = computed(() => {
+//   const image = props.item.image
+//   return new URL(image, IMAGE_BASE)
+// })
+
+const thumbnailUrl = computed(() => {
+  const thumbnail = props.item.thumbnail
+  return thumbnail && new URL(thumbnail, IMAGE_BASE)
+})
 
 const metadata = {
   Date: props.item.date || 'No Date',
@@ -80,7 +89,7 @@ function getFacetName (term) {
   <section class="galc-result">
     <!-- {{ item.mmsId }} -->
     <div class="galc-result-thumbnail">
-      <img :key="thumbnailUrl" :src="thumbnailUrl" :alt="`thumbnail of “${item.title}” by ${item.artist}`" class="galc-thumbnail">
+      <img v-if="thumbnailUrl" :key="thumbnailUrl" :src="thumbnailUrl" :alt="`thumbnail of “${item.title}” by ${item.artist}`" class="galc-thumbnail">
     </div>
     <div class="galc-result-details">
       <div class="galc-result-header">

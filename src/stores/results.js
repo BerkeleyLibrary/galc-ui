@@ -1,22 +1,18 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { useMachine } from 'xstate-vue'
-import { resultsMachine } from '../state/results'
 
 export const useResultStore = defineStore('results', () => {
   // --------------------------------------------------
   // State
 
+  // NOTE: We encapsulate the result state in one ref() so we can update it atomically
+  // TODO: Is that really necessary?
   const state = ref({
     items: [],
     availability: {},
-    pagination: {}
+    pagination: {},
+    searchPerformed: false
   })
-
-  const resultState = useMachine(resultsMachine)
-  const service = resultState.service
-  service.onTransition((state) => console.log('resultState.onTransition(%o)', state.value))
-  service.start()
 
   // --------------------------------------------------
   // Exported functions and properties
@@ -24,15 +20,11 @@ export const useResultStore = defineStore('results', () => {
   const items = computed(() => { return state.value.items })
   const availability = computed(() => { return state.value.availablity })
   const pagination = computed(() => { return state.value.pagination })
+  const searchPerformed = computed(() => { return state.value.searchPerformed })
 
   const hasResults = computed(() => {
     const items = state.value.items
     return Array.isArray(items) && items.length > 0
-  })
-
-  const showingResults = computed(() => {
-    const stateValue = resultState.state.value
-    return stateValue.matches('showing_results')
   })
 
   function getAvailability (item) {
@@ -43,12 +35,15 @@ export const useResultStore = defineStore('results', () => {
     state.value = {
       items: data,
       availability: meta.availability,
-      pagination: meta.pagination
+      pagination: meta.pagination,
+      searchPerformed: true
     }
-    resultState.send('SEARCH_PERFORMED')
   }
 
-  const exported = { items, availability, pagination, hasResults, showingResults, getAvailability, updateResults }
+  const exported = { items, availability, pagination, hasResults, searchPerformed, getAvailability, updateResults }
+
+  // --------------------------------------------------
+  // Internal functions and properties
 
   // --------------------------------------------------
   // Store definition

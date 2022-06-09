@@ -1,13 +1,11 @@
 import JsonApi from 'devour-client'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { useMachine } from 'xstate-vue'
 import camelcaseKeys from 'camelcase-keys'
 
 import { useFacetStore } from './facets'
 import { useResultStore } from './results'
 import { useSearchStore } from './search'
-import { apiMachine } from '../state/api'
 
 // ------------------------------------------------------------
 // Store definition
@@ -20,15 +18,13 @@ export const useApiStore = defineStore('api', () => {
   // State
 
   const jsonApi = ref(null)
-  const apiState = useMachine(apiMachine)
-  const service = apiState.service
-  service.onTransition((state) => console.log('apiState.onTransition(%o)', state.value))
-  service.start()
+  const loadingFacets = ref(false)
+  const loadingItems = ref(false)
 
   // --------------------------------------------------
   // Exported functions and properties
 
-  const loading = computed(() => !apiState.state.value.matches('idle'))
+  const loading = computed(() => loadingFacets.value || loadingItems.value)
 
   function init (apiUrl) {
     jsonApi.value = newJsonApi(apiUrl)
@@ -40,7 +36,7 @@ export const useApiStore = defineStore('api', () => {
   }
 
   function loadFacets () {
-    apiState.send('FACET_LOAD_STARTED')
+    loadingFacets.value = true
 
     const api = jsonApi.value
     return api
@@ -50,7 +46,7 @@ export const useApiStore = defineStore('api', () => {
   }
 
   function performSearch (params) {
-    apiState.send('SEARCH_STARTED')
+    loadingItems.value = true
 
     const api = jsonApi.value
 
@@ -69,14 +65,14 @@ export const useApiStore = defineStore('api', () => {
     const { updateResults } = useResultStore()
     updateResults(payload)
 
-    apiState.send('SEARCH_COMPLETE')
+    loadingItems.value = false
   }
 
   function facetsLoaded ({ data }) {
     const facets = useFacetStore()
     facets.facets = data
 
-    apiState.send('FACETS_READY')
+    loadingFacets.value = false
   }
 
   // --------------------------------------------------
@@ -100,6 +96,7 @@ function newJsonApi (apiUrl) {
 const models = {
   item: {
     image: '',
+    thumbnail: '',
     title: '',
     artist: '',
     artistUrl: '',
