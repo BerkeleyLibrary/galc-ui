@@ -28,11 +28,18 @@ export const useApiStore = defineStore('api', () => {
   const loading = computed(() => loadingFacets.value || loadingItems.value || reservingItem.value)
 
   function init (apiUrl) {
+    const reserveItemId = getReserveItemFromWindowLocation()
+
     jsonApi.value = newJsonApi(apiUrl)
 
     return loadFacets().then(() => {
       const search = useSearchStore()
       search.init() // TODO: should this live here instead?
+
+      if (reserveItemId) {
+        clearReserveItemFromWindowLocation()
+        reserveItem({ id: reserveItemId })
+      }
     })
   }
 
@@ -93,6 +100,25 @@ export const useApiStore = defineStore('api', () => {
 
 // ------------------------------------------------------------
 // Private implementation
+
+const RESERVE_ITEM_PARAM = 'reserve'
+
+function getReserveItemFromWindowLocation () {
+  const params = new URL(window.location).searchParams
+  const itemVal = params.get(RESERVE_ITEM_PARAM)
+  return parseInt(itemVal) || 0
+}
+
+function clearReserveItemFromWindowLocation () {
+  const url = new URL(window.location)
+  const params = url.searchParams
+  params.delete(RESERVE_ITEM_PARAM)
+  const newSearch = params.toString()
+  if (url.search !== newSearch) {
+    url.search = newSearch
+    window.history.pushState(null, '', url)
+  }
+}
 
 function newJsonApi (apiUrl) {
   const jsonApi = new JsonApi({ apiUrl })

@@ -95,6 +95,8 @@ export const useSearchStore = defineStore('search', () => {
   // --------------------------------------------------
   // Internal functions and properties
 
+  // TODO: share window location manipulation w/api.js
+
   const activeFacetNames = computed(() => {
     const currentSearch = state.value.search
     return facetNames.value.filter((facetName) => {
