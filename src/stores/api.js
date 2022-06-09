@@ -18,9 +18,11 @@ export const useApiStore = defineStore('api', () => {
   // State
 
   const jsonApi = ref(null)
+  const apiBaseUrl = ref('')
   const loadingFacets = ref(false)
   const loadingItems = ref(false)
-  const reservingItem = ref(false)
+  const reservingItem = ref(null)
+  const pendingItem = ref(null)
 
   // --------------------------------------------------
   // Exported functions and properties
@@ -28,6 +30,7 @@ export const useApiStore = defineStore('api', () => {
   const loading = computed(() => loadingFacets.value || loadingItems.value || reservingItem.value)
 
   function init (apiUrl) {
+    apiBaseUrl.value = apiUrl
     const reserveItemId = getReserveItemFromWindowLocation()
 
     jsonApi.value = newJsonApi(apiUrl)
@@ -67,17 +70,39 @@ export const useApiStore = defineStore('api', () => {
   }
 
   function reserveItem (item) {
-    reservingItem.value = true
+    reservingItem.value = item
 
     const api = jsonApi.value
 
     return api
       .create('reservation', { item })
-      .catch(handleError(`reserveItem(${item.id}) failed`))
-      .finally(() => { reservingItem.value = false })
+      .catch((error) => {
+        // TODO: something more elegant
+        const err0 = error[0]
+        if (err0 && (err0.title === 'Unauthorized')) {
+          pendingItem.value = item
+        } else {
+          const handle = handleError(`reserveItem(${item.id}) failed`)
+          return handle(error)
+        }
+      })
+      .finally(() => { reservingItem.value = null })
   }
 
-  const exported = { init, loading, loadFacets, performSearch, reserveItem }
+  // TODO: why doesn't this work? cookies?
+  const reserveItemRedirectUrl = computed(() => {
+    const item = pendingItem.value
+    const url = item && getReserveItemRedirectUrl(item.id)
+    console.log('reserveItemRedirectUrl() -> item = %o, url = %o', item, url)
+    return url
+  })
+
+  const loginUrl = computed(() => {
+    const baseUrl = apiBaseUrl.value
+    return baseUrl && new URL('/auth/calnet', baseUrl)
+  })
+
+  const exported = { init, loading, loadFacets, performSearch, reserveItem, loginUrl, reserveItemRedirectUrl, reservingItem, pendingItem }
 
   // --------------------------------------------------
   // Internal functions and properties
@@ -118,6 +143,15 @@ function clearReserveItemFromWindowLocation () {
     url.search = newSearch
     window.history.pushState(null, '', url)
   }
+}
+
+function getReserveItemRedirectUrl (itemId) {
+  const url = new URL(window.location)
+  const params = url.searchParams
+  params.set(RESERVE_ITEM_PARAM, itemId)
+  const newSearch = params.toString()
+  url.search = newSearch
+  return url
 }
 
 function newJsonApi (apiUrl) {
