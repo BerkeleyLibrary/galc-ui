@@ -20,11 +20,12 @@ export const useApiStore = defineStore('api', () => {
   const jsonApi = ref(null)
   const loadingFacets = ref(false)
   const loadingItems = ref(false)
+  const reservingItem = ref(false)
 
   // --------------------------------------------------
   // Exported functions and properties
 
-  const loading = computed(() => loadingFacets.value || loadingItems.value)
+  const loading = computed(() => loadingFacets.value || loadingItems.value || reservingItem.value)
 
   function init (apiUrl) {
     jsonApi.value = newJsonApi(apiUrl)
@@ -43,6 +44,7 @@ export const useApiStore = defineStore('api', () => {
       .findAll('facets', { include: 'terms' })
       .then(facetsLoaded)
       .catch(handleError('loadFacets() failed'))
+      .finally(() => { loadingFacets.value = false })
   }
 
   function performSearch (params) {
@@ -54,9 +56,21 @@ export const useApiStore = defineStore('api', () => {
       .findAll('items', { include: 'terms', ...params })
       .then(resultsFound)
       .catch(handleError('performSearch() failed'))
+      .finally(() => { loadingItems.value = false })
   }
 
-  const exported = { init, loading, loadFacets, performSearch }
+  function reserveItem (item) {
+    reservingItem.value = true
+
+    const api = jsonApi.value
+
+    return api
+      .create('reservation', { item })
+      .catch(handleError(`reserveItem(${item.id}) failed`))
+      .finally(() => { reservingItem.value = false })
+  }
+
+  const exported = { init, loading, loadFacets, performSearch, reserveItem }
 
   // --------------------------------------------------
   // Internal functions and properties
@@ -64,15 +78,11 @@ export const useApiStore = defineStore('api', () => {
   function resultsFound (payload) {
     const { updateResults } = useResultStore()
     updateResults(payload)
-
-    loadingItems.value = false
   }
 
   function facetsLoaded ({ data }) {
     const facets = useFacetStore()
     facets.facets = data
-
-    loadingFacets.value = false
   }
 
   // --------------------------------------------------
@@ -126,6 +136,15 @@ const models = {
   facet: {
     name: '',
     terms: { jsonApi: 'hasMany', type: 'term' }
+  },
+  reservation: {
+    user: { jsonApi: 'hasOne', type: 'user' },
+    item: { jsonApi: 'hasOne', type: 'item' }
+  },
+  user: {
+    uid: '',
+    displayName: '',
+    email: ''
   }
 }
 
