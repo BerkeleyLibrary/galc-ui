@@ -3,7 +3,8 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useResultStore } from '../stores/results'
 import { useFacetStore } from '../stores/facets'
-import { useApiStore } from '../stores/api'
+
+import Reservation from './Reservation.vue'
 
 // ------------------------------------------------------------
 // Misc. constants
@@ -16,7 +17,6 @@ const IMAGE_BASE = 'https://digitalassets.lib.berkeley.edu/galc/ucb/images/'
 
 const { facets } = storeToRefs(useFacetStore())
 const { getAvailability } = useResultStore()
-const { reserveItem } = useApiStore()
 
 // ------------------------------------------------------------
 // Properties
@@ -113,9 +113,7 @@ function getFacetName (term) {
         </table>
       </div>
       <div class="galc-result-actions">
-        <!-- TODO: make this do something -->
-        <button v-if="available" @click="reserveItem(item)">Reserve print</button>
-        <button v-else disabled>Item unavailable</button>
+        <Reservation :item="item" :available="available"/>
       </div>
     </div>
   </section>
