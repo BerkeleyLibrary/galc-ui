@@ -33,7 +33,12 @@ export const useApiStore = defineStore('api', () => {
     apiBaseUrl.value = apiUrl
     const reserveItemId = getReserveItemFromWindowLocation()
 
-    jsonApi.value = newJsonApi(apiUrl)
+    const authToken = getAuthTokenFromWindowLocation()
+    if (authToken) {
+      clearAuthTokenFromWindowLocation()
+    }
+
+    jsonApi.value = newJsonApi(apiUrl, authToken)
 
     return loadFacets().then(() => {
       const search = useSearchStore()
@@ -89,7 +94,6 @@ export const useApiStore = defineStore('api', () => {
       .finally(() => { reservingItem.value = null })
   }
 
-  // TODO: why doesn't this work? cookies?
   const reserveItemRedirectUrl = computed(() => {
     const item = pendingItem.value
     const url = item && getReserveItemRedirectUrl(item.id)
@@ -126,12 +130,31 @@ export const useApiStore = defineStore('api', () => {
 // ------------------------------------------------------------
 // Private implementation
 
+const AUTH_TOKEN_PARAM = 'token'
 const RESERVE_ITEM_PARAM = 'reserve'
+
+// TODO: share window location manipulation w/search.js
+
+function getAuthTokenFromWindowLocation () {
+  const params = new URL(window.location).searchParams
+  return params.get(AUTH_TOKEN_PARAM)
+}
 
 function getReserveItemFromWindowLocation () {
   const params = new URL(window.location).searchParams
   const itemVal = params.get(RESERVE_ITEM_PARAM)
   return parseInt(itemVal) || 0
+}
+
+function clearAuthTokenFromWindowLocation () {
+  const url = new URL(window.location)
+  const params = url.searchParams
+  params.delete(AUTH_TOKEN_PARAM)
+  const newSearch = params.toString()
+  if (url.search !== newSearch) {
+    url.search = newSearch
+    window.history.pushState(null, '', url)
+  }
 }
 
 function clearReserveItemFromWindowLocation () {
@@ -154,8 +177,9 @@ function getReserveItemRedirectUrl (itemId) {
   return url
 }
 
-function newJsonApi (apiUrl) {
-  const jsonApi = new JsonApi({ apiUrl })
+function newJsonApi (apiUrl, authToken) {
+  const options = authToken ? { apiUrl: apiUrl, bearer: authToken } : { apiUrl }
+  const jsonApi = new JsonApi(options)
   jsonApi.insertMiddlewareBefore('response', camelcaseMiddleware)
   for (const [name, attrs] of Object.entries(models)) {
     jsonApi.define(name, attrs)
