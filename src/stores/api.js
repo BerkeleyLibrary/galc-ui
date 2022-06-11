@@ -23,6 +23,7 @@ export const useApiStore = defineStore('api', () => {
   const loadingItems = ref(false)
   const reservingItem = ref(null)
   const pendingItem = ref(null)
+  const loggedIn = ref(false)
 
   // --------------------------------------------------
   // Exported functions and properties
@@ -37,8 +38,8 @@ export const useApiStore = defineStore('api', () => {
     if (authToken) {
       clearAuthTokenFromWindowLocation()
     }
-
     jsonApi.value = newJsonApi(apiUrl, authToken)
+    loggedIn.value = !!authToken
 
     return loadFacets().then(() => {
       const search = useSearchStore()
@@ -106,7 +107,12 @@ export const useApiStore = defineStore('api', () => {
     return baseUrl && new URL('/auth/calnet', baseUrl)
   })
 
-  const exported = { init, loading, loadFacets, performSearch, reserveItem, loginUrl, reserveItemRedirectUrl, reservingItem, pendingItem }
+  const logoutUrl = computed(() => {
+    const baseUrl = apiBaseUrl.value
+    return baseUrl && new URL('/logout', baseUrl)
+  })
+
+  const exported = { init, loading, loadFacets, performSearch, reserveItem, loggedIn, loginUrl, logoutUrl, reserveItemRedirectUrl, reservingItem, pendingItem }
 
   // --------------------------------------------------
   // Internal functions and properties
