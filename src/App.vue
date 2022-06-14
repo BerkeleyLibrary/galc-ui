@@ -6,6 +6,7 @@ import { useApiStore } from './stores/api'
 import Search from './components/Search.vue'
 import Results from './components/Results.vue'
 import { storeToRefs } from 'pinia'
+import { useSessionStore } from './stores/session'
 
 const props = defineProps({
   apiBaseUrl: { type: String, default: null }
@@ -16,7 +17,8 @@ onMounted(() => {
   api.init(props.apiBaseUrl)
 })
 
-const { loggedIn, logoutUrl } = storeToRefs(useApiStore())
+const { authenticated } = storeToRefs(useSessionStore())
+const { logoutUrl } = storeToRefs(useApiStore())
 
 </script>
 
@@ -24,7 +26,7 @@ const { loggedIn, logoutUrl } = storeToRefs(useApiStore())
   <section class="galc">
     <h2 class="galc-title">Search the collection</h2>
     <Search class="galc-search"/>
-    <p v-if="loggedIn">
+    <p v-if="authenticated">
       <a :href="logoutUrl">Log out</a>
     </p>
     <Results class="galc-results"/>

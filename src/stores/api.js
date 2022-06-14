@@ -1,11 +1,12 @@
 import JsonApi from 'devour-client'
-import { defineStore } from 'pinia'
+import { defineStore, storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
 import camelcaseKeys from 'camelcase-keys'
 
 import { useFacetStore } from './facets'
 import { useResultStore } from './results'
 import { useSearchStore } from './search'
+import { useSessionStore } from './session'
 
 // ------------------------------------------------------------
 // Store definition
@@ -22,8 +23,7 @@ export const useApiStore = defineStore('api', () => {
   const loadingFacets = ref(false)
   const loadingItems = ref(false)
   const reservingItem = ref(null)
-  const pendingItem = ref(null)
-  const loggedIn = ref(false)
+  const reservedItemIds = ref([])
 
   // --------------------------------------------------
   // Exported functions and properties
@@ -32,24 +32,17 @@ export const useApiStore = defineStore('api', () => {
 
   function init (apiUrl) {
     apiBaseUrl.value = apiUrl
-    const reserveItemId = getReserveItemFromWindowLocation()
 
     const authToken = getAuthTokenFromWindowLocation()
+    jsonApi.value = newJsonApi(apiUrl, authToken)
+
+    // TODO: DRY this
     if (authToken) {
       clearAuthTokenFromWindowLocation()
+      return initSession().then(() => loadFacets().then(initSearch))
+    } else {
+      return loadFacets().then(initSearch)
     }
-    jsonApi.value = newJsonApi(apiUrl, authToken)
-    loggedIn.value = !!authToken
-
-    return loadFacets().then(() => {
-      const search = useSearchStore()
-      search.init() // TODO: should this live here instead?
-
-      if (reserveItemId) {
-        clearReserveItemFromWindowLocation()
-        reserveItem({ id: reserveItemId })
-      }
-    })
   }
 
   function loadFacets () {
@@ -76,31 +69,30 @@ export const useApiStore = defineStore('api', () => {
   }
 
   function reserveItem (item) {
+    console.log('reserveItem(%o)', item)
     reservingItem.value = item
 
     const api = jsonApi.value
 
     return api
       .create('reservation', { item })
-      .catch((error) => {
-        // TODO: something more elegant
-        const err0 = error[0]
-        if (err0 && (err0.title === 'Unauthorized')) {
-          pendingItem.value = item
-        } else {
-          const handle = handleError(`reserveItem(${item.id}) failed`)
-          return handle(error)
-        }
-      })
+      .then(itemReserved).catch(handleError(`reserveItem(${item.id}) failed`))
       .finally(() => { reservingItem.value = null })
   }
 
-  const reserveItemRedirectUrl = computed(() => {
-    const item = pendingItem.value
-    const url = item && getReserveItemRedirectUrl(item.id)
-    console.log('reserveItemRedirectUrl() -> item = %o, url = %o', item, url)
+  function isReserved (item) {
+    const reservedIds = reservedItemIds.value
+    return reservedIds.includes(item.id)
+  }
+
+  function reserveItemRedirectUrl (item) {
+    const url = new URL(window.location)
+    const params = url.searchParams
+    params.set(RESERVE_ITEM_PARAM, item.id)
+    const newSearch = params.toString()
+    url.search = newSearch
     return url
-  })
+  }
 
   const loginUrl = computed(() => {
     const baseUrl = apiBaseUrl.value
@@ -112,10 +104,17 @@ export const useApiStore = defineStore('api', () => {
     return baseUrl && new URL('/logout', baseUrl)
   })
 
-  const exported = { init, loading, loadFacets, performSearch, reserveItem, loggedIn, loginUrl, logoutUrl, reserveItemRedirectUrl, reservingItem, pendingItem }
+  // TODO: extract a ReservationStore
+  const exported = { init, loading, loadFacets, performSearch, reserveItem, isReserved, loginUrl, logoutUrl, reserveItemRedirectUrl, reservingItem }
 
   // --------------------------------------------------
   // Internal functions and properties
+
+  function itemReserved ({ data }) {
+    console.log('Created reservation: { %o }', data)
+    const item = data.item
+    reservedItemIds.value.push(item.id)
+  }
 
   function resultsFound (payload) {
     const { updateResults } = useResultStore()
@@ -125,6 +124,31 @@ export const useApiStore = defineStore('api', () => {
   function facetsLoaded ({ data }) {
     const facets = useFacetStore()
     facets.facets = data
+  }
+
+  function initSession () {
+    const api = jsonApi.value
+    return api.one('user', 'current')
+      .get()
+      .then(({ data }) => {
+        console.log('Initializing session with { %o }', data)
+        const { user } = storeToRefs(useSessionStore())
+        user.value = data
+      })
+      .catch(handleError('initSession() failed'))
+  }
+
+  function initSearch () {
+    const reserveItemId = getReserveItemFromWindowLocation()
+    console.log('initSearch(): reserveItemId = %o', reserveItemId)
+
+    const search = useSearchStore()
+    search.init() // TODO: should this live here instead?
+
+    if (reserveItemId) {
+      clearReserveItemFromWindowLocation()
+      reserveItem({ id: reserveItemId })
+    }
   }
 
   // --------------------------------------------------
@@ -172,15 +196,6 @@ function clearReserveItemFromWindowLocation () {
     url.search = newSearch
     window.history.pushState(null, '', url)
   }
-}
-
-function getReserveItemRedirectUrl (itemId) {
-  const url = new URL(window.location)
-  const params = url.searchParams
-  params.set(RESERVE_ITEM_PARAM, itemId)
-  const newSearch = params.toString()
-  url.search = newSearch
-  return url
 }
 
 function newJsonApi (apiUrl, authToken) {
@@ -234,7 +249,8 @@ const models = {
   user: {
     uid: '',
     displayName: '',
-    email: ''
+    email: '',
+    galcAdmin: false
   }
 }
 
