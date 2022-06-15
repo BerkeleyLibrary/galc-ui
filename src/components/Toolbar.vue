@@ -3,13 +3,13 @@ import { storeToRefs } from 'pinia/dist/pinia'
 import { useSessionStore } from '../stores/session'
 import { useApiStore } from '../stores/api'
 
-const { authenticated } = storeToRefs(useSessionStore())
+const { isAuthenticated } = storeToRefs(useSessionStore())
 const { logoutUrl } = storeToRefs(useApiStore())
 
 </script>
 
 <template>
-  <nav v-if="authenticated" class="galc-toolbar-nav">
+  <nav v-if="isAuthenticated" class="galc-toolbar-nav">
     <ul>
       <li>
         <a :href="logoutUrl">Log out</a>

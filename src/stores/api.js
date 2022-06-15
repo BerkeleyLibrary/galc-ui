@@ -100,10 +100,10 @@ export const useApiStore = defineStore('api', () => {
   async function initApi (apiUrl) {
     apiBaseUrl.value = apiUrl
 
-    const authToken = getAuthTokenFromWindowLocation()
+    const authToken = getLoginFlagFromWindowLocation()
 
     if (authToken) {
-      clearAuthTokenFromWindowLocation()
+      clearLoginFlagFromWindowLocation()
       jsonApi.value = newJsonApi(apiUrl, authToken)
 
       await initSession()
@@ -151,17 +151,17 @@ export const useApiStore = defineStore('api', () => {
 // ------------------------------------------------------------
 // Private implementation
 
-const AUTH_TOKEN_PARAM = 'token'
+const LOGIN_PARAM = 'login'
 
-function getAuthTokenFromWindowLocation () {
+function getLoginFlagFromWindowLocation () {
   const params = new URL(window.location).searchParams
-  return params.get(AUTH_TOKEN_PARAM)
+  return params.get(LOGIN_PARAM)
 }
 
-function clearAuthTokenFromWindowLocation () {
+function clearLoginFlagFromWindowLocation () {
   const url = new URL(window.location)
   const params = url.searchParams
-  params.delete(AUTH_TOKEN_PARAM)
+  params.delete(LOGIN_PARAM)
   const newSearch = params.toString()
   if (url.search !== newSearch) {
     url.search = newSearch
