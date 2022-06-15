@@ -28,6 +28,7 @@ const props = defineProps({
 
 function tryReserve (event) {
   event.target.blur()
+  // TODO: confirmation
   reserveItem(props.item)
 }
 

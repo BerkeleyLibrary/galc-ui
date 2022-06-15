@@ -6,6 +6,7 @@ export const useReservationStore = defineStore('reservation', () => {
   // --------------------------------------------------
   // State
 
+  // TODO: Handle multiple simultaneous attempted reservations
   const inProgressItem = ref(null)
   const reservedItemIds = ref([])
 
@@ -17,6 +18,7 @@ export const useReservationStore = defineStore('reservation', () => {
     if (reserveItemId) {
       clearReserveItemFromWindowLocation()
 
+      // TODO: confirmation
       const { reserveItem } = useApiStore()
       reserveItem({ id: reserveItemId })
     }
