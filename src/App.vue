@@ -5,8 +5,7 @@ import { onMounted } from 'vue'
 import { useApiStore } from './stores/api'
 import Search from './components/Search.vue'
 import Results from './components/Results.vue'
-import { storeToRefs } from 'pinia'
-import { useSessionStore } from './stores/session'
+import Toolbar from './components/Toolbar.vue'
 
 const props = defineProps({
   apiBaseUrl: { type: String, default: null }
@@ -16,19 +15,13 @@ onMounted(() => {
   const api = useApiStore()
   api.init(props.apiBaseUrl)
 })
-
-const { authenticated } = storeToRefs(useSessionStore())
-const { logoutUrl } = storeToRefs(useApiStore())
-
 </script>
 
 <template>
   <section class="galc">
     <h2 class="galc-title">Search the collection</h2>
     <Search class="galc-search"/>
-    <p v-if="authenticated">
-      <a :href="logoutUrl">Log out</a>
-    </p>
+    <Toolbar class="galc-toolbar"/>
     <Results class="galc-results"/>
   </section>
 </template>
@@ -39,7 +32,7 @@ section.galc {
   grid-template-columns: max-content minmax(0, 1fr);
   align-items: start;
 
-  .galc-title, .galc-search {
+  .galc-title, .galc-search, .galc-toolbar {
     grid-column: 1 / span 2;
   }
 
