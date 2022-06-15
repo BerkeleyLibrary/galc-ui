@@ -10,14 +10,19 @@ export const useSessionStore = defineStore('session', () => {
   // --------------------------------------------------
   // Exported functions and properties
 
-  const authenticated = computed(() => !!user.value)
+  const isAuthenticated = computed(() => !!user.value)
 
-  const admin = computed(() => {
+  const isAdmin = computed(() => {
     const userObj = user.value
     return userObj && userObj.galcAdmin
   })
 
-  const exported = { user, authenticated, admin }
+  function updateUser ({ data }) {
+    console.log('Initializing session with { %o }', data)
+    user.value = data
+  }
+
+  const exported = { user, isAuthenticated, isAdmin, updateUser }
 
   // --------------------------------------------------
   // Store definition

@@ -114,12 +114,19 @@ export const useSearchStore = defineStore('search', () => {
   }
 
   function writeWindowLocation () {
-    const params = searchParamsFrom(state.value.search)
-    addPageParam(params, state.value.page)
-    const newSearch = params.toString()
+    const searchParams = searchParamsFrom(state.value.search)
+    addPageParam(searchParams, state.value.page)
 
     const url = new URL(window.location)
-    if (url.search !== newSearch) {
+    const currentSearch = url.search
+
+    const params = url.searchParams
+    for (const [key, value] of searchParams) {
+      params.set(key, value)
+    }
+    const newSearch = params.toString()
+
+    if (currentSearch !== newSearch) {
       url.search = newSearch
       window.history.pushState(null, '', url)
     }
@@ -141,6 +148,8 @@ export const useSearchStore = defineStore('search', () => {
 
 // ------------------------------------------------------------
 // Misc. constants
+
+// TODO: DRY window location manipulation code
 
 const DEFAULT_PAGE = 1
 const KEYWORDS_PARAM = 'keywords'
