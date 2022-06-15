@@ -7,6 +7,7 @@ import { useFacetStore } from './facets'
 import { useResultStore } from './results'
 import { useSearchStore } from './search'
 import { useSessionStore } from './session'
+import { useReservationStore } from './reservation'
 
 // ------------------------------------------------------------
 // Store definition
@@ -22,27 +23,23 @@ export const useApiStore = defineStore('api', () => {
   const apiBaseUrl = ref('')
   const loadingFacets = ref(false)
   const loadingItems = ref(false)
-  const reservingItem = ref(null)
-  const reservedItemIds = ref([])
 
   // --------------------------------------------------
   // Exported functions and properties
 
-  const loading = computed(() => loadingFacets.value || loadingItems.value || reservingItem.value)
-
-  function init (apiUrl) {
-    apiBaseUrl.value = apiUrl
-
-    const authToken = getAuthTokenFromWindowLocation()
-    jsonApi.value = newJsonApi(apiUrl, authToken)
-
-    // TODO: DRY this
-    if (authToken) {
-      clearAuthTokenFromWindowLocation()
-      return initSession().then(() => loadFacets().then(initSearch))
-    } else {
-      return loadFacets().then(initSearch)
+  const loading = computed(() => {
+    const loading = loadingFacets.value || loadingItems.value
+    if (loading) {
+      return true
     }
+    const { inProgressItem } = storeToRefs(useReservationStore())
+    return !!inProgressItem.value
+  })
+
+  async function init (apiUrl) {
+    await initApi(apiUrl)
+    await loadFacets()
+    await initStores()
   }
 
   function loadFacets () {
@@ -70,28 +67,19 @@ export const useApiStore = defineStore('api', () => {
 
   function reserveItem (item) {
     console.log('reserveItem(%o)', item)
-    reservingItem.value = item
+
+    const reservation = useReservationStore()
+    const { inProgressItem } = storeToRefs(reservation)
+    const { itemReserved } = reservation
+
+    inProgressItem.value = item
 
     const api = jsonApi.value
-
     return api
       .create('reservation', { item })
-      .then(itemReserved).catch(handleError(`reserveItem(${item.id}) failed`))
-      .finally(() => { reservingItem.value = null })
-  }
-
-  function isReserved (item) {
-    const reservedIds = reservedItemIds.value
-    return reservedIds.includes(item.id)
-  }
-
-  function reserveItemRedirectUrl (item) {
-    const url = new URL(window.location)
-    const params = url.searchParams
-    params.set(RESERVE_ITEM_PARAM, item.id)
-    const newSearch = params.toString()
-    url.search = newSearch
-    return url
+      .then(itemReserved)
+      .catch(handleError(`reserveItem(${item.id}) failed`))
+      .finally(() => { inProgressItem.value = null })
   }
 
   const loginUrl = computed(() => {
@@ -104,16 +92,44 @@ export const useApiStore = defineStore('api', () => {
     return baseUrl && new URL('/logout', baseUrl)
   })
 
-  // TODO: extract a ReservationStore
-  const exported = { init, loading, loadFacets, performSearch, reserveItem, isReserved, loginUrl, logoutUrl, reserveItemRedirectUrl, reservingItem }
+  const exported = { init, loading, loadFacets, performSearch, reserveItem, loginUrl, logoutUrl }
 
   // --------------------------------------------------
   // Internal functions and properties
 
-  function itemReserved ({ data }) {
-    console.log('Created reservation: { %o }', data)
-    const item = data.item
-    reservedItemIds.value.push(item.id)
+  async function initApi (apiUrl) {
+    apiBaseUrl.value = apiUrl
+
+    const authToken = getAuthTokenFromWindowLocation()
+
+    if (authToken) {
+      clearAuthTokenFromWindowLocation()
+      jsonApi.value = newJsonApi(apiUrl, authToken)
+
+      await initSession()
+    } else {
+      jsonApi.value = newJsonApi(apiUrl)
+    }
+  }
+
+  async function initSession () {
+    const api = jsonApi.value
+    const { updateUser } = useSessionStore()
+
+    await api.one('user', 'current')
+      .get()
+      .then(updateUser)
+      .catch(handleError('initSession() failed'))
+  }
+
+  async function initStores () {
+    const stores = [
+      useSearchStore(),
+      useReservationStore()
+    ]
+    for (const store of stores) {
+      store.init()
+    }
   }
 
   function resultsFound (payload) {
@@ -126,31 +142,6 @@ export const useApiStore = defineStore('api', () => {
     facets.facets = data
   }
 
-  function initSession () {
-    const api = jsonApi.value
-    return api.one('user', 'current')
-      .get()
-      .then(({ data }) => {
-        console.log('Initializing session with { %o }', data)
-        const { user } = storeToRefs(useSessionStore())
-        user.value = data
-      })
-      .catch(handleError('initSession() failed'))
-  }
-
-  function initSearch () {
-    const reserveItemId = getReserveItemFromWindowLocation()
-    console.log('initSearch(): reserveItemId = %o', reserveItemId)
-
-    const search = useSearchStore()
-    search.init() // TODO: should this live here instead?
-
-    if (reserveItemId) {
-      clearReserveItemFromWindowLocation()
-      reserveItem({ id: reserveItemId })
-    }
-  }
-
   // --------------------------------------------------
   // Store definition
 
@@ -161,19 +152,10 @@ export const useApiStore = defineStore('api', () => {
 // Private implementation
 
 const AUTH_TOKEN_PARAM = 'token'
-const RESERVE_ITEM_PARAM = 'reserve'
-
-// TODO: share window location manipulation w/search.js
 
 function getAuthTokenFromWindowLocation () {
   const params = new URL(window.location).searchParams
   return params.get(AUTH_TOKEN_PARAM)
-}
-
-function getReserveItemFromWindowLocation () {
-  const params = new URL(window.location).searchParams
-  const itemVal = params.get(RESERVE_ITEM_PARAM)
-  return parseInt(itemVal) || 0
 }
 
 function clearAuthTokenFromWindowLocation () {
@@ -187,18 +169,7 @@ function clearAuthTokenFromWindowLocation () {
   }
 }
 
-function clearReserveItemFromWindowLocation () {
-  const url = new URL(window.location)
-  const params = url.searchParams
-  params.delete(RESERVE_ITEM_PARAM)
-  const newSearch = params.toString()
-  if (url.search !== newSearch) {
-    url.search = newSearch
-    window.history.pushState(null, '', url)
-  }
-}
-
-function newJsonApi (apiUrl, authToken) {
+function newJsonApi (apiUrl, authToken = null) {
   const options = authToken ? { apiUrl: apiUrl, bearer: authToken } : { apiUrl }
   const jsonApi = new JsonApi(options)
   jsonApi.insertMiddlewareBefore('response', camelcaseMiddleware)

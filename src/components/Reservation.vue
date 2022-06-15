@@ -3,15 +3,20 @@ import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 import { useApiStore } from '../stores/api'
 import { useSessionStore } from '../stores/session'
+import { useReservationStore } from '../stores/reservation'
 
 // ------------------------------------------------------------
 // Store
 
-const { authenticated } = storeToRefs(useSessionStore())
+const { isAuthenticated } = storeToRefs(useSessionStore())
 
 const api = useApiStore()
-const { reserveItem, reserveItemRedirectUrl, isReserved } = api
-const { loginUrl, reservingItem } = storeToRefs(api)
+const { reserveItem } = api
+const { loginUrl } = storeToRefs(api)
+
+const reservation = useReservationStore()
+const { isReserved, reserveItemRedirectUrl } = reservation
+const { inProgressItem } = storeToRefs(reservation)
 
 // ------------------------------------------------------------
 // Properties
@@ -27,7 +32,7 @@ function tryReserve (event) {
 }
 
 const reserving = computed(() => {
-  const reserving = reservingItem.value
+  const reserving = inProgressItem.value
   return reserving && reserving.id === props.item.id
 })
 </script>
@@ -36,7 +41,7 @@ const reserving = computed(() => {
   <button v-if="reserving" disabled>Reserving…</button>
   <button v-else-if="isReserved(item)" disabled>Reserved</button>
   <template v-else-if="available">
-    <button v-if="authenticated" @click="tryReserve">Reserve print</button>
+    <button v-if="isAuthenticated" @click="tryReserve">Reserve print</button>
     <form v-else method="post" class="galc-reserve-button-form" :action="loginUrl">
       <input type="hidden" name="origin" :value="reserveItemRedirectUrl(item)">
       <input type="submit" value="Reserve print">
