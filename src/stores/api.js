@@ -172,6 +172,7 @@ function clearAuthTokenFromWindowLocation () {
 function newJsonApi (apiUrl, authToken = null) {
   const options = authToken ? { apiUrl: apiUrl, bearer: authToken } : { apiUrl }
   const jsonApi = new JsonApi(options)
+  jsonApi.axios.defaults.withCredentials = true
   jsonApi.insertMiddlewareBefore('response', camelcaseMiddleware)
   for (const [name, attrs] of Object.entries(models)) {
     jsonApi.define(name, attrs)
@@ -221,7 +222,8 @@ const models = {
     uid: '',
     displayName: '',
     email: '',
-    galcAdmin: false
+    galcAdmin: false,
+    debug: ''
   }
 }
 
