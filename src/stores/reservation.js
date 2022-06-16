@@ -1,13 +1,14 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { useSessionStore } from './session'
 import { useApiStore } from './api'
 
 export const useReservationStore = defineStore('reservation', () => {
   // --------------------------------------------------
   // State
 
-  // TODO: Handle multiple simultaneous attempted reservations
-  const inProgressItem = ref(null)
+  // TODO: Handle/prevent multiple simultaneous attempted reservations
+  const currentReservation = ref(null)
   const reservedItemIds = ref([])
 
   // --------------------------------------------------
@@ -18,9 +19,15 @@ export const useReservationStore = defineStore('reservation', () => {
     if (reserveItemId) {
       clearReserveItemFromWindowLocation()
 
-      // TODO: confirmation
-      const { reserveItem } = useApiStore()
-      reserveItem({ id: reserveItemId })
+      // TODO: retry auth?
+      const { isAuthenticated } = useSessionStore()
+      if (isAuthenticated) {
+        const { fetchItem } = useApiStore()
+        fetchItem(reserveItemId).then(({ data }) => {
+          const item = data
+          startReservation(item)
+        })
+      }
     }
   }
 
@@ -28,6 +35,23 @@ export const useReservationStore = defineStore('reservation', () => {
     console.log('Created reservation: { %o }', data)
     const item = data.item
     reservedItemIds.value.push(item.id)
+
+    const rsvn = currentReservation.value
+    const rsvnItemId = rsvn && rsvn.item.id
+    if (rsvnItemId === item.id) {
+      currentReservation.value = null
+    }
+  }
+
+  // TODO: Handle/prevent multiple simultaneous attempted reservations
+  function startReservation (item) {
+    const rsvn = {
+      item: item,
+      confirmed: false
+    }
+    currentReservation.value = rsvn
+
+    console.log('startReservation(%o) => %o', item.id, currentReservation.value)
   }
 
   function isReserved (item) {
@@ -44,7 +68,7 @@ export const useReservationStore = defineStore('reservation', () => {
     return url
   }
 
-  const exported = { init, reserveItemRedirectUrl, inProgressItem, itemReserved, isReserved }
+  const exported = { init, reserveItemRedirectUrl, startReservation, currentReservation, itemReserved, isReserved }
 
   // --------------------------------------------------
   // Store definition
@@ -60,16 +84,19 @@ const RESERVE_ITEM_PARAM = 'reserve'
 
 function getReserveItemFromWindowLocation () {
   const params = new URL(window.location).searchParams
-  const itemVal = params.get(RESERVE_ITEM_PARAM)
-  return parseInt(itemVal) || 0
+  return params.get(RESERVE_ITEM_PARAM)
 }
 
 function clearReserveItemFromWindowLocation () {
+  console.log('clearReserveItemFromWindowLocation()')
   const url = new URL(window.location)
+  const oldSearch = url.search
+
   const params = url.searchParams
   params.delete(RESERVE_ITEM_PARAM)
   const newSearch = params.toString()
-  if (url.search !== newSearch) {
+
+  if (oldSearch !== newSearch) {
     url.search = newSearch
     window.history.pushState(null, '', url)
   }

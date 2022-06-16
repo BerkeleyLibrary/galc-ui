@@ -11,12 +11,11 @@ import { useReservationStore } from '../stores/reservation'
 const { isAuthenticated } = storeToRefs(useSessionStore())
 
 const api = useApiStore()
-const { reserveItem } = api
 const { loginUrl } = storeToRefs(api)
 
 const reservation = useReservationStore()
-const { isReserved, reserveItemRedirectUrl } = reservation
-const { inProgressItem } = storeToRefs(reservation)
+const { startReservation, isReserved, reserveItemRedirectUrl } = reservation
+const { currentReservation } = storeToRefs(reservation)
 
 // ------------------------------------------------------------
 // Properties
@@ -26,19 +25,20 @@ const props = defineProps({
   available: { type: Boolean, default: false }
 })
 
+// TODO: Handle/prevent multiple simultaneous attempted reservations
 function tryReserve (event) {
   event.target.blur()
-  // TODO: confirmation
-  reserveItem(props.item)
+  startReservation(props.item)
 }
 
 const reserving = computed(() => {
-  const reserving = inProgressItem.value
-  return reserving && reserving.id === props.item.id
+  const rsvn = currentReservation.value
+  return rsvn && rsvn.item.id === props.item.id
 })
 </script>
 
 <template>
+  <!-- TODO: clean this up -->
   <button v-if="reserving" disabled>Reserving…</button>
   <button v-else-if="isReserved(item)" disabled>Reserved</button>
   <template v-else-if="available">

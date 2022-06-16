@@ -22,7 +22,8 @@ const { getAvailability } = useResultStore()
 // Properties
 
 const props = defineProps({
-  item: { type: Object, default: null }
+  item: { type: Object, default: null },
+  actions: { type: Boolean, default: true }
 })
 
 // ------------------------------------------------------------
@@ -88,7 +89,6 @@ function getFacetName (term) {
 
 <template>
   <section class="galc-result">
-    <!-- {{ item.mmsId }} -->
     <div class="galc-result-thumbnail">
       <img v-if="thumbnailUrl" :key="thumbnailUrl" :src="thumbnailUrl" :alt="`thumbnail of “${item.title}” by ${item.artist}`" class="galc-thumbnail">
     </div>
@@ -112,7 +112,8 @@ function getFacetName (term) {
           </template>
         </table>
       </div>
-      <div class="galc-result-actions">
+      <!-- Find less hacky way to share code w/ConfirmDialog -->
+      <div v-if="actions" class="galc-result-actions">
         <Reservation :item="item" :available="available"/>
       </div>
     </div>

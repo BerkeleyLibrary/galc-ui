@@ -1,5 +1,5 @@
 import JsonApi from 'devour-client'
-import { defineStore, storeToRefs } from 'pinia'
+import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import camelcaseKeys from 'camelcase-keys'
 
@@ -23,17 +23,13 @@ export const useApiStore = defineStore('api', () => {
   const apiBaseUrl = ref('')
   const loadingFacets = ref(false)
   const loadingItems = ref(false)
+  const reservingItem = ref(false)
 
   // --------------------------------------------------
   // Exported functions and properties
 
   const loading = computed(() => {
-    const loading = loadingFacets.value || loadingItems.value
-    if (loading) {
-      return true
-    }
-    const { inProgressItem } = storeToRefs(useReservationStore())
-    return !!inProgressItem.value
+    return loadingFacets.value || loadingItems.value || reservingItem.value
   })
 
   async function init (apiUrl) {
@@ -65,21 +61,24 @@ export const useApiStore = defineStore('api', () => {
       .finally(() => { loadingItems.value = false })
   }
 
-  function reserveItem (item) {
-    console.log('reserveItem(%o)', item)
+  function fetchItem (itemId) {
+    const api = jsonApi.value
+    return api.find('item', itemId, { include: 'terms' })
+  }
 
-    const reservation = useReservationStore()
-    const { inProgressItem } = storeToRefs(reservation)
-    const { itemReserved } = reservation
+  function reserveItem (itemId) {
+    console.log('reserveItem(%o)', itemId)
 
-    inProgressItem.value = item
+    reservingItem.value = true
+
+    const { itemReserved } = useReservationStore()
 
     const api = jsonApi.value
     return api
-      .create('reservation', { item })
+      .create('reservation', { item: { id: itemId } })
       .then(itemReserved)
-      .catch(handleError(`reserveItem(${item.id}) failed`))
-      .finally(() => { inProgressItem.value = null })
+      .catch(handleError(`reserveItem(${itemId}) failed`))
+      .finally(() => { reservingItem.value = false })
   }
 
   const loginUrl = computed(() => {
@@ -92,7 +91,7 @@ export const useApiStore = defineStore('api', () => {
     return baseUrl && new URL('/logout', baseUrl)
   })
 
-  const exported = { init, loading, loadFacets, performSearch, reserveItem, loginUrl, logoutUrl }
+  const exported = { init, loading, fetchItem, loadFacets, performSearch, reserveItem, loginUrl, logoutUrl }
 
   // --------------------------------------------------
   // Internal functions and properties
@@ -100,18 +99,11 @@ export const useApiStore = defineStore('api', () => {
   async function initApi (apiUrl) {
     apiBaseUrl.value = apiUrl
 
-    const authToken = getLoginFlagFromWindowLocation()
-
-    if (authToken) {
-      clearLoginFlagFromWindowLocation()
-      jsonApi.value = newJsonApi(apiUrl, authToken)
-
-      await initSession()
-    } else {
-      jsonApi.value = newJsonApi(apiUrl)
-    }
+    jsonApi.value = newJsonApi(apiUrl)
+    await initSession()
   }
 
+  // This will succeed if we already have a cookie, fail otherwise
   async function initSession () {
     const api = jsonApi.value
     const { updateUser } = useSessionStore()
@@ -150,24 +142,6 @@ export const useApiStore = defineStore('api', () => {
 
 // ------------------------------------------------------------
 // Private implementation
-
-const LOGIN_PARAM = 'login'
-
-function getLoginFlagFromWindowLocation () {
-  const params = new URL(window.location).searchParams
-  return params.get(LOGIN_PARAM)
-}
-
-function clearLoginFlagFromWindowLocation () {
-  const url = new URL(window.location)
-  const params = url.searchParams
-  params.delete(LOGIN_PARAM)
-  const newSearch = params.toString()
-  if (url.search !== newSearch) {
-    url.search = newSearch
-    window.history.pushState(null, '', url)
-  }
-}
 
 function newJsonApi (apiUrl, authToken = null) {
   const options = authToken ? { apiUrl: apiUrl, bearer: authToken } : { apiUrl }

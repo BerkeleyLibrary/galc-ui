@@ -1,11 +1,10 @@
 <script setup>
-/* global defineProps */
-
 import { onMounted } from 'vue'
 import { useApiStore } from './stores/api'
 import Search from './components/Search.vue'
 import Results from './components/Results.vue'
 import Toolbar from './components/Toolbar.vue'
+import ConfirmDialog from './components/ConfirmDialog.vue'
 
 const props = defineProps({
   apiBaseUrl: { type: String, default: null }
@@ -23,6 +22,7 @@ onMounted(() => {
     <Search class="galc-search"/>
     <Toolbar class="galc-toolbar"/>
     <Results class="galc-results"/>
+    <ConfirmDialog/>
   </section>
 </template>
 
