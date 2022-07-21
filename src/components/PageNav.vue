@@ -38,7 +38,6 @@ const totalItems = computed(() => pagination.value.records || 0)
 <style lang="scss">
 nav.page-nav {
   display: flex;
-  width: 100%;
   margin-top: 0.375em;
   margin-bottom: 0.625em;
 
@@ -47,6 +46,7 @@ nav.page-nav {
   }
 
   &:last-of-type {
+    width: 100%;
     justify-content: center;
   }
 
@@ -61,12 +61,6 @@ nav.page-nav {
     margin: 0;
   }
 
-  //p.page-nav-items {
-  //  margin-top: 0;
-  //  margin-right: 0.5em;
-  //  margin-bottom: 0;
-  //}
-  //
   ul {
     display: flex;
     gap: 0.25em;

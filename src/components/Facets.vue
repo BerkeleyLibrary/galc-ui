@@ -10,7 +10,6 @@ const { facets } = storeToRefs(useFacetStore())
 
 <template>
   <form class="galc-facet-form">
-    <h3 class="galc-facet-title">Refine your results</h3>
     <Facet
       v-for="facet in facets"
       :id="`galc-facet-${facet.name}`"
@@ -20,9 +19,8 @@ const { facets } = storeToRefs(useFacetStore())
   </form>
 </template>
 
-<!-- TODO: figure out how to use scoped styles & still style subcomponent here -->
 <style lang="scss">
-form.galc-facets {
+form.galc-facet-form {
   display: grid;
   grid-template-columns: min-content max-content minmax(0, 1fr);
   align-items: center;

@@ -8,6 +8,7 @@ import Facets from './Facets.vue'
 import PageNav from './PageNav.vue'
 import Result from './Result.vue'
 import Spinner from './Spinner.vue'
+import TermDeselection from './TermDeselection.vue'
 
 // TODO: do getters need storeToRefs?
 const { items, hasResults, searchPerformed } = storeToRefs(useResultStore())
@@ -19,26 +20,34 @@ const { loading } = storeToRefs(useApiStore())
     <Spinner v-if="loading"/>
     <template v-if="searchPerformed">
       <Facets class="galc-facets"/>
-      <div v-if="hasResults">
-        <PageNav class="galc-page-nav"/>
-        <ul class="galc-results-list">
-          <li v-for="item in items" :key="item.id">
-            <Result :item="item"/>
-          </li>
-        </ul>
-        <PageNav class="galc-page-nav"/>
-      </div>
-      <div v-else class="galc-results-list galc-no-results">
-        <h3>Your search yielded no results</h3>
-        <ul>
-          <li>
-            Check whether your spelling is correct.
-          </li>
-          <li>
-            Consider loosening your query by reducing the number of keywords, or eliminating
-            advanced search filters.
-          </li>
-        </ul>
+      <div class="galc-results-block">
+        <template v-if="hasResults">
+          <div class="galc-results-list-header">
+            <TermDeselection/>
+            <PageNav class="galc-page-nav"/>
+          </div>
+          <ul class="galc-results-list">
+            <li v-for="item in items" :key="item.id">
+              <Result :item="item"/>
+            </li>
+          </ul>
+          <PageNav class="galc-page-nav"/>
+        </template>
+        <template v-else>
+          <TermDeselection/>
+          <div class="galc-no-results">
+            <h3>Your search yielded no results</h3>
+            <ul>
+              <li>
+                Check whether your spelling is correct.
+              </li>
+              <li>
+                Consider loosening your query by reducing the number of keywords, or eliminating
+                advanced search filters.
+              </li>
+            </ul>
+          </div>
+        </template>
       </div>
     </template>
   </div>
@@ -56,10 +65,16 @@ div.galc-results {
     grid-column: 1;
   }
 
-  .galc-results-list {
+  .galc-results-block {
     grid-column: 2;
   }
 
+}
+
+div.galc-results-list-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  margin-bottom: 10px;
 }
 
 div.galc-no-results {
