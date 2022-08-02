@@ -38,8 +38,16 @@ const selected = selectedTerms(props.facet.name)
 div.galc-term-selection {
   display: contents;
 
+  @media only screen and (max-width: 700px) {
+    font-size: 1.125rem;
+  }
+
   input[type=checkbox] {
     margin-bottom: 0.25em;
+
+    @media only screen and (max-width: 700px) {
+      -webkit-transform: scale(1.25);
+    }
   }
 
   label {
