@@ -213,25 +213,31 @@ function getFacetName (term) {
     }
 
     table.galc-result-metadata {
-      display: grid;
-      width: 100%;
-      grid-template-columns: min-content min-content min-content minmax(0, 1fr);
       font-size: 1rem;
       line-height: 1.25rem;
       margin-top: 1rem;
       margin-bottom: 1rem;
 
-      tr {
-        display: contents;
+      td {
+        padding-left: 0.5em;
+        padding-right: 1em;
+      }
 
-        th {
-          display: block;
-        }
+      @media only screen and (min-width: 700px) {
+        display: grid;
+        grid-template-columns: min-content min-content min-content minmax(0, 1fr);
+        width: 100%;
 
-        td {
-          display: block;
-          padding-left: 0.5em;
-          padding-right: 1em;
+        tr {
+          display: contents;
+
+          th {
+            display: block;
+          }
+
+          td {
+            display: block;
+          }
         }
       }
     }
