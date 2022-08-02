@@ -60,7 +60,7 @@ fieldset.galc-facet {
       white-space: nowrap;
       display: block;
       height: min-content;
-      font-size: 1rem;
+      font-size: 1.125rem;
       border-bottom: 1px solid #ddd5c7;
       width: 100%;
       margin-bottom: 0.5em;
