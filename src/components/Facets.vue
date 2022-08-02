@@ -2,6 +2,8 @@
 import { storeToRefs } from 'pinia'
 import { useFacetStore } from '../stores/facets'
 
+import filter from '../assets/filter.svg'
+
 import Facet from './Facet.vue'
 
 const { facets } = storeToRefs(useFacetStore())
@@ -9,64 +11,119 @@ const { facets } = storeToRefs(useFacetStore())
 </script>
 
 <template>
-  <form class="galc-facet-form">
-    <Facet
-      v-for="facet in facets"
-      :id="`galc-facet-${facet.name}`"
-      :key="facet.name"
-      :facet="facet"
-    />
-  </form>
+  <div class="galc-facets">
+    <input id="show-facets" type="checkbox">
+    <label class="show-facets-label" for="show-facets">
+      Options
+      <img alt="Options" :src="filter" class="show-facets-icon">
+    </label>
+    <form class="galc-facet-form">
+      <Facet
+        v-for="facet in facets"
+        :id="`galc-facet-${facet.name}`"
+        :key="facet.name"
+        :facet="facet"
+      />
+    </form>
+  </div>
 </template>
 
 <style lang="scss">
-form.galc-facet-form {
-  display: grid;
-  grid-template-columns: min-content max-content minmax(0, 1fr);
-  align-items: center;
-  justify-items: start;
+div.galc-facets {
 
-  // TODO: rationalize these measurements
-  column-gap: 0.5rem;
-  row-gap: 0;
-  margin-right: 2rem;
-
-  .galc-facet-title {
-    white-space: nowrap;
-    grid-column: 1 / 4;
-    margin-bottom: 0.25em;
+  input#show-facets {
+    display: none;
   }
 
-  > fieldset {
+  @media only screen and (min-width: 700px) {
+    label.show-facets-label {
+      display: none;
+    }
+  }
 
-    details {
-      summary {
-        grid-column: 1 / 4;
+  @media only screen and (max-width: 700px) {
+    margin-top: -30px; // overlap Toolbar
+
+    input#show-facets {
+      ~ form.galc-facet-form {
+        display: none;
       }
 
-      input {
-        grid-column: 1;
-      }
-
-      label {
-        grid-column: 2 / 4;
-      }
-
-      fieldset {
-
-        input {
-          grid-column: 2;
-        }
-
-        label {
-          grid-column: 3 / 4;
-        }
+      &:checked ~ form.galc-facet-form {
+        display: grid;
       }
     }
 
-    &:not(:first-of-type) {
-      summary {
-        margin-top: 0.25em;
+    label.show-facets-label {
+      display: block;
+      font-size: 1rem;
+      line-height: 1.75rem;
+      font-weight: normal;
+      color: white;
+      background-color: #46535e;
+      padding: 2px 8px;
+      margin: 6px 16px 6px 0;
+      width: fit-content;
+
+      img.show-facets-icon {
+        height: 0.9rem;
+        width: 0.9rem;
+        filter: invert(100%);
+        display: inline;
+        margin-bottom: -2px;
+        margin-left: 4px;
+      }
+    }
+  }
+
+  form.galc-facet-form {
+    display: grid;
+    grid-template-columns: min-content max-content minmax(0, 1fr);
+    align-items: center;
+    justify-items: start;
+
+    // TODO: rationalize these measurements
+    column-gap: 0.5rem;
+    row-gap: 0;
+    margin-right: 2rem;
+
+    .galc-facet-title {
+      white-space: nowrap;
+      grid-column: 1 / 4;
+      margin-bottom: 0.25em;
+    }
+
+    > fieldset {
+
+      details {
+        summary {
+          grid-column: 1 / 4;
+        }
+
+        input {
+          grid-column: 1;
+        }
+
+        label {
+          grid-column: 2 / 4;
+        }
+
+        fieldset {
+
+          input {
+            grid-column: 2;
+          }
+
+          label {
+            grid-column: 3 / 4;
+          }
+        }
+      }
+
+      &:not(:first-of-type) {
+        summary {
+          margin-top: 0.25em;
+        }
       }
     }
   }

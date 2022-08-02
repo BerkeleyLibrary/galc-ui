@@ -26,6 +26,7 @@ const { logoutUrl } = storeToRefs(useApiStore())
     gap: 0.25em;
     padding: 0;
     margin-top: 0;
+    margin-bottom: 0;
 
     li {
       display: inline-block;
