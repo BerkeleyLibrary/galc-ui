@@ -40,15 +40,7 @@ nav.page-nav {
   display: flex;
   margin-top: 0.375em;
   margin-bottom: 0.625em;
-
-  &:first-of-type {
-    justify-content: end;
-  }
-
-  &:last-of-type {
-    width: 100%;
-    justify-content: center;
-  }
+  justify-content: center;
 
   .page-nav-items-total {
     font-weight: bold
@@ -57,7 +49,6 @@ nav.page-nav {
   ul, p.page-nav-items {
     font-size: 1.25rem;
     line-height: 1.25em;
-    font-variant-numeric: lining-nums;
     margin: 0;
   }
 

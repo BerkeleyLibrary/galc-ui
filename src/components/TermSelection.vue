@@ -38,11 +38,16 @@ const selected = selectedTerms(props.facet.name)
 div.galc-term-selection {
   display: contents;
 
+  input[type=checkbox] {
+    margin-bottom: 0.25em;
+  }
+
   label {
     white-space: nowrap;
     height: min-content;
     font-weight: normal;
     line-height: 1.15;
+    margin-bottom: 0.25em;
   }
 
   fieldset.galc-facet-subterms {

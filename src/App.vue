@@ -28,5 +28,6 @@ onMounted(() => {
 
 <style lang="scss">
 section.galc {
+  font-variant-numeric: lining-nums;
 }
 </style>

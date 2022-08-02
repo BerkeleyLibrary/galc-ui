@@ -85,6 +85,10 @@ div.galc-results {
           display: none;
         }
       }
+
+      nav.page-nav {
+        justify-content: end;
+      }
     }
 
     ul.galc-results-list {

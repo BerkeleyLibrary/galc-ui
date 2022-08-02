@@ -60,7 +60,10 @@ fieldset.galc-facet {
       white-space: nowrap;
       display: block;
       height: min-content;
-      font-weight: bold;
+      font-size: 1rem;
+      border-bottom: 1px solid #ddd5c7;
+      width: 100%;
+      margin-bottom: 0.5em;
 
       &::-webkit-details-marker {
         display: none;
@@ -68,7 +71,7 @@ fieldset.galc-facet {
 
       &::after {
         content: ' ';
-        padding-left: 1em;
+        padding-left: 1.5em;
         background-repeat: no-repeat;
         background-position: center;
         background-size: 1em 1em;
@@ -82,7 +85,12 @@ fieldset.galc-facet {
         background-image: url('../assets/angle-up.svg');
       }
     }
+  }
 
+  &:not(:first-of-type) {
+    summary {
+      margin-top: 1em;
+    }
   }
 }
 </style>
