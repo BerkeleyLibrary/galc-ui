@@ -20,6 +20,10 @@ const { logoutUrl } = storeToRefs(useApiStore())
 
 <style lang="scss">
 .galc-toolbar-nav {
+  @media only screen and (max-width: 700px) {
+    margin-bottom: -36px; // overlap show/hide facets button
+  }
+
   ul {
     display: flex;
     justify-content: end;

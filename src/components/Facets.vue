@@ -42,8 +42,6 @@ div.galc-facets {
   }
 
   @media only screen and (max-width: 700px) {
-    margin-top: -30px; // overlap Toolbar
-
     input#show-facets {
       ~ form.galc-facet-form {
         display: none;
