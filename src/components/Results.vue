@@ -56,19 +56,21 @@ const { loading } = storeToRefs(useApiStore())
 <style lang="scss">
 div.galc-results {
   position: relative;
-  display: grid;
-  grid-template-columns: max-content minmax(0, 1fr);
-  align-items: start;
   min-height: 24px;
 
-  .galc-facets {
-    grid-column: 1;
-  }
+  @media only screen and (min-width: 700px) {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    align-items: start;
 
-  .galc-results-block {
-    grid-column: 2;
-  }
+    .galc-facets {
+      grid-column: 1;
+    }
 
+    .galc-results-block {
+      grid-column: 2;
+    }
+  }
 }
 
 div.galc-results-list-header {
