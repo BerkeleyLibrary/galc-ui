@@ -31,7 +31,9 @@ const { loading } = storeToRefs(useApiStore())
               <Result :item="item"/>
             </li>
           </ul>
-          <PageNav class="galc-page-nav"/>
+          <div class="galc-results-list-footer">
+            <PageNav class="galc-page-nav"/>
+          </div>
         </template>
         <template v-else>
           <TermDeselection/>
@@ -77,6 +79,12 @@ div.galc-results-list-header {
   display: grid;
   grid-template-columns: minmax(0, 1fr) max-content;
   margin-bottom: 10px;
+
+  @media only screen and (max-width: 700px) {
+    ul.page-nav-links {
+      display: none;
+    }
+  }
 }
 
 div.galc-no-results {

@@ -25,7 +25,7 @@ const totalItems = computed(() => pagination.value.records || 0)
 <template>
   <nav v-if="totalItems > 0" class="page-nav">
     <p class="page-nav-items"><span class="page-nav-items-total">{{ totalItems }}</span> records found</p>
-    <ul>
+    <ul class="page-nav-links">
       <PageNavLink text="«" :active="pagination.current > 1" rel="first" title="First page" :page="1"/>
       <PageNavLink text="‹" :active="pagination.current > 1" rel="prev" title="Previous page" :page="pagination.prev"/>
       <li>{{ fromItem }}–{{ toItem }}</li>
@@ -61,13 +61,19 @@ nav.page-nav {
     margin: 0;
   }
 
-  ul {
-    display: flex;
-    gap: 0.25em;
-    padding: 0;
+  ul.page-nav-links {
+    display: none;
+  }
 
-    li {
-      display: inline-block;
+  @media only screen {
+    ul.page-nav-links {
+      display: flex;
+      gap: 0.25em;
+      padding: 0;
+
+      li {
+        display: inline-block;
+      }
     }
   }
 }
