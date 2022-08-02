@@ -112,10 +112,10 @@ function getFacetName (term) {
           </template>
         </table>
       </div>
-      <!-- Find less hacky way to share code w/ConfirmDialog -->
-      <div v-if="actions" class="galc-result-actions">
-        <Reservation :item="item" :available="available"/>
-      </div>
+    </div>
+    <!-- Find less hacky way to share code w/ConfirmDialog -->
+    <div v-if="actions" class="galc-result-actions">
+      <Reservation :item="item" :available="available"/>
     </div>
   </section>
 </template>
@@ -123,19 +123,35 @@ function getFacetName (term) {
 <style lang="scss">
 .galc-result {
   display: grid;
-  grid-template-columns: max-content minmax(0, 1fr);
-  grid-column-gap: 0.5em;
-  align-items: start;
-  justify-items: start;
+  grid-template-columns: min(180px, 45%) minmax(0, 1fr);
+  grid-column-gap: 0.75rem;
 
-  button {
-    align-self: end;
-    width: 180px;
+  @media only screen and (max-width: 700px) {
+    .galc-result-actions {
+      grid-column: 1 / 3;
+    }
+  }
+
+  @media only screen and (min-width: 700px) {
+    .galc-result-thumbnail {
+      grid-column: 1;
+      grid-row: 1 / 3;
+    }
+
+    .galc-result-actions {
+      width: 160px;
+      justify-self: end;
+    }
+  }
+
+  button, input[type=submit] {
+    width: 100%;
     white-space: nowrap;
     text-transform: uppercase;
     font-weight: 700;
     height: 42px;
     padding: 6px 10px;
+    margin-bottom: 0.5em;
     transition: background-color .25s, color .25s;
     color: #000;
     font-size: 1rem;
@@ -151,51 +167,28 @@ function getFacetName (term) {
     }
   }
 
-  .galc-result-thumbnail {
-    grid-column: 1;
-
-    img.galc-thumbnail {
-      width: 180px;
-      grid-column: 1;
-      grid-row: 1 / 6;
-      margin-right: 0.5rem;
-    }
-  }
-
   .galc-result-details {
-    grid-column: 2;
-    width: 100%;
-
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 180px;
-    align-items: end;
-
-    div.galc-result-header, div.galc-result-footer {
-      grid-column: 1 / 3;
-    }
-
-    div.galc-result-body {
-      grid-column: 1;
-    }
-
-    div.galc-result-actions {
-      grid-column: 2;
-    }
 
     .galc-result-metadata {
       font-size: 1rem;
       line-height: 1.25rem;
     }
 
+    h4 {
+      margin: 0;
+    }
+
     h4, p {
       line-height: 1.15em;
-      margin-top: 0;
     }
 
     p {
+      margin-top: 0;
+
       &:last-of-type {
         margin-bottom: 0;
       }
+
       &:not(:last-of-type) {
         margin-bottom: 0.25em;
       }
@@ -208,15 +201,15 @@ function getFacetName (term) {
       margin: 0;
     }
 
-    h4.galc-result-title {
-      margin: 0;
-    }
-
     table.galc-result-metadata {
       font-size: 1rem;
       line-height: 1.25rem;
       margin-top: 1rem;
       margin-bottom: 1rem;
+
+      th {
+        text-align: left;
+      }
 
       td {
         padding-left: 0.5em;
@@ -225,8 +218,8 @@ function getFacetName (term) {
 
       @media only screen and (min-width: 700px) {
         display: grid;
+        width: auto;
         grid-template-columns: min-content min-content min-content minmax(0, 1fr);
-        width: 100%;
 
         tr {
           display: contents;
@@ -242,6 +235,5 @@ function getFacetName (term) {
       }
     }
   }
-
 }
 </style>
