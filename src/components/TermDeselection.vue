@@ -11,6 +11,7 @@ const { selectedTerms } = useSearchStore()
 
 <template>
   <fieldset class="galc-term-deselection">
+    <!-- TODO: clean this up -->
     <template v-for="facet of facets">
       <div v-for="term of facet.terms" :key="`ds-term-${term.id}`" class="ds-term">
         <input
@@ -30,42 +31,46 @@ const { selectedTerms } = useSearchStore()
 
 <style lang="scss">
 .galc-term-deselection {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: start;
-  border: 0;
-  margin: 0;
-  padding: 0;
+  display: none;
 
-  img.term-deselect-icon {
-    height: 0.9rem;
-    width: 0.9rem;
-    filter: invert(100%);
-    display: inline;
-    margin-bottom: -2px;
-    margin-right: 4px;
-  }
+  @media only screen and (min-width: 700px) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: start;
+    border: 0;
+    margin: 0;
+    padding: 0;
 
-  div.ds-term {
-    display: contents;
-
-    input[type=checkbox] {
-      display: none;
-
-      &:checked ~ label {
-        display: block;
-        font-size: 1rem;
-        line-height: 1.75rem;
-        font-weight: normal;
-        color: white;
-        background-color: #3b7ea1;
-        padding: 2px 8px;
-        margin: 6px 16px 6px 0;
-      }
+    img.term-deselect-icon {
+      height: 0.9rem;
+      width: 0.9rem;
+      filter: invert(100%);
+      display: inline;
+      margin-bottom: -2px;
+      margin-right: 4px;
     }
 
-    label {
-      display: none;
+    div.ds-term {
+      display: contents;
+
+      input[type=checkbox] {
+        display: none;
+
+        &:checked ~ label {
+          display: block;
+          font-size: 1rem;
+          line-height: 1.75rem;
+          font-weight: normal;
+          color: white;
+          background-color: #3b7ea1;
+          padding: 2px 8px;
+          margin: 6px 16px 6px 0;
+        }
+      }
+
+      label {
+        display: none;
+      }
     }
   }
 }
