@@ -23,6 +23,7 @@ const item = computed(() => {
   <div class="galc-confirm-dialog">
     <h3>You are reserving:</h3>
 
+    <!-- TODO: find less hacky way to share thumbnail & metadata w/o rsvn button between Result & ConfirmDialog -->
     <Result :item="item" :actions="false"/>
     <p>
       You may only reserve two prints per semester. You may have no more than two prints charged out at any time.
@@ -82,6 +83,13 @@ const item = computed(() => {
       }
     }
 
+  }
+
+  @media only screen and (min-width: 700px) {
+    .galc-result {
+      margin-left: 1em;
+      margin-right: 1em;
+    }
   }
 }
 </style>
