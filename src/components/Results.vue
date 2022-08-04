@@ -2,22 +2,19 @@
 import { storeToRefs } from 'pinia'
 
 import { useResultStore } from '../stores/results'
-import { useApiStore } from '../stores/api'
 
 import Facets from './Facets.vue'
+import Modals from './Modals.vue'
 import PageNav from './PageNav.vue'
 import Result from './Result.vue'
-import Spinner from './Spinner.vue'
 import TermDeselection from './TermDeselection.vue'
 
-// TODO: do getters need storeToRefs?
 const { items, hasResults, searchPerformed } = storeToRefs(useResultStore())
-const { loading } = storeToRefs(useApiStore())
 </script>
 
 <template>
   <div class="galc-results">
-    <Spinner v-if="loading"/>
+    <Modals/>
     <template v-if="searchPerformed">
       <Facets class="galc-facets"/>
       <div class="galc-results-block">

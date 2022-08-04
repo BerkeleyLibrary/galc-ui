@@ -54,6 +54,24 @@ export const useReservationStore = defineStore('reservation', () => {
     console.log('startReservation(%o) => %o', item.id, currentReservation.value)
   }
 
+  function confirmReservation () {
+    console.log('confirmReservation(): %o', currentReservation.value)
+
+    const api = useApiStore()
+    const { reserveItem } = api
+
+    const rsvn = currentReservation.value
+    rsvn.confirmed = true
+
+    const itemId = rsvn.item.id
+    reserveItem(itemId)
+  }
+
+  function cancelReservation () {
+    console.log('cancelReservation()')
+    currentReservation.value = null
+  }
+
   function isReserved (item) {
     const reservedIds = reservedItemIds.value
     return reservedIds.includes(item.id)
@@ -68,7 +86,7 @@ export const useReservationStore = defineStore('reservation', () => {
     return url
   }
 
-  const exported = { init, reserveItemRedirectUrl, startReservation, currentReservation, itemReserved, isReserved }
+  const exported = { init, reserveItemRedirectUrl, startReservation, confirmReservation, cancelReservation, currentReservation, itemReserved, isReserved }
 
   // --------------------------------------------------
   // Store definition
