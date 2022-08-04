@@ -51,6 +51,7 @@ const item = computed(() => {
     justify-content: center;
     gap: 1em;
 
+    // TODO: share button styles
     button {
       width: 180px;
       white-space: nowrap;

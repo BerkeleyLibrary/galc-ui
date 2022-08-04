@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted } from 'vue'
 import { useApiStore } from './stores/api'
+import Modals from './components/Modals.vue'
 import Search from './components/Search.vue'
 import Results from './components/Results.vue'
 import Toolbar from './components/Toolbar.vue'
@@ -17,6 +18,7 @@ onMounted(() => {
 
 <template>
   <section class="galc">
+    <Modals/>
     <h2 class="galc-title">Search the collection</h2>
     <Search class="galc-search"/>
     <Toolbar class="galc-toolbar"/>

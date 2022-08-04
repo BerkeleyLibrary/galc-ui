@@ -5,10 +5,12 @@ import { useResultStore } from '../stores/results'
 import ItemDetails from './ItemDetails.vue'
 import ItemImage from './ItemImage.vue'
 import Reservation from './Reservation.vue'
+import { useReservationStore } from '../stores/reservation'
 
 // ------------------------------------------------------------
 // Store
 
+const { startPreview } = useReservationStore()
 const { getAvailability } = useResultStore()
 
 // ------------------------------------------------------------
@@ -24,12 +26,19 @@ const props = defineProps({
 
 const available = computed(() => getAvailability(props.item))
 
+// ------------------------------------------------------------
+// Actions
+
+function showPreview (event) {
+  startPreview(props.item)
+}
+
 </script>
 
 <template>
   <section class="galc-result">
     <div class="galc-result-thumbnail">
-      <ItemImage :filename="item.thumbnail" :alt="`thumbnail of “${item.title}” by ${item.artist}`"/>
+      <ItemImage :filename="item.thumbnail" :alt="`thumbnail of “${item.title}” by ${item.artist}`" @click="showPreview"/>
     </div>
     <ItemDetails :item="item"/>
     <!-- TODO: find less hacky way to share thumbnail & metadata w/o rsvn button between Result & ConfirmDialog -->

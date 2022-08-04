@@ -7,8 +7,8 @@ export const useReservationStore = defineStore('reservation', () => {
   // --------------------------------------------------
   // State
 
-  // TODO: Handle/prevent multiple simultaneous attempted reservations
   const currentReservation = ref(null)
+  const currentPreview = ref(null)
   const reservedItemIds = ref([])
 
   // --------------------------------------------------
@@ -43,7 +43,6 @@ export const useReservationStore = defineStore('reservation', () => {
     }
   }
 
-  // TODO: Handle/prevent multiple simultaneous attempted reservations
   function startReservation (item) {
     const rsvn = {
       item: item,
@@ -86,7 +85,33 @@ export const useReservationStore = defineStore('reservation', () => {
     return url
   }
 
-  const exported = { init, reserveItemRedirectUrl, startReservation, confirmReservation, cancelReservation, currentReservation, itemReserved, isReserved }
+  function startPreview (item) {
+    // TODO: find less hacky way to prevent launching preview from confirm dialog
+    if (currentReservation.value) {
+      console.log('not previewing')
+      return
+    }
+    console.log('previewing %o', item)
+    currentPreview.value = item
+  }
+
+  function endPreview () {
+    currentPreview.value = null
+  }
+
+  const exported = {
+    init,
+    reserveItemRedirectUrl,
+    startReservation,
+    confirmReservation,
+    cancelReservation,
+    currentReservation,
+    itemReserved,
+    isReserved,
+    currentPreview,
+    startPreview,
+    endPreview
+  }
 
   // --------------------------------------------------
   // Store definition

@@ -4,7 +4,6 @@ import { storeToRefs } from 'pinia'
 import { useResultStore } from '../stores/results'
 
 import Facets from './Facets.vue'
-import Modals from './Modals.vue'
 import PageNav from './PageNav.vue'
 import Result from './Result.vue'
 import TermDeselection from './TermDeselection.vue'
@@ -14,7 +13,6 @@ const { items, hasResults, searchPerformed } = storeToRefs(useResultStore())
 
 <template>
   <div class="galc-results">
-    <Modals/>
     <template v-if="searchPerformed">
       <Facets class="galc-facets"/>
       <div class="galc-results-block">
@@ -54,9 +52,6 @@ const { items, hasResults, searchPerformed } = storeToRefs(useResultStore())
 
 <style lang="scss">
 div.galc-results {
-  position: relative;
-  min-height: 24px;
-
   @media only screen and (min-width: 700px) {
     display: grid;
     grid-template-columns: max-content minmax(0, 1fr);
