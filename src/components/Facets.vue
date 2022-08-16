@@ -5,6 +5,7 @@ import { useFacetStore } from '../stores/facets'
 import filter from '../assets/filter.svg'
 
 import Facet from './Facet.vue'
+import TermDeselection from './TermDeselection.vue'
 
 const { facets } = storeToRefs(useFacetStore())
 
@@ -12,6 +13,7 @@ const { facets } = storeToRefs(useFacetStore())
 
 <template>
   <div class="galc-facets">
+    <TermDeselection/>
     <input id="show-facets" type="checkbox">
     <label class="show-facets-label" for="show-facets">
       Options
@@ -36,6 +38,11 @@ div.galc-facets {
   }
 
   @media only screen and (min-width: 700px) {
+    // TODO: less hacky way to place this differently on desktop and mobile
+    .galc-term-deselection {
+      display: none;
+    }
+
     label.show-facets-label {
       display: none;
     }

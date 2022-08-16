@@ -67,6 +67,13 @@ div.galc-results {
   }
 
   .galc-results-block {
+    @media only screen and (max-width: 700px) {
+      // TODO: less hacky way to place this differently on desktop and mobile
+      .galc-term-deselection {
+        display: none;
+      }
+    }
+
     div.galc-results-list-header {
       display: grid;
       grid-template-columns: minmax(0, 1fr) max-content;
