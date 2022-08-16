@@ -26,12 +26,13 @@ const { endPreview } = reservation
   padding: 1em;
   border: 1px solid black;
   background-color: white;
-  height: 100%;
+  max-height: 100%;
 
   .galc-item-preview-image {
     max-height: 100%;
-    min-height: 100%;
-    //width: auto;
+    width: fit-content;
+    // TODO: Figure out how to size image block properly w/o aspect ratio problems
+    object-fit: contain;
   }
 
   button {
