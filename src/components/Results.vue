@@ -40,7 +40,7 @@ const { items, hasResults, searchPerformed } = storeToRefs(useResultStore())
               </li>
               <li>
                 Consider loosening your query by reducing the number of keywords, or eliminating
-                advanced search filters.
+                search filters.
               </li>
             </ul>
           </div>
