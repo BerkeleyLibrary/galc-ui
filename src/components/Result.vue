@@ -54,6 +54,12 @@ function showPreview (event) {
   grid-template-columns: min(180px, 45%) minmax(0, 1fr);
   grid-column-gap: 0.75rem;
 
+  .galc-result-thumbnail {
+    img {
+      cursor: pointer;
+    }
+  }
+
   @media only screen and (max-width: 700px) {
     .galc-result-actions {
       grid-column: 1 / 3;
