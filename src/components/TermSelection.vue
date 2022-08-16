@@ -56,6 +56,7 @@ div.galc-term-selection {
     font-weight: normal;
     line-height: 1.15;
     margin-bottom: 0.25em;
+    cursor: pointer;
   }
 
   fieldset.galc-facet-subterms {

@@ -69,6 +69,7 @@ div.galc-facets {
       padding: 2px 8px;
       margin: 6px 16px 6px 0;
       width: fit-content;
+      cursor: pointer;
 
       img.show-facets-icon {
         height: 0.9rem;

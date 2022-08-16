@@ -64,6 +64,7 @@ fieldset.galc-facet {
       border-bottom: 1px solid #ddd5c7;
       width: 100%;
       margin-bottom: 0.5em;
+      cursor: pointer;
 
       &::-webkit-details-marker {
         display: none;
