@@ -99,11 +99,19 @@ export const useApiStore = defineStore('api', () => {
   async function initApi (apiUrl) {
     apiBaseUrl.value = apiUrl
 
-    jsonApi.value = newJsonApi(apiUrl)
-    await initSession()
+    const authToken = getAuthTokenFromWindowLocation()
+
+    if (authToken) {
+      clearAuthTokenFromWindowLocation()
+      jsonApi.value = newJsonApi(apiUrl, authToken)
+
+      await initSession()
+    } else {
+      jsonApi.value = newJsonApi(apiUrl)
+    }
   }
 
-  // This will succeed if we already have a cookie, fail otherwise
+  // This will succeed if we already have an auth token, fail otherwise
   async function initSession () {
     const api = jsonApi.value
     const { updateUser } = useSessionStore()
@@ -142,6 +150,24 @@ export const useApiStore = defineStore('api', () => {
 
 // ------------------------------------------------------------
 // Private implementation
+
+const AUTH_TOKEN_PARAM = 'token'
+
+function getAuthTokenFromWindowLocation () {
+  const params = new URL(window.location).searchParams
+  return params.get(AUTH_TOKEN_PARAM)
+}
+
+function clearAuthTokenFromWindowLocation () {
+  const url = new URL(window.location)
+  const params = url.searchParams
+  params.delete(AUTH_TOKEN_PARAM)
+  const newSearch = params.toString()
+  if (url.search !== newSearch) {
+    url.search = newSearch
+    window.history.pushState(null, '', url)
+  }
+}
 
 function newJsonApi (apiUrl, authToken = null) {
   const options = authToken ? { apiUrl: apiUrl, bearer: authToken } : { apiUrl }
