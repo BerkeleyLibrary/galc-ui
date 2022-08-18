@@ -173,6 +173,7 @@ const models = {
     appraisalDate: '',
     notes: '',
     reserveDate: null,
+    suppressed: false,
     createdAt: null,
     updatedAt: null,
     permalinkUri: null,
