@@ -6,7 +6,7 @@ import { useApiStore } from '../stores/api'
 import { useReservationStore } from '../stores/reservation'
 
 import Spinner from './Spinner.vue'
-import ConfirmDialog from './ConfirmDialog.vue'
+import ReserveDialog from './ReserveDialog.vue'
 import PreviewDialog from './PreviewDialog.vue'
 
 const { loading } = storeToRefs(useApiStore())
@@ -19,7 +19,7 @@ const activeModal = computed(() => {
   }
   const rsvn = currentReservation.value
   if (rsvn && !rsvn.confirmed) {
-    return ConfirmDialog
+    return ReserveDialog
   }
   if (currentPreview.value) {
     return PreviewDialog

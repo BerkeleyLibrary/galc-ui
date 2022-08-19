@@ -41,7 +41,7 @@ function showPreview (event) {
       <ItemImage :filename="item.thumbnail" :alt="`thumbnail of “${item.title}” by ${item.artist}`" @click="showPreview"/>
     </div>
     <ItemDetails :item="item"/>
-    <!-- TODO: find less hacky way to share thumbnail & metadata w/o rsvn button between Result & ConfirmDialog -->
+    <!-- TODO: find less hacky way to share thumbnail & metadata w/o rsvn button between Result & ReserveDialog -->
     <div v-if="actions" class="galc-result-actions">
       <Reservation :item="item" :available="available"/>
     </div>

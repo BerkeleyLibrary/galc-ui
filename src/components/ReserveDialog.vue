@@ -20,10 +20,10 @@ const item = computed(() => {
 </script>
 
 <template>
-  <div class="galc-confirm-dialog">
+  <div class="galc-reserve-dialog">
     <h3>You are reserving:</h3>
 
-    <!-- TODO: find less hacky way to share thumbnail & metadata w/o rsvn button between Result & ConfirmDialog -->
+    <!-- TODO: find less hacky way to share thumbnail & metadata w/o rsvn button between Result & ReserveDialog -->
     <Result :item="item" :actions="false"/>
     <p>
       You may only reserve two prints per semester. You may have no more than two prints charged out at any time.
@@ -32,20 +32,20 @@ const item = computed(() => {
       You will receive an email from the Morrison Library at <strong>{{ email }}</strong> when your print is ready for pick up.
     </p>
 
-    <div class="galc-confirm-actions">
-      <button class="galc-confirm-cancel" @click="cancelReservation">Cancel</button>
-      <button class="galc-confirm-confirm" @click="confirmReservation">Reserve print</button>
+    <div class="galc-reserve-actions">
+      <button class="galc-reserve-cancel" @click="cancelReservation">Cancel</button>
+      <button class="galc-reserve-confirm" @click="confirmReservation">Reserve print</button>
     </div>
   </div>
 </template>
 
 <style lang="scss">
-.galc-confirm-dialog {
+.galc-reserve-dialog {
   padding: 2em;
   border: 1px solid black;
   background-color: white;
 
-  .galc-confirm-actions {
+  .galc-reserve-actions {
 
     display: flex;
     justify-content: center;
@@ -63,7 +63,7 @@ const item = computed(() => {
       color: #000;
       font-size: 1rem;
 
-      &.galc-confirm-confirm {
+      &.galc-reserve-confirm {
         border: 1px solid #fdb515;
 
         &:hover {
@@ -73,7 +73,7 @@ const item = computed(() => {
         }
       }
 
-      &.galc-confirm-cancel {
+      &.galc-reserve-cancel {
         background-color: white;
         border: 1px solid black;
 
