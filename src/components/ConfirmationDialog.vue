@@ -45,7 +45,7 @@ const { acknowledgeComplete } = useReservationStore()
     <p>When you are done reserving prints, remember to log out of CalNet via the link provided.</p>
     <div class="galc-confirmation-actions">
       <button class="galc-confirmation-close" @click="acknowledgeComplete">Close</button>
-      <a class="galc-confirmation-logout" :href="logoutUrl">Log out</a>
+      <a class="galc-confirmation-logout" :href="logoutUrl">Close and Log Out</a>
     </div>
   </div>
 </template>
