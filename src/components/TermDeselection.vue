@@ -7,20 +7,37 @@ import timesCircle from '../assets/times-circle.svg'
 const { facets } = storeToRefs(useFacetStore())
 const { selectedTerms } = useSearchStore()
 
+const props = defineProps({
+  idPrefix: {
+    type: String,
+    default: ''
+  }
+})
+
+function inputIdFor (term) {
+  const baseId = `ds-term-${term.id}`
+  const prefix = props.idPrefix
+  if (!prefix) {
+    return baseId
+  }
+  return `${prefix}-${baseId}`
+}
+
 </script>
 
 <template>
   <fieldset class="galc-term-deselection">
+    <legend>Active filters</legend>
     <!-- TODO: clean this up -->
     <template v-for="facet of facets">
-      <div v-for="term of facet.terms" :key="`ds-term-${term.id}`" class="ds-term">
+      <div v-for="term of facet.terms" :key="inputIdFor(term)" class="ds-term">
         <input
-          :id="`ds-term-${term.id}`"
+          :id="inputIdFor(term)"
           v-model="selectedTerms(facet.name).value"
           :value="term.value"
           type="checkbox"
         >
-        <label class="form-checkboxes" :for="`ds-term-${term.id}`">
+        <label class="form-checkboxes" :for="inputIdFor(term)">
           <img :alt="`Deselect ${term.value}`" :src="timesCircle" class="term-deselect-icon">
           {{ facet.name }}: {{ term.value }}
         </label>
@@ -30,13 +47,19 @@ const { selectedTerms } = useSearchStore()
 </template>
 
 <style lang="scss">
-.galc-term-deselection {
+fieldset.galc-term-deselection {
   display: flex;
   flex-wrap: wrap;
   justify-content: start;
   border: 0;
   margin: 0;
   padding: 0;
+
+  legend {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+  }
 
   img.term-deselect-icon {
     height: 0.9rem;
@@ -59,7 +82,8 @@ const { selectedTerms } = useSearchStore()
         line-height: 1.75rem;
         font-weight: normal;
         color: white;
-        background-color: #3b7ea1;
+        // slight tweak from official "Founder's Rock" RGB to increase contrast
+        background-color: #3b7da1;
         padding: 2px 8px;
         margin: 6px 16px 6px 0;
         cursor: pointer;

@@ -13,7 +13,7 @@ const { facets } = storeToRefs(useFacetStore())
 
 <template>
   <div class="galc-facets">
-    <TermDeselection/>
+    <TermDeselection id-prefix="facets"/>
     <input id="show-facets" type="checkbox">
     <label class="show-facets-label" for="show-facets">
       Options

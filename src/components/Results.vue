@@ -18,7 +18,7 @@ const { items, hasResults, searchPerformed } = storeToRefs(useResultStore())
       <div class="galc-results-block">
         <template v-if="hasResults">
           <div class="galc-results-list-header">
-            <TermDeselection/>
+            <TermDeselection id-prefix="results"/>
             <PageNav class="galc-page-nav"/>
           </div>
           <ul class="galc-results-list">
@@ -31,7 +31,7 @@ const { items, hasResults, searchPerformed } = storeToRefs(useResultStore())
           </div>
         </template>
         <template v-else>
-          <TermDeselection/>
+          <TermDeselection id-prefix="results"/>
           <div class="galc-no-results">
             <h3>Your search yielded no results</h3>
             <ul>
