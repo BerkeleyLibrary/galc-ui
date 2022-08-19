@@ -9,6 +9,7 @@ import Spinner from './Spinner.vue'
 import ReserveDialog from './ReserveDialog.vue'
 import PreviewDialog from './PreviewDialog.vue'
 import ConfirmationDialog from './ConfirmationDialog.vue'
+import { FocusTrap } from 'focus-trap-vue'
 
 const { loading } = storeToRefs(useApiStore())
 const { currentReservation, completedReservation, currentPreview } = storeToRefs(useReservationStore())
@@ -31,14 +32,29 @@ const activeModal = computed(() => {
   return null
 })
 
+const enableFocusTrap = computed({
+  get () {
+    if (loading.value) {
+      // TODO: figure out how to get FocusTrap to work with (non-focusable) spinner
+      return false
+    }
+    return !!activeModal.value
+  },
+  set (v) {
+    // ignored
+  }
+})
+
 </script>
 
 <template>
   <div v-if="activeModal" class="galc-modal">
     <div class="galc-modal-overlay"/>
-    <div class="galc-modal-container">
-      <component :is="activeModal" class="galc-modal-component"/>
-    </div>
+    <focus-trap v-model:active="enableFocusTrap">
+      <div class="galc-modal-container">
+        <component :is="activeModal" class="galc-modal-component"/>
+      </div>
+    </focus-trap>
   </div>
 </template>
 
