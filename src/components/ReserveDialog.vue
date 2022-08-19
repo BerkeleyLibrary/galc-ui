@@ -44,6 +44,7 @@ const item = computed(() => {
   padding: 2em;
   border: 1px solid black;
   background-color: white;
+  max-width: 1075px;
 
   .galc-reserve-actions {
 
@@ -63,21 +64,21 @@ const item = computed(() => {
       color: #000;
       font-size: 1rem;
 
-      &.galc-reserve-confirm {
-        border: 1px solid #fdb515;
-
-        &:hover {
-          border-color: black;
-          background-color: #000;
-          color: #fff;
-        }
-      }
-
       &.galc-reserve-cancel {
         background-color: white;
         border: 1px solid black;
 
         &:hover {
+          background-color: #000;
+          color: #fff;
+        }
+      }
+
+      &.galc-reserve-confirm {
+        border: 1px solid #fdb515;
+
+        &:hover {
+          border-color: black;
           background-color: #000;
           color: #fff;
         }

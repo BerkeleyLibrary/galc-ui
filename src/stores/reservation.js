@@ -8,6 +8,7 @@ export const useReservationStore = defineStore('reservation', () => {
   // State
 
   const currentReservation = ref(null)
+  const completedReservation = ref(null)
   const currentPreview = ref(null)
   const reservedItemIds = ref([])
 
@@ -40,6 +41,7 @@ export const useReservationStore = defineStore('reservation', () => {
     const rsvnItemId = rsvn && rsvn.item.id
     if (rsvnItemId === item.id) {
       currentReservation.value = null
+      completedReservation.value = rsvn
     }
   }
 
@@ -69,6 +71,11 @@ export const useReservationStore = defineStore('reservation', () => {
   function cancelReservation () {
     console.log('cancelReservation()')
     currentReservation.value = null
+  }
+
+  function acknowledgeComplete () {
+    console.log('acknowledgeComplete()')
+    completedReservation.value = null
   }
 
   function isReserved (item) {
@@ -106,6 +113,8 @@ export const useReservationStore = defineStore('reservation', () => {
     confirmReservation,
     cancelReservation,
     currentReservation,
+    completedReservation,
+    acknowledgeComplete,
     itemReserved,
     isReserved,
     currentPreview,
