@@ -21,13 +21,21 @@ const linkUrl = computed(() => {
 function navigateTo (newPage) {
   const { page } = storeToRefs(useSearchStore())
   page.value = newPage
+
+  const appElement = document.getElementById('galc-app')
+  const boundingClientRect = appElement.getBoundingClientRect()
+  if (boundingClientRect.top < 0) {
+    appElement.scrollIntoView()
+  }
 }
 
 </script>
 
 <template>
   <li class="page-nav-link">
-    <a v-if="page && active" :href="linkUrl" :rel="rel" :title="title" @click.prevent="navigateTo(page)"><div class="galc-nav-icon">{{ text }}</div></a>
+    <a v-if="page && active" :href="linkUrl" :rel="rel" :title="title" @click.prevent="navigateTo(page)">
+      <div class="galc-nav-icon">{{ text }}</div>
+    </a>
   </li>
 </template>
 
