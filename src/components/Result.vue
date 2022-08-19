@@ -17,8 +17,7 @@ const { getAvailability } = useResultStore()
 // Properties
 
 const props = defineProps({
-  item: { type: Object, default: null },
-  actions: { type: Boolean, default: true }
+  item: { type: Object, default: null }
 })
 
 // ------------------------------------------------------------
@@ -41,8 +40,7 @@ function showPreview (event) {
       <ItemImage :filename="item.thumbnail" :alt="`thumbnail of “${item.title}” by ${item.artist}`" @click="showPreview"/>
     </div>
     <ItemDetails :item="item"/>
-    <!-- TODO: find less hacky way to share thumbnail & metadata w/o rsvn button between Result & ReserveDialog -->
-    <div v-if="actions" class="galc-result-actions">
+    <div class="galc-result-actions">
       <Reservation :item="item" :available="available"/>
     </div>
   </section>
@@ -82,6 +80,7 @@ function showPreview (event) {
     }
   }
 
+  // TODO: share button styles
   button, input[type=submit] {
     width: 100%;
     white-space: nowrap;

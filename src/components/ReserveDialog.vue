@@ -4,7 +4,8 @@ import { storeToRefs } from 'pinia'
 import { useSessionStore } from '../stores/session'
 import { useReservationStore } from '../stores/reservation'
 
-import Result from './Result.vue'
+import ItemDetails from './ItemDetails.vue'
+import ItemImage from './ItemImage.vue'
 
 const reservation = useReservationStore()
 const { currentReservation } = storeToRefs(reservation)
@@ -23,8 +24,13 @@ const item = computed(() => {
   <div class="galc-reserve-dialog">
     <h3>You are reserving:</h3>
 
-    <!-- TODO: find less hacky way to share thumbnail & metadata w/o rsvn button between Result & ReserveDialog -->
-    <Result :item="item" :actions="false"/>
+    <section class="galc-reserve-item">
+      <div class="galc-result-thumbnail">
+        <ItemImage :filename="item.thumbnail" :alt="`thumbnail of “${item.title}” by ${item.artist}`"/>
+      </div>
+      <ItemDetails :item="item"/>
+    </section>
+
     <p>
       You may only reserve two prints per semester. You may have no more than two prints charged out at any time.
     </p>
@@ -46,8 +52,19 @@ const item = computed(() => {
   background-color: white;
   max-width: 1075px;
 
-  .galc-reserve-actions {
+  .galc-reserve-item {
+    display: grid;
+    grid-template-columns: min(180px, 45%) minmax(0, 1fr);
+    grid-column-gap: 0.75rem;
 
+    @media only screen and (min-width: 700px) {
+      .galc-item-details {
+        margin-right: auto;
+      }
+    }
+  }
+
+  .galc-reserve-actions {
     display: flex;
     justify-content: center;
     gap: 1em;
