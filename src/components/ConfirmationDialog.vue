@@ -9,9 +9,9 @@ const { acknowledgeComplete } = useReservationStore()
 </script>
 
 <template>
-  <div class="galc-confirmation-dialog">
-    <div class="galc-confirmation-message">
-      <h3>Confirmation</h3>
+  <section class="galc-confirmation-dialog" role="alertdialog" aria-modal="true" aria-labelledby="galc-dialog-title" aria-describedby="galc-confirmation-message">
+    <h3 id="galc-dialog-title">Confirmation</h3>
+    <div id="galc-confirmation-message">
       <p>Thank you for submitting a Graphic Arts Loan Collection print reservation request.</p>
       <ul>
         <li>
@@ -41,13 +41,13 @@ const { acknowledgeComplete } = useReservationStore()
           returning the prints.
         </li>
       </ul>
+      <p>When you are done reserving prints, remember to log out of CalNet via the link provided.</p>
     </div>
-    <p>When you are done reserving prints, remember to log out of CalNet via the link provided.</p>
     <div class="galc-confirmation-actions">
       <button class="galc-confirmation-close" @click="acknowledgeComplete">Close</button>
       <a class="galc-confirmation-logout" :href="logoutUrl">Close and Log Out</a>
     </div>
-  </div>
+  </section>
 </template>
 
 <style lang="scss">

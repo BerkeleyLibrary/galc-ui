@@ -21,8 +21,8 @@ const item = computed(() => {
 </script>
 
 <template>
-  <div class="galc-reserve-dialog">
-    <h3>You are reserving:</h3>
+  <section class="galc-reserve-dialog" role="alertdialog" aria-modal="true" aria-labelledby="galc-dialog-title" aria-describedby="galc-reserve-message">
+    <h3 id="galc-dialog-title">You are reserving “{{ item.title }}”</h3>
 
     <section class="galc-reserve-item">
       <div class="galc-result-thumbnail">
@@ -31,18 +31,20 @@ const item = computed(() => {
       <ItemDetails :item="item"/>
     </section>
 
-    <p>
-      You may only reserve two prints per semester. You may have no more than two prints charged out at any time.
-    </p>
-    <p>
-      You will receive an email from the Morrison Library at <strong>{{ email }}</strong> when your print is ready for pick up.
-    </p>
+    <div id="galc-reserve-message">
+      <p>
+        You may only reserve two prints per semester. You may have no more than two prints charged out at any time.
+      </p>
+      <p>
+        You will receive an email from the Morrison Library at <strong>{{ email }}</strong> when your print is ready for pick up.
+      </p>
+    </div>
 
     <div class="galc-reserve-actions">
       <button class="galc-reserve-cancel" @click="cancelReservation">Cancel</button>
       <button class="galc-reserve-confirm" @click="confirmReservation">Reserve print</button>
     </div>
-  </div>
+  </section>
 </template>
 
 <style lang="scss">
