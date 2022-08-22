@@ -83,7 +83,8 @@ fieldset.galc-term-deselection {
         font-weight: normal;
         color: white;
         // slight tweak from official "Founder's Rock" RGB to increase contrast
-        background-color: #3b7da1;
+        // (exact color per jloesberg, cf. Hours)
+        background-color: #2c5e77;
         padding: 2px 8px;
         margin: 6px 16px 6px 0;
         cursor: pointer;
