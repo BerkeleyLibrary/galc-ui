@@ -78,7 +78,7 @@ function getFacetName (term) {
       <table class="galc-item-metadata">
         <template v-for="(v, k) in metadata" :key="k">
           <tr v-if="v">
-            <th>{{ k }}</th>
+            <th scope="row">{{ k }}</th>
             <td>{{ v }}</td>
           </tr>
         </template>
