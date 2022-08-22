@@ -22,7 +22,7 @@ const item = computed(() => {
 
 <template>
   <section class="galc-reserve-dialog" role="alertdialog" aria-modal="true" aria-labelledby="galc-dialog-title" aria-describedby="galc-reserve-message">
-    <h3 id="galc-dialog-title">You are reserving “{{ item.title }}”</h3>
+    <h2 id="galc-dialog-title">You are reserving “{{ item.title }}”</h2>
 
     <section class="galc-reserve-item">
       <div class="galc-result-thumbnail">

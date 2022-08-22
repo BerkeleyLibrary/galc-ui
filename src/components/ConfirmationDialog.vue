@@ -10,7 +10,7 @@ const { acknowledgeComplete } = useReservationStore()
 
 <template>
   <section class="galc-confirmation-dialog" role="alertdialog" aria-modal="true" aria-labelledby="galc-dialog-title" aria-describedby="galc-confirmation-message">
-    <h3 id="galc-dialog-title">Confirmation</h3>
+    <h2 id="galc-dialog-title">Confirmation</h2>
     <div id="galc-confirmation-message">
       <p>Thank you for submitting a Graphic Arts Loan Collection print reservation request.</p>
       <ul>

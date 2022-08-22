@@ -67,7 +67,7 @@ function getFacetName (term) {
   <div class="galc-item-details">
     <div class="galc-item-header">
       <p class="galc-item-medium">{{ facetValue('Medium') }}</p>
-      <h4 class="galc-item-title">{{ item.title }}</h4>
+      <h3 class="galc-item-title">{{ item.title }}</h3>
       <p class="galc-item-artist">
         <a v-if="item.artistUrl" :href="item.artistUrl" target="_blank" rel="noopener">{{ item.artist }}</a>
         <template v-else>{{ item.artist }}</template>
@@ -95,11 +95,13 @@ function getFacetName (term) {
     line-height: 1.25rem;
   }
 
-  h4 {
+  h3 {
     margin: 0;
+    color: inherit;
+    font-weight: bold;
   }
 
-  h4, p {
+  h3, p {
     line-height: 1.15em;
   }
 
