@@ -37,7 +37,9 @@ function onToggle (event) {
     <legend>{{ facetName }}</legend>
     <details :open="expanded" @toggle="onToggle">
       <summary>{{ facetName }}</summary>
-      <TermSelection v-for="term in rootTerms" :key="term.id" :facet="props.facet" :term="term"/>
+      <template v-if="expanded">
+        <TermSelection v-for="term in rootTerms" :key="term.id" :facet="props.facet" :term="term"/>
+      </template>
     </details>
   </fieldset>
 </template>
