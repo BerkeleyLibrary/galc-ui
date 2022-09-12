@@ -31,6 +31,7 @@ function tryReserve (event) {
   startReservation(props.item)
 }
 
+// TODO: disable all reserve buttons during reservation, but distinguish text for current item
 const reserving = computed(() => {
   const rsvn = currentReservation.value
   return rsvn && rsvn.item.id === props.item.id

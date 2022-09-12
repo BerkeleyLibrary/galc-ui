@@ -45,6 +45,7 @@ export const useReservationStore = defineStore('reservation', () => {
     }
   }
 
+  // TODO: Handle/prevent multiple simultaneous attempted reservations
   function startReservation (item) {
     const rsvn = {
       item: item,
