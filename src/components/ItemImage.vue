@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 
-// TODO: make this configurable
+// TODO: use image_uri and thumbnail_uri from server
 const IMAGE_BASE = 'https://digitalassets.lib.berkeley.edu/galc/ucb/images/'
 
 const props = defineProps({
