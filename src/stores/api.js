@@ -3,6 +3,8 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import camelcaseKeys from 'camelcase-keys'
 
+import { deleteParam } from '../helpers/window-location-helper'
+
 import { useFacetStore } from './facets'
 import { useResultStore } from './results'
 import { useSearchStore } from './search'
@@ -50,6 +52,7 @@ export const useApiStore = defineStore('api', () => {
   }
 
   function performSearch (params) {
+    console.log('performSearch(%o)', params)
     loadingItems.value = true
 
     const api = jsonApi.value
@@ -99,10 +102,9 @@ export const useApiStore = defineStore('api', () => {
   async function initApi (apiUrl) {
     apiBaseUrl.value = apiUrl
 
-    const authToken = getAuthTokenFromWindowLocation()
+    const authToken = deleteParam(AUTH_TOKEN_PARAM)
 
     if (authToken) {
-      clearAuthTokenFromWindowLocation()
       jsonApi.value = newJsonApi(apiUrl, authToken)
 
       await initSession()
@@ -152,22 +154,6 @@ export const useApiStore = defineStore('api', () => {
 // Private implementation
 
 const AUTH_TOKEN_PARAM = 'token'
-
-function getAuthTokenFromWindowLocation () {
-  const params = new URL(window.location).searchParams
-  return params.get(AUTH_TOKEN_PARAM)
-}
-
-function clearAuthTokenFromWindowLocation () {
-  const url = new URL(window.location)
-  const params = url.searchParams
-  params.delete(AUTH_TOKEN_PARAM)
-  const newSearch = params.toString()
-  if (url.search !== newSearch) {
-    url.search = newSearch
-    window.history.pushState(null, '', url)
-  }
-}
 
 function newJsonApi (apiUrl, authToken = null) {
   const options = authToken ? { apiUrl: apiUrl, bearer: authToken } : { apiUrl }

@@ -1,5 +1,8 @@
 import { defineStore, storeToRefs } from 'pinia'
 import { computed, ref, watch } from 'vue'
+
+import { setParams } from '../helpers/window-location-helper'
+
 import { useFacetStore } from './facets'
 import { useApiStore } from './api'
 
@@ -31,19 +34,9 @@ export const useSearchStore = defineStore('search', () => {
   // Exported functions and properties
 
   function init () {
-    const initState = readWindowLocation()
-    state.value = initState
-
+    state.value = readWindowLocation()
     expandAll(activeFacetNames.value)
-
-    watch(
-      state,
-      (state) => {
-        writeWindowLocation()
-        doSearch()
-      },
-      { deep: true, immediate: true, flush: 'post' }
-    )
+    watch(state, doSearch, { deep: true, immediate: true, flush: 'post' })
   }
 
   const keywords = computed({
@@ -64,7 +57,11 @@ export const useSearchStore = defineStore('search', () => {
       return state.value.page || DEFAULT_PAGE
     },
     set (v) {
-      state.value.page = parseInt(v) || DEFAULT_PAGE
+      const newPage = parseInt(v) || DEFAULT_PAGE
+      state.value.page = newPage
+      // if (newPage !== DEFAULT_PAGE) {
+      //   setParams({ page: newPage })
+      // }
     }
   })
 
@@ -95,8 +92,6 @@ export const useSearchStore = defineStore('search', () => {
   // --------------------------------------------------
   // Internal functions and properties
 
-  // TODO: share window location manipulation w/api.js
-
   const activeFacetNames = computed(() => {
     const currentSearch = state.value.search
     return facetNames.value.filter((facetName) => {
@@ -113,32 +108,47 @@ export const useSearchStore = defineStore('search', () => {
     }
   }
 
-  function writeWindowLocation () {
-    const searchParams = searchParamsFrom(state.value.search)
-    addPageParam(searchParams, state.value.page)
+  function doSearch (state) {
+    const { performSearch } = useApiStore()
 
-    const url = new URL(window.location)
-    const currentSearch = url.search
+    const searchParams = currentSearchParams()
+    const filterParams = jsonizeParams(searchParams)
 
-    const params = url.searchParams
-    for (const [key, value] of searchParams) {
-      params.set(key, value)
-    }
-    const newSearch = params.toString()
-
-    if (currentSearch !== newSearch) {
-      url.search = newSearch
-      window.history.pushState(null, '', url)
-    }
+    setParams(searchParams)
+    performSearch(filterParams)
   }
 
-  function doSearch () {
-    const params = filterParamsFrom(state.value.search)
-    addPageNumber(params, state.value.page)
+  // TODO: share code with searchFrom()?
+  function currentSearchParams () {
+    const params = {}
 
-    const api = useApiStore()
-    return api.performSearch(params)
+    const search = state.value.search
+
+    const keywordsVal = search.keywords
+    if (keywordsVal) {
+      params.keywords = keywordsVal
+    }
+
+    const { facetNames } = storeToRefs(useFacetStore())
+    for (const facetName of facetNames.value) {
+      const termValues = search[facetName]
+      if (termValues && termValues.length > 0) {
+        params[facetName] = termValues.join(',')
+      }
+    }
+
+    const page = state.value.page
+    if (page !== DEFAULT_PAGE) {
+      params.page = page
+    }
+
+    return params
   }
+
+  // --------------------------------------------------
+  // Event handling
+
+  window.addEventListener('popstate', () => { state.value = readWindowLocation() })
 
   // --------------------------------------------------
   // Store definition
@@ -149,8 +159,6 @@ export const useSearchStore = defineStore('search', () => {
 // ------------------------------------------------------------
 // Misc. constants
 
-// TODO: DRY window location manipulation code
-
 const DEFAULT_PAGE = 1
 const KEYWORDS_PARAM = 'keywords'
 const PAGE_PARAM = 'page'
@@ -158,6 +166,7 @@ const PAGE_PARAM = 'page'
 // ------------------------------------------------------------
 // Window location query parsing
 
+// TODO: share code with currentSearchParams()?
 function searchFrom (urlSearchParams) {
   const newSearch = {}
 
@@ -183,47 +192,21 @@ function pageFrom (urlSearchParams) {
 }
 
 // ------------------------------------------------------------
-// Window location query creation
-
-function searchParamsFrom (search) {
-  const params = new URLSearchParams()
-  const keywordsVal = search.keywords
-  if (keywordsVal) {
-    params.set(KEYWORDS_PARAM, keywordsVal)
-  }
-
-  const { facetNames } = storeToRefs(useFacetStore())
-  for (const facetName of facetNames.value) {
-    const termValues = search[facetName]
-    if (termValues && termValues.length > 0) {
-      params.set(facetName, termValues.join(','))
-    }
-  }
-  return params
-}
-
-// TODO: better naming (see addPageNumber)
-function addPageParam (params, page) {
-  if (page !== DEFAULT_PAGE) {
-    params.set(PAGE_PARAM, page)
-  }
-}
-
-// ------------------------------------------------------------
 // API query creation
 
-function filterParamsFrom (search) {
-  const filterParams = {}
-  const searchParams = searchParamsFrom(search)
-  searchParams.forEach((value, key) => {
-    filterParams[`filter[${key}]`] = value
-  })
-  return filterParams
+function jsonizeParamName (name) {
+  if (name === 'page') {
+    return 'page[number]'
+  } else {
+    return `filter[${name}]`
+  }
 }
 
-// TODO: better naming (see addPageParam)
-function addPageNumber (params, page) {
-  if (page !== DEFAULT_PAGE) {
-    params['page[number]'] = page
+function jsonizeParams (params) {
+  const jsonized = {}
+  for (const [name, value] of Object.entries(params)) {
+    const jsonizedName = jsonizeParamName(name)
+    jsonized[jsonizedName] = value
   }
+  return jsonized
 }

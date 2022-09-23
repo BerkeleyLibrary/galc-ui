@@ -19,7 +19,7 @@ const { items, hasResults, searchPerformed } = storeToRefs(useResultStore())
         <template v-if="hasResults">
           <div class="galc-results-list-header">
             <TermDeselection id-prefix="results"/>
-            <PageNav class="galc-page-nav"/>
+            <PageNav id-infix="results-header" class="galc-page-nav"/>
           </div>
           <ul class="galc-results-list">
             <li v-for="item in items" :key="item.id">
@@ -27,7 +27,7 @@ const { items, hasResults, searchPerformed } = storeToRefs(useResultStore())
             </li>
           </ul>
           <div class="galc-results-list-footer">
-            <PageNav class="galc-page-nav"/>
+            <PageNav id-infix="results-footer" class="galc-page-nav"/>
           </div>
         </template>
         <template v-else>

@@ -1,9 +1,14 @@
 <script setup>
-import { storeToRefs } from 'pinia'
-import { useSearchStore } from '../stores/search'
 import { computed } from 'vue'
+import { storeToRefs } from 'pinia'
+
+import { computeRelativeUrl } from '../helpers/window-location-helper'
+
+import { useSearchStore } from '../stores/search'
+import { useWindowLocationStore } from '../stores/window-location'
 
 const props = defineProps({
+  id: { type: String, default: null },
   active: { type: Boolean, default: false },
   rel: { type: String, default: null },
   title: { type: String, default: null },
@@ -11,11 +16,10 @@ const props = defineProps({
   page: { type: Number, default: 1 }
 })
 
+const { location } = storeToRefs(useWindowLocationStore())
+
 const linkUrl = computed(() => {
-  const url = new URL(window.location)
-  const params = url.searchParams
-  params.set('page', props.page)
-  return url
+  return computeRelativeUrl(location.value, { page: props.page })
 })
 
 function navigateTo (newPage) {
@@ -32,7 +36,7 @@ function navigateTo (newPage) {
 </script>
 
 <template>
-  <li class="page-nav-link">
+  <li :key="id" class="page-nav-link">
     <a v-if="page && active" :href="linkUrl" :rel="rel" :title="title" @click.prevent="navigateTo(page)">
       <div class="galc-nav-icon">{{ text }}</div>
     </a>

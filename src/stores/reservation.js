@@ -1,5 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+
+import { deleteParam, relativeUrl } from '../helpers/window-location-helper'
+
 import { useSessionStore } from './session'
 import { useApiStore } from './api'
 
@@ -16,11 +19,8 @@ export const useReservationStore = defineStore('reservation', () => {
   // Exported functions and properties
 
   function init () {
-    const reserveItemId = getReserveItemFromWindowLocation()
+    const reserveItemId = deleteParam(RESERVE_ITEM_PARAM)
     if (reserveItemId) {
-      clearReserveItemFromWindowLocation()
-
-      // TODO: retry auth?
       const { isAuthenticated } = useSessionStore()
       if (isAuthenticated) {
         const { fetchItem } = useApiStore()
@@ -28,6 +28,8 @@ export const useReservationStore = defineStore('reservation', () => {
           const item = data
           startReservation(item)
         })
+      } else {
+        console.log('Ignoring %o=%o; user not authenticated', RESERVE_ITEM_PARAM, reserveItemId)
       }
     }
   }
@@ -85,12 +87,7 @@ export const useReservationStore = defineStore('reservation', () => {
   }
 
   function reserveItemRedirectUrl (item) {
-    const url = new URL(window.location)
-    const params = url.searchParams
-    params.set(RESERVE_ITEM_PARAM, item.id)
-    const newSearch = params.toString()
-    url.search = newSearch
-    return url
+    return relativeUrl({ [RESERVE_ITEM_PARAM]: item.id })
   }
 
   function startPreview (item) {
@@ -132,25 +129,4 @@ export const useReservationStore = defineStore('reservation', () => {
 // ------------------------------------------------------------
 // Private implementation
 
-// TODO: DRY window location manipulation code
 const RESERVE_ITEM_PARAM = 'reserve'
-
-function getReserveItemFromWindowLocation () {
-  const params = new URL(window.location).searchParams
-  return params.get(RESERVE_ITEM_PARAM)
-}
-
-function clearReserveItemFromWindowLocation () {
-  console.log('clearReserveItemFromWindowLocation()')
-  const url = new URL(window.location)
-  const oldSearch = url.search
-
-  const params = url.searchParams
-  params.delete(RESERVE_ITEM_PARAM)
-  const newSearch = params.toString()
-
-  if (oldSearch !== newSearch) {
-    url.search = newSearch
-    window.history.pushState(null, '', url)
-  }
-}
