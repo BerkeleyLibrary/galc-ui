@@ -183,7 +183,9 @@ function newJsonApi (apiUrl, authToken = null) {
 const models = {
   item: {
     image: '',
+    imageUri: null,
     thumbnail: '',
+    thumbnailUri: null,
     title: '',
     artist: '',
     artistUrl: '',
@@ -207,6 +209,7 @@ const models = {
   },
   term: {
     value: '',
+    ord: null,
     facet: { jsonApi: 'hasOne', type: 'facet' },
     parent: { jsonApi: 'hasOne', type: 'term' },
     children: { jsonApi: 'hasMany', type: 'term' }

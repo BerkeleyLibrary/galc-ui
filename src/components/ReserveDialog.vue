@@ -26,7 +26,7 @@ const item = computed(() => {
 
     <section class="galc-reserve-item">
       <div class="galc-result-thumbnail">
-        <ItemImage :filename="item.thumbnail" :alt="`thumbnail of “${item.title}” by ${item.artist}`"/>
+        <ItemImage :image-uri="item.thumbnailUri" :alt="`thumbnail of “${item.title}” by ${item.artist}`"/>
       </div>
       <ItemDetails :item="item"/>
     </section>

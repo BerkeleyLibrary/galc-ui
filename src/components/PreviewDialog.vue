@@ -12,7 +12,7 @@ const { endPreview } = reservation
 
 <template>
   <div class="galc-item-preview">
-    <ItemImage class="galc-item-preview-image" :filename="currentPreview.image" :alt="`preview “${currentPreview.title}” by ${currentPreview.artist}`"/>
+    <ItemImage class="galc-item-preview-image" :image-uri="currentPreview.imageUri" :alt="`preview “${currentPreview.title}” by ${currentPreview.artist}`"/>
     <button @click="endPreview">Close</button>
   </div>
 </template>

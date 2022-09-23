@@ -37,7 +37,7 @@ function showPreview (event) {
 <template>
   <section class="galc-result">
     <div class="galc-result-thumbnail">
-      <ItemImage :filename="item.thumbnail" :alt="`thumbnail of “${item.title}” by ${item.artist}`" @click="showPreview"/>
+      <ItemImage :image-uri="item.thumbnailUri" :alt="`thumbnail of “${item.title}” by ${item.artist}`" @click="showPreview"/>
     </div>
     <ItemDetails :item="item"/>
     <div class="galc-result-actions">
