@@ -9,7 +9,6 @@ function relativeUrl (params, clearParams = false) {
 }
 
 function setParams (params) {
-  console.log('setParams(%o, %o)', params)
   const newLocation = relativeUrl(params, true).toString()
 
   const { location } = storeToRefs(useWindowLocationStore())
