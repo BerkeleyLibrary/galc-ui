@@ -126,8 +126,8 @@ export const useApiStore = defineStore('api', () => {
 
   async function initStores () {
     const stores = [
-      useSearchStore(),
-      useReservationStore()
+      useReservationStore(),
+      useSearchStore()
     ]
     for (const store of stores) {
       store.init()
