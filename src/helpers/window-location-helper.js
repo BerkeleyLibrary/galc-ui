@@ -44,4 +44,5 @@ function computeRelativeUrl (oldLocation, params, clearParams = false) {
   return url
 }
 
+// TODO: export an object, so these method names are less confusing/generic?
 export { relativeUrl, setParams, deleteParam, computeRelativeUrl }
