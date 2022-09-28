@@ -15,23 +15,52 @@ export const useReservationStore = defineStore('reservation', () => {
   const currentPreview = ref(null)
   const reservedItemIds = ref([])
 
-  // --------------------------------------------------
-  // Exported functions and properties
+  const closure = ref(null)
 
-  function init () {
-    const reserveItemId = deleteParam(RESERVE_ITEM_PARAM)
-    if (reserveItemId) {
-      const { isAuthenticated } = useSessionStore()
-      if (isAuthenticated) {
+  // --------------------------------------------------
+  // Internal functions and properties
+
+  function initClosure () {
+    const { fetchClosures } = useApiStore()
+    const params = { limit: 1 }
+    params['filter[current]'] = true
+
+    return fetchClosures(params).then(({ data }) => {
+      let currentClosure = null
+      if (Array.isArray(data) && data.length > 0) {
+        currentClosure = data[0]
+      }
+      closure.value = currentClosure
+    })
+  }
+
+  function doReserve (reserveItemId) {
+    const { isAuthenticated } = useSessionStore()
+    if (isAuthenticated) {
+      if (closure.value) {
+        console.log('Ignoring %o=%o; closure in effect: %o', RESERVE_ITEM_PARAM, reserveItemId, closure.value)
+      } else {
         const { fetchItem } = useApiStore()
         fetchItem(reserveItemId).then(({ data }) => {
           const item = data
           startReservation(item)
         })
-      } else {
-        console.log('Ignoring %o=%o; user not authenticated', RESERVE_ITEM_PARAM, reserveItemId)
       }
+    } else {
+      console.log('Ignoring %o=%o; user not authenticated', RESERVE_ITEM_PARAM, reserveItemId)
     }
+  }
+
+  // --------------------------------------------------
+  // Exported functions and properties
+
+  function init () {
+    initClosure().then(() => {
+      const reserveItemId = deleteParam(RESERVE_ITEM_PARAM)
+      if (reserveItemId) {
+        doReserve(reserveItemId)
+      }
+    })
   }
 
   function itemReserved ({ data }) {
@@ -117,7 +146,8 @@ export const useReservationStore = defineStore('reservation', () => {
     isReserved,
     currentPreview,
     startPreview,
-    endPreview
+    endPreview,
+    closure
   }
 
   // --------------------------------------------------

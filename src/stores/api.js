@@ -52,7 +52,6 @@ export const useApiStore = defineStore('api', () => {
   }
 
   function performSearch (params) {
-    console.log('performSearch(%o)', params)
     loadingItems.value = true
 
     const api = jsonApi.value
@@ -67,6 +66,7 @@ export const useApiStore = defineStore('api', () => {
   function fetchItem (itemId) {
     const api = jsonApi.value
     return api.find('item', itemId, { include: 'terms' })
+      .catch(handleError(`fetchItem(${itemId}) failed`))
   }
 
   function reserveItem (itemId) {
@@ -84,6 +84,11 @@ export const useApiStore = defineStore('api', () => {
       .finally(() => { reservingItem.value = false })
   }
 
+  function fetchClosures (params) {
+    const api = jsonApi.value
+    return api.findAll('closures', params)
+  }
+
   const loginUrl = computed(() => {
     const baseUrl = apiBaseUrl.value
     return baseUrl && new URL('/auth/calnet', baseUrl)
@@ -94,7 +99,7 @@ export const useApiStore = defineStore('api', () => {
     return baseUrl && new URL('/logout', baseUrl)
   })
 
-  const exported = { init, loading, fetchItem, loadFacets, performSearch, reserveItem, loginUrl, logoutUrl }
+  const exported = { init, loading, fetchItem, fetchClosures, loadFacets, performSearch, reserveItem, loginUrl, logoutUrl }
 
   // --------------------------------------------------
   // Internal functions and properties
@@ -214,6 +219,13 @@ const models = {
     email: '',
     galcAdmin: false,
     debug: ''
+  },
+  closure: {
+    note: null,
+    startDate: null,
+    endDate: null,
+    createdAt: null,
+    updatedAt: null
   }
 }
 

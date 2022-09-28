@@ -10,6 +10,7 @@ export const useResultStore = defineStore('results', () => {
     items: [],
     availability: {},
     pagination: {},
+    closure: null,
     searchPerformed: false
   })
 
@@ -17,9 +18,7 @@ export const useResultStore = defineStore('results', () => {
   // Exported functions and properties
 
   const items = computed(() => {
-    const items = state.value.items
-    console.log('Returning %o items', items.length)
-    return items
+    return state.value.items
   })
   const pagination = computed(() => { return state.value.pagination })
   const searchPerformed = computed(() => { return state.value.searchPerformed })
@@ -34,7 +33,6 @@ export const useResultStore = defineStore('results', () => {
   }
 
   function updateResults ({ data, meta }) {
-    console.log('Found %o items', data.length)
     state.value = {
       items: data,
       availability: meta.availability,

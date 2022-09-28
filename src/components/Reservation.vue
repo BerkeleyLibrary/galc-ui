@@ -4,6 +4,7 @@ import { computed } from 'vue'
 import { useApiStore } from '../stores/api'
 import { useSessionStore } from '../stores/session'
 import { useReservationStore } from '../stores/reservation'
+import formatInTimeZone from 'date-fns-tz/formatInTimeZone'
 
 // ------------------------------------------------------------
 // Store
@@ -15,7 +16,7 @@ const { loginUrl } = storeToRefs(api)
 
 const reservation = useReservationStore()
 const { startReservation, isReserved, reserveItemRedirectUrl } = reservation
-const { currentReservation } = storeToRefs(reservation)
+const { closure, currentReservation } = storeToRefs(reservation)
 
 // ------------------------------------------------------------
 // Properties
@@ -31,19 +32,40 @@ function tryReserve (event) {
   startReservation(props.item)
 }
 
-// TODO: disable all reserve buttons during reservation, but distinguish text for current item
-const reserving = computed(() => {
+const reservingThisItem = computed(() => {
   const rsvn = currentReservation.value
   return rsvn && rsvn.item.id === props.item.id
 })
+
+const reservingAnyItem = computed(() => {
+  const rsvn = currentReservation.value
+  return !!rsvn
+})
+
+const closureMessage = computed(() => {
+  const cls = closure.value
+  if (cls) {
+    const endDate = cls.endDate
+    if (endDate) {
+      const formattedDate = formatInTimeZone(endDate, 'America/Los_Angeles', 'M/d')
+      return `Reopening ${formattedDate}`
+    } else {
+      return 'Closed'
+    }
+  }
+  return null
+})
+
 </script>
 
 <template>
   <!-- TODO: clean this up -->
-  <button v-if="reserving" disabled>Reserving…</button>
+  <button v-if="reservingThisItem" disabled>Reserving…</button>
+  <button v-else-if="closureMessage" disabled>{{ closureMessage }}</button>
   <button v-else-if="isReserved(item)" disabled>Reserved</button>
   <template v-else-if="available">
-    <button v-if="isAuthenticated" @click="tryReserve">Reserve print</button>
+    <button v-if="reservingAnyItem" disabled>Reserve print</button>
+    <button v-else-if="isAuthenticated" @click="tryReserve">Reserve print</button>
     <form v-else method="post" class="galc-reserve-button-form" :action="loginUrl">
       <input type="hidden" name="origin" :value="reserveItemRedirectUrl(item)">
       <input type="submit" value="Reserve print">
