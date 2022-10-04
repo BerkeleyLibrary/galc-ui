@@ -96,7 +96,12 @@ export const useApiStore = defineStore('api', () => {
     return baseUrl && new URL('/logout', baseUrl)
   })
 
-  const exported = { init, loading, fetchItem, fetchClosures, loadFacets, performSearch, reserveItem, loginUrl, logoutUrl }
+  function logout () {
+    const url = logoutUrl.value
+    window.location = url
+  }
+
+  const exported = { init, loading, fetchItem, fetchClosures, loadFacets, performSearch, reserveItem, loginUrl, logoutUrl, logout }
 
   // --------------------------------------------------
   // Internal functions and properties

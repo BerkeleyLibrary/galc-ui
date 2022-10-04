@@ -22,11 +22,7 @@ export const useSearchStore = defineStore('search', () => {
 
   // NOTE: We encapsulate the search state in one ref() so we can update it atomically
   // TODO: Is that really necessary?
-  const state = ref({
-    // TODO: separate keywords from terms?
-    search: {},
-    page: DEFAULT_PAGE
-  })
+  const state = ref(emptyState())
 
   const computedTermSelections = {}
 
@@ -87,10 +83,27 @@ export const useSearchStore = defineStore('search', () => {
     return termSelection
   }
 
-  const exported = { init, keywords, page, selectedTerms }
+  function canResetSearch () {
+    const params = currentSearchParams()
+    return params && Object.keys(params).length > 0
+  }
+
+  function resetSearch () {
+    state.value = emptyState()
+  }
+
+  const exported = { init, keywords, page, selectedTerms, resetSearch, canResetSearch }
 
   // --------------------------------------------------
   // Internal functions and properties
+
+  function emptyState () {
+    return {
+      // TODO: separate keywords from terms?
+      search: {},
+      page: DEFAULT_PAGE
+    }
+  }
 
   const activeFacetNames = computed(() => {
     const currentSearch = state.value.search
