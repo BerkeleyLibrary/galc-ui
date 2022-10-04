@@ -11,7 +11,7 @@ function initGalcApp () {
   }
   const apiBaseUrl = appContainer.dataset.apiBaseUrl
   const app = createApp(App, { apiBaseUrl })
-  app.use(createPinia()) // TODO: can this be in the app setup?
+  app.use(createPinia())
   app.mount(appContainer)
 }
 

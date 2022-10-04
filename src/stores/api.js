@@ -14,9 +14,6 @@ import { useReservationStore } from './reservation'
 // ------------------------------------------------------------
 // Store definition
 
-// TODO: is there an advantage to using a Pinia store over a globally
-//       exported constant?
-
 export const useApiStore = defineStore('api', () => {
   // --------------------------------------------------
   // State
