@@ -6,7 +6,7 @@ import { useResultStore } from '../stores/results'
 import PageNavLink from './PageNavLink.vue'
 
 defineProps({
-  idInfix: { type: String, default: '' }
+  name: { type: String, default: '' }
 })
 
 // ------------------------------------------------------------
@@ -27,14 +27,14 @@ const totalItems = computed(() => pagination.value.records || 0)
 </script>
 
 <template>
-  <nav v-if="totalItems > 0" class="page-nav">
+  <nav v-if="totalItems > 0" class="page-nav" :aria-label="`${name} page navigation`">
     <p class="page-nav-items"><span class="page-nav-items-total">{{ totalItems }}</span> records found</p>
     <ul class="page-nav-links">
-      <PageNavLink :id="`page-nav-${idInfix}-first`" text="«" :active="pagination.current > 1" rel="first" title="First page" :page="1"/>
-      <PageNavLink :id="`page-nav-${idInfix}-prev`" text="‹" :active="pagination.current > 1" rel="prev" title="Previous page" :page="pagination.prev"/>
+      <PageNavLink :id="`page-nav-${name}-first`" text="«" :active="pagination.current > 1" rel="first" title="First page" :page="1"/>
+      <PageNavLink :id="`page-nav-${name}-prev`" text="‹" :active="pagination.current > 1" rel="prev" title="Previous page" :page="pagination.prev"/>
       <li>{{ fromItem }}–{{ toItem }}</li>
-      <PageNavLink :id="`page-nav-${idInfix}-next`" text="›" :active="pagination.current < pagination.last" rel="next" title="Next page" :page="pagination.next"/>
-      <PageNavLink :id="`page-nav-${idInfix}-last`" text="»" :active="pagination.current < pagination.last" rel="last" title="Last page" :page="pagination.last"/>
+      <PageNavLink :id="`page-nav-${name}-next`" text="›" :active="pagination.current < pagination.last" rel="next" title="Next page" :page="pagination.next"/>
+      <PageNavLink :id="`page-nav-${name}-last`" text="»" :active="pagination.current < pagination.last" rel="last" title="Last page" :page="pagination.last"/>
     </ul>
   </nav>
 </template>
