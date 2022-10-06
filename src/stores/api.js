@@ -40,7 +40,7 @@ export const useApiStore = defineStore('api', () => {
 
   async function init (apiUrl) {
     await initApi(apiUrl)
-    await loadFacets()
+    await loadFacets() // TODO: move this to facet store initializer?
     await initStores()
 
     initialized.value = true
