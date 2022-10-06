@@ -29,7 +29,8 @@ export const useSearchStore = defineStore('search', () => {
   // --------------------------------------------------
   // Exported functions and properties
 
-  function init () {
+  async function init () {
+    console.log('search.init()')
     state.value = readWindowLocation()
     expandAll(activeFacetNames.value)
     watch(state, doSearch, { deep: true, immediate: true, flush: 'post' })

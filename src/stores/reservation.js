@@ -58,8 +58,9 @@ export const useReservationStore = defineStore('reservation', () => {
   // --------------------------------------------------
   // Exported functions and properties
 
-  function init () {
-    initClosure().then(() => {
+  async function init () {
+    console.log('reservation.init()')
+    return initClosure().then(() => {
       const reserveItemId = deleteParam(RESERVE_ITEM_PARAM)
       console.log('reserveItemId: %o', reserveItemId)
       if (reserveItemId) {

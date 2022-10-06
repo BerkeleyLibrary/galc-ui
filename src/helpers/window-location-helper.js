@@ -2,6 +2,7 @@ import { storeToRefs } from 'pinia'
 import { useWindowLocationStore } from '../stores/window-location'
 import { RESERVE_ITEM_PARAM } from '../stores/reservation'
 import { AUTH_TOKEN_PARAM } from '../stores/api'
+import { LOGIN_PARAM } from '../stores/session'
 
 // TODO: merge this back into stores/window-location.js?
 
@@ -20,19 +21,22 @@ function setParams (params, clearParams = []) {
 }
 
 function deleteParam (paramName) {
+  const { location } = storeToRefs(useWindowLocationStore())
+
   console.log('deleteParam(%o)', paramName)
   const url = new URL(window.location)
   const params = url.searchParams
   const value = params.get(paramName)
   if (value) {
-    const url = new URL(window.location)
+    console.log('deleting %o = %o', paramName, value)
     params.delete(paramName)
 
-    const { location } = storeToRefs(useWindowLocationStore())
     location.value = url
     console.log('location.value = %o', url)
   }
   console.log('deleteParam(%o) returning %o', paramName, value)
+  console.log('location ref = %o', location.value.toString())
+  console.log('window location = %o', window.location.toString())
   return value
 }
 
@@ -64,7 +68,7 @@ function baseSearchParams (clearParams, url) {
     return currentParams
   }
   const newParams = new URLSearchParams()
-  for (const param of [AUTH_TOKEN_PARAM, RESERVE_ITEM_PARAM]) {
+  for (const param of [LOGIN_PARAM, AUTH_TOKEN_PARAM, RESERVE_ITEM_PARAM]) {
     for (const currentVal of currentParams.getAll(param)) {
       newParams.append(param, currentVal)
     }
