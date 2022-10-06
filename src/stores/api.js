@@ -26,10 +26,15 @@ export const useApiStore = defineStore('api', () => {
   const loadingItems = ref(false)
   const reservingItem = ref(false)
 
+  const initialized = ref(false)
+
   // --------------------------------------------------
   // Exported functions and properties
 
   const loading = computed(() => {
+    if (!initialized.value) {
+      return true
+    }
     return loadingFacets.value || loadingItems.value || reservingItem.value
   })
 
@@ -37,6 +42,8 @@ export const useApiStore = defineStore('api', () => {
     await initApi(apiUrl)
     await loadFacets()
     await initStores()
+
+    initialized.value = true
   }
 
   function loadFacets () {
