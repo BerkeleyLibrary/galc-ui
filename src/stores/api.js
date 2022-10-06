@@ -14,6 +14,8 @@ import { useReservationStore } from './reservation'
 // ------------------------------------------------------------
 // Store definition
 
+export const AUTH_TOKEN_PARAM = 'token'
+
 export const useApiStore = defineStore('api', () => {
   // --------------------------------------------------
   // State
@@ -159,8 +161,6 @@ export const useApiStore = defineStore('api', () => {
 
 // ------------------------------------------------------------
 // Private implementation
-
-const AUTH_TOKEN_PARAM = 'token'
 
 function newJsonApi (apiUrl, authToken = null) {
   const options = authToken ? { apiUrl: apiUrl, bearer: authToken } : { apiUrl }

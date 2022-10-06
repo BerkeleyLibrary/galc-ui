@@ -5,12 +5,12 @@ import { useResultStore } from '../stores/results'
 import ItemDetails from './ItemDetails.vue'
 import ItemImage from './ItemImage.vue'
 import Reservation from './Reservation.vue'
-import { useReservationStore } from '../stores/reservation'
+import { usePreviewStore } from '../stores/preview'
 
 // ------------------------------------------------------------
 // Store
 
-const { startPreview } = useReservationStore()
+const { startPreview } = usePreviewStore()
 const { getAvailability } = useResultStore()
 
 // ------------------------------------------------------------

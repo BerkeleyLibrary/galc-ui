@@ -28,8 +28,11 @@ const props = defineProps({
 
 // TODO: Handle/prevent multiple simultaneous attempted reservations
 function tryReserve (event) {
+  console.log('tryReserve(%o)', event)
   event.target.blur()
-  startReservation(props.item)
+  const item = props.item
+  console.log('tryReserve(%o)', item)
+  startReservation(item)
 }
 
 const reservingThisItem = computed(() => {

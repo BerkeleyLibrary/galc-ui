@@ -1,12 +1,12 @@
 <script setup>
 import { storeToRefs } from 'pinia'
-import { useReservationStore } from '../stores/reservation'
+import { usePreviewStore } from '../stores/preview'
 
 import ItemImage from './ItemImage.vue'
 
-const reservation = useReservationStore()
-const { currentPreview } = storeToRefs(reservation)
-const { endPreview } = reservation
+const preview = usePreviewStore()
+const { currentPreview } = storeToRefs(preview)
+const { endPreview } = preview
 
 </script>
 

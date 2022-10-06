@@ -6,13 +6,14 @@ import { deleteParam, relativeUrl } from '../helpers/window-location-helper'
 import { useSessionStore } from './session'
 import { useApiStore } from './api'
 
+export const RESERVE_ITEM_PARAM = 'reserve'
+
 export const useReservationStore = defineStore('reservation', () => {
   // --------------------------------------------------
   // State
 
   const currentReservation = ref(null)
   const completedReservation = ref(null)
-  const currentPreview = ref(null)
   const reservedItemIds = ref([])
 
   const closure = ref(null)
@@ -30,6 +31,7 @@ export const useReservationStore = defineStore('reservation', () => {
       if (Array.isArray(data) && data.length > 0) {
         currentClosure = data[0]
       }
+      console.log('currentClosure: %o', currentClosure)
       closure.value = currentClosure
     })
   }
@@ -40,8 +42,10 @@ export const useReservationStore = defineStore('reservation', () => {
       if (closure.value) {
         console.log('Ignoring %o=%o; closure in effect: %o', RESERVE_ITEM_PARAM, reserveItemId, closure.value)
       } else {
+        console.log('Found %o=%o', RESERVE_ITEM_PARAM, reserveItemId)
         const { fetchItem } = useApiStore()
         fetchItem(reserveItemId).then(({ data }) => {
+          console.log('Item fetched')
           const item = data
           startReservation(item)
         })
@@ -57,6 +61,7 @@ export const useReservationStore = defineStore('reservation', () => {
   function init () {
     initClosure().then(() => {
       const reserveItemId = deleteParam(RESERVE_ITEM_PARAM)
+      console.log('reserveItemId: %o', reserveItemId)
       if (reserveItemId) {
         doReserve(reserveItemId)
       }
@@ -78,6 +83,7 @@ export const useReservationStore = defineStore('reservation', () => {
 
   // TODO: Handle/prevent multiple simultaneous attempted reservations
   function startReservation (item) {
+    console.log('startReservation(%o)', item)
     const rsvn = {
       item: item,
       confirmed: false
@@ -119,20 +125,6 @@ export const useReservationStore = defineStore('reservation', () => {
     return relativeUrl({ [RESERVE_ITEM_PARAM]: item.id })
   }
 
-  function startPreview (item) {
-    // TODO: find less hacky way to prevent launching preview from confirm dialog
-    if (currentReservation.value) {
-      console.log('not previewing')
-      return
-    }
-    console.log('previewing %o', item)
-    currentPreview.value = item
-  }
-
-  function endPreview () {
-    currentPreview.value = null
-  }
-
   const exported = {
     init,
     reserveItemRedirectUrl,
@@ -144,9 +136,6 @@ export const useReservationStore = defineStore('reservation', () => {
     acknowledgeComplete,
     itemReserved,
     isReserved,
-    currentPreview,
-    startPreview,
-    endPreview,
     closure
   }
 
@@ -155,8 +144,3 @@ export const useReservationStore = defineStore('reservation', () => {
 
   return exported
 })
-
-// ------------------------------------------------------------
-// Private implementation
-
-const RESERVE_ITEM_PARAM = 'reserve'

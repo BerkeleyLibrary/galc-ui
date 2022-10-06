@@ -1,34 +1,46 @@
 <script setup>
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
+import { FocusTrap } from 'focus-trap-vue'
 
 import { useApiStore } from '../stores/api'
 import { useReservationStore } from '../stores/reservation'
+import { usePreviewStore } from '../stores/preview'
 
 import Spinner from './Spinner.vue'
 import ReserveDialog from './ReserveDialog.vue'
 import PreviewDialog from './PreviewDialog.vue'
 import ConfirmationDialog from './ConfirmationDialog.vue'
-import { FocusTrap } from 'focus-trap-vue'
 
 const { loading } = storeToRefs(useApiStore())
-const { currentReservation, completedReservation, currentPreview } = storeToRefs(useReservationStore())
+const { currentReservation, completedReservation } = storeToRefs(useReservationStore())
+const { currentPreview } = storeToRefs(usePreviewStore())
 
 const activeModal = computed(() => {
   if (loading.value) {
+    console.log('Spinning')
     return Spinner
   }
   const completedRsvn = completedReservation.value
+  console.log('completedRsvn: %o', completedRsvn)
   if (completedRsvn) {
     return ConfirmationDialog
   }
   const currentRsvn = currentReservation.value
-  if (currentRsvn && !currentRsvn.confirmed) {
-    return ReserveDialog
+  console.log('currentRsvn: %o', currentRsvn)
+  if (currentRsvn) {
+    const confirmed = currentRsvn.confirmed
+    console.log('confirmed: %o', confirmed)
+    if (!confirmed) {
+      return ReserveDialog
+    }
   }
-  if (currentPreview.value) {
+  const currentPrv = currentPreview.value
+  console.log('currentPreview: %o', currentPrv)
+  if (currentPrv) {
     return PreviewDialog
   }
+  console.log('No modals')
   return null
 })
 
