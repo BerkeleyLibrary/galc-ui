@@ -3,20 +3,11 @@ import { storeToRefs } from 'pinia/dist/pinia'
 import { useSessionStore } from '../stores/session'
 import { useApiStore } from '../stores/api'
 import { useSearchStore } from '../stores/search'
-import { useWindowLocationStore } from '../stores/window-location'
-
-const apiStore = useApiStore()
 
 // Log out
 
 const { isAuthenticated } = storeToRefs(useSessionStore())
-const { logout } = apiStore
-
-// Log in
-
-// TODO: remove login form entirely if we don't end up needing it for admin
-const { loginUrl } = storeToRefs(apiStore)
-const { location } = storeToRefs(useWindowLocationStore())
+const { logout } = useApiStore()
 
 // Reset search
 
@@ -34,10 +25,6 @@ function doReset (event) {
     <ul>
       <li>
         <button v-if="isAuthenticated" @click="logout">Log out</button>
-        <form v-else method="post" :action="loginUrl">
-          <input type="hidden" name="origin" :value="location">
-          <input type="submit" value="Log in">
-        </form>
       </li>
       <li>
         <button @click="doReset">Reset</button>
@@ -65,12 +52,7 @@ function doReset (event) {
       flex-direction: column;
       justify-content: start;
 
-      form {
-        //display: contents;
-        display: none;
-      }
-
-      button, input[type=Submit] {
+      button {
         line-height: inherit;
         font-size: 1rem;
         line-height: 1.15;

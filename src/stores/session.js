@@ -8,17 +8,23 @@ export const useSessionStore = defineStore('session', () => {
   // --------------------------------------------------
   // State
 
-  const doLogin = ref(false)
   const user = ref(null)
+  const loginSet = ref(false)
 
   // --------------------------------------------------
   // Exported functions and properties
 
   async function init () {
-    // console.log('session.init()')
     const login = deleteParam(LOGIN_PARAM)
-    doLogin.value = !!login
+    loginSet.value = !!login
   }
+
+  const doLogin = computed(() => {
+    if (isAuthenticated.value) {
+      return false
+    }
+    return loginSet.value
+  })
 
   const isAuthenticated = computed(() => !!user.value)
 

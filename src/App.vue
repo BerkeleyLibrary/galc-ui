@@ -5,6 +5,7 @@ import Modals from './components/Modals.vue'
 import Search from './components/Search.vue'
 import Results from './components/Results.vue'
 import Toolbar from './components/Toolbar.vue'
+import AutoLogin from './components/AutoLogin.vue'
 
 const props = defineProps({
   apiBaseUrl: { type: String, default: null }
@@ -23,6 +24,7 @@ onMounted(() => {
     <Search class="galc-search"/>
     <Toolbar class="galc-toolbar"/>
     <Results class="galc-results"/>
+    <AutoLogin/>
   </section>
 </template>
 
