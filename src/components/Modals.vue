@@ -18,29 +18,29 @@ const { currentPreview } = storeToRefs(usePreviewStore())
 
 const activeModal = computed(() => {
   if (loading.value) {
-    console.log('Spinning')
+    // console.log('Spinning')
     return Spinner
   }
   const completedRsvn = completedReservation.value
-  console.log('completedRsvn: %o', completedRsvn)
+  // console.log('completedRsvn: %o', completedRsvn)
   if (completedRsvn) {
     return ConfirmationDialog
   }
   const currentRsvn = currentReservation.value
-  console.log('currentRsvn: %o', currentRsvn)
+  // console.log('currentRsvn: %o', currentRsvn)
   if (currentRsvn) {
     const confirmed = currentRsvn.confirmed
-    console.log('confirmed: %o', confirmed)
+    // console.log('confirmed: %o', confirmed)
     if (!confirmed) {
       return ReserveDialog
     }
   }
   const currentPrv = currentPreview.value
-  console.log('currentPreview: %o', currentPrv)
+  // console.log('currentPreview: %o', currentPrv)
   if (currentPrv) {
     return PreviewDialog
   }
-  console.log('No modals')
+  // console.log('No modals')
   return null
 })
 

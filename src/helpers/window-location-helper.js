@@ -12,31 +12,31 @@ function relativeUrl (params, clearParams = false) {
 }
 
 function setParams (params, clearParams = []) {
-  console.log('setParams(%o)', params)
+  // console.log('setParams(%o)', params)
   const newLocation = relativeUrl(params, true).toString()
 
   const { location } = storeToRefs(useWindowLocationStore())
   location.value = newLocation
-  console.log('location.value = %o', newLocation)
+  // console.log('location.value = %o', newLocation)
 }
 
 function deleteParam (paramName) {
   const { location } = storeToRefs(useWindowLocationStore())
 
-  console.log('deleteParam(%o)', paramName)
+  // console.log('deleteParam(%o)', paramName)
   const url = new URL(window.location)
   const params = url.searchParams
   const value = params.get(paramName)
   if (value) {
-    console.log('deleting %o = %o', paramName, value)
+    // console.log('deleting %o = %o', paramName, value)
     params.delete(paramName)
 
     location.value = url
-    console.log('location.value = %o', url)
+    // console.log('location.value = %o', url)
   }
-  console.log('deleteParam(%o) returning %o', paramName, value)
-  console.log('location ref = %o', location.value.toString())
-  console.log('window location = %o', window.location.toString())
+  // console.log('deleteParam(%o) returning %o', paramName, value)
+  // console.log('location ref = %o', location.value.toString())
+  // console.log('window location = %o', window.location.toString())
   return value
 }
 

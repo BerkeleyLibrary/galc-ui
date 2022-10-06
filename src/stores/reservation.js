@@ -31,7 +31,7 @@ export const useReservationStore = defineStore('reservation', () => {
       if (Array.isArray(data) && data.length > 0) {
         currentClosure = data[0]
       }
-      console.log('currentClosure: %o', currentClosure)
+      // console.log('currentClosure: %o', currentClosure)
       closure.value = currentClosure
     })
   }
@@ -40,18 +40,18 @@ export const useReservationStore = defineStore('reservation', () => {
     const { isAuthenticated } = useSessionStore()
     if (isAuthenticated) {
       if (closure.value) {
-        console.log('Ignoring %o=%o; closure in effect: %o', RESERVE_ITEM_PARAM, reserveItemId, closure.value)
+        // console.log('Ignoring %o=%o; closure in effect: %o', RESERVE_ITEM_PARAM, reserveItemId, closure.value)
       } else {
-        console.log('Found %o=%o', RESERVE_ITEM_PARAM, reserveItemId)
+        // console.log('Found %o=%o', RESERVE_ITEM_PARAM, reserveItemId)
         const { fetchItem } = useApiStore()
         fetchItem(reserveItemId).then(({ data }) => {
-          console.log('Item fetched')
+          // console.log('Item fetched')
           const item = data
           startReservation(item)
         })
       }
     } else {
-      console.log('Ignoring %o=%o; user not authenticated', RESERVE_ITEM_PARAM, reserveItemId)
+      // console.log('Ignoring %o=%o; user not authenticated', RESERVE_ITEM_PARAM, reserveItemId)
     }
   }
 
@@ -59,10 +59,10 @@ export const useReservationStore = defineStore('reservation', () => {
   // Exported functions and properties
 
   async function init () {
-    console.log('reservation.init()')
+    // console.log('reservation.init()')
     return initClosure().then(() => {
       const reserveItemId = deleteParam(RESERVE_ITEM_PARAM)
-      console.log('reserveItemId: %o', reserveItemId)
+      // console.log('reserveItemId: %o', reserveItemId)
       if (reserveItemId) {
         doReserve(reserveItemId)
       }
@@ -70,7 +70,7 @@ export const useReservationStore = defineStore('reservation', () => {
   }
 
   function itemReserved ({ data }) {
-    console.log('Created reservation: { %o }', data)
+    // console.log('Created reservation: { %o }', data)
     const item = data.item
     reservedItemIds.value.push(item.id)
 
@@ -84,18 +84,18 @@ export const useReservationStore = defineStore('reservation', () => {
 
   // TODO: Handle/prevent multiple simultaneous attempted reservations
   function startReservation (item) {
-    console.log('startReservation(%o)', item)
+    // console.log('startReservation(%o)', item)
     const rsvn = {
       item: item,
       confirmed: false
     }
     currentReservation.value = rsvn
 
-    console.log('startReservation(%o) => %o', item.id, currentReservation.value)
+    // console.log('startReservation(%o) => %o', item.id, currentReservation.value)
   }
 
   function confirmReservation () {
-    console.log('confirmReservation(): %o', currentReservation.value)
+    // console.log('confirmReservation(): %o', currentReservation.value)
 
     const api = useApiStore()
     const { reserveItem } = api
@@ -108,12 +108,12 @@ export const useReservationStore = defineStore('reservation', () => {
   }
 
   function cancelReservation () {
-    console.log('cancelReservation()')
+    // console.log('cancelReservation()')
     currentReservation.value = null
   }
 
   function acknowledgeComplete () {
-    console.log('acknowledgeComplete()')
+    // console.log('acknowledgeComplete()')
     completedReservation.value = null
   }
 

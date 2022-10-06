@@ -15,7 +15,7 @@ export const useSessionStore = defineStore('session', () => {
   // Exported functions and properties
 
   async function init () {
-    console.log('session.init()')
+    // console.log('session.init()')
     const login = deleteParam(LOGIN_PARAM)
     doLogin.value = !!login
   }
@@ -33,7 +33,7 @@ export const useSessionStore = defineStore('session', () => {
   })
 
   function updateUser ({ data }) {
-    console.log('Initializing session with { %o }', data)
+    // console.log('Initializing session with { %o }', data)
     user.value = data
   }
 
