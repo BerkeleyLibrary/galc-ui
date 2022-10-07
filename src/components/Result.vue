@@ -4,7 +4,7 @@ import { useResultStore } from '../stores/results'
 
 import ItemDetails from './ItemDetails.vue'
 import ItemImage from './ItemImage.vue'
-import Reservation from './Reservation.vue'
+import ReserveButton from './ReserveButton.vue'
 import { usePreviewStore } from '../stores/preview'
 
 // ------------------------------------------------------------
@@ -41,7 +41,7 @@ function showPreview (event) {
     </div>
     <ItemDetails :item="item"/>
     <div class="galc-result-actions">
-      <Reservation :item="item" :available="available"/>
+      <ReserveButton :item="item" :available="available"/>
     </div>
   </section>
 </template>
