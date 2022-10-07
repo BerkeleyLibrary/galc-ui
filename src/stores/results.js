@@ -10,7 +10,6 @@ export const useResultStore = defineStore('results', () => {
     items: [],
     availability: {},
     pagination: {},
-    closure: null,
     searchPerformed: false
   })
 

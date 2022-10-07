@@ -5,6 +5,7 @@ import { useApiStore } from '../stores/api'
 import { useSessionStore } from '../stores/session'
 import { useReservationStore } from '../stores/reservation'
 import formatInTimeZone from 'date-fns-tz/formatInTimeZone'
+import { useClosuresStore } from '../stores/closures'
 
 // ------------------------------------------------------------
 // Store
@@ -16,7 +17,9 @@ const { loginUrl } = storeToRefs(api)
 
 const reservation = useReservationStore()
 const { startReservation, isReserved, reserveItemRedirectUrl } = reservation
-const { closure, currentReservation } = storeToRefs(reservation)
+const { currentReservation } = storeToRefs(reservation)
+
+const { closed, reopenDate } = storeToRefs(useClosuresStore())
 
 // ------------------------------------------------------------
 // Properties
@@ -46,9 +49,9 @@ const reservingAnyItem = computed(() => {
 })
 
 const closureMessage = computed(() => {
-  const cls = closure.value
+  const cls = closed.value
   if (cls) {
-    const endDate = cls.endDate
+    const endDate = reopenDate.value
     if (endDate) {
       const formattedDate = formatInTimeZone(endDate, 'America/Los_Angeles', 'M/d')
       return `Reopening ${formattedDate}`

@@ -1,10 +1,11 @@
-import { defineStore } from 'pinia'
+import { defineStore, storeToRefs } from 'pinia'
 import { ref } from 'vue'
 
 import { deleteParam, relativeUrl } from '../helpers/window-location-helper'
 
 import { useSessionStore } from './session'
 import { useApiStore } from './api'
+import { useClosuresStore } from './closures'
 
 export const RESERVE_ITEM_PARAM = 'reserve'
 
@@ -16,35 +17,19 @@ export const useReservationStore = defineStore('reservation', () => {
   const completedReservation = ref(null)
   const reservedItemIds = ref([])
 
-  const closure = ref(null)
-
   // --------------------------------------------------
   // Internal functions and properties
-
-  function initClosure () {
-    const { fetchClosures } = useApiStore()
-    const params = { limit: 1 }
-    params['filter[current]'] = true
-
-    return fetchClosures(params).then(({ data }) => {
-      let currentClosure = null
-      if (Array.isArray(data) && data.length > 0) {
-        currentClosure = data[0]
-      }
-      // console.log('currentClosure: %o', currentClosure)
-      closure.value = currentClosure
-    })
-  }
 
   function doReserve (reserveItemId) {
     const { isAuthenticated } = useSessionStore()
     if (isAuthenticated) {
-      if (closure.value) {
+      const { closed } = storeToRefs(useClosuresStore())
+      if (closed.value) {
         // console.log('Ignoring %o=%o; closure in effect: %o', RESERVE_ITEM_PARAM, reserveItemId, closure.value)
       } else {
         // console.log('Found %o=%o', RESERVE_ITEM_PARAM, reserveItemId)
         const { fetchItem } = useApiStore()
-        fetchItem(reserveItemId).then(({ data }) => {
+        return fetchItem(reserveItemId).then(({ data }) => {
           // console.log('Item fetched')
           const item = data
           startReservation(item)
@@ -60,13 +45,11 @@ export const useReservationStore = defineStore('reservation', () => {
 
   async function init () {
     // console.log('reservation.init()')
-    return initClosure().then(() => {
-      const reserveItemId = deleteParam(RESERVE_ITEM_PARAM)
-      // console.log('reserveItemId: %o', reserveItemId)
-      if (reserveItemId) {
-        doReserve(reserveItemId)
-      }
-    })
+    const reserveItemId = deleteParam(RESERVE_ITEM_PARAM)
+    // console.log('reserveItemId: %o', reserveItemId)
+    if (reserveItemId) {
+      return doReserve(reserveItemId)
+    }
   }
 
   function itemReserved ({ data }) {
@@ -136,8 +119,7 @@ export const useReservationStore = defineStore('reservation', () => {
     completedReservation,
     acknowledgeComplete,
     itemReserved,
-    isReserved,
-    closure
+    isReserved
   }
 
   // --------------------------------------------------

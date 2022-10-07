@@ -10,6 +10,7 @@ import { useResultStore } from './results'
 import { useSearchStore } from './search'
 import { useSessionStore } from './session'
 import { useReservationStore } from './reservation'
+import { useClosuresStore } from './closures'
 
 // ------------------------------------------------------------
 // Store definition
@@ -24,6 +25,7 @@ export const useApiStore = defineStore('api', () => {
   const apiBaseUrl = ref('')
   const loadingFacets = ref(false)
   const loadingItems = ref(false)
+  const loadingClosures = ref(false)
   const reservingItem = ref(false)
 
   const initialized = ref(false)
@@ -35,7 +37,8 @@ export const useApiStore = defineStore('api', () => {
     if (!initialized.value) {
       return true
     }
-    return loadingFacets.value || loadingItems.value || reservingItem.value
+    // TODO: increment/decrement counters instead of flipping booleans
+    return loadingFacets.value || loadingItems.value || loadingClosures.value || reservingItem.value
   })
 
   async function init (apiUrl) {
@@ -90,9 +93,11 @@ export const useApiStore = defineStore('api', () => {
       .finally(() => { reservingItem.value = false })
   }
 
-  function fetchClosures (params) {
+  function loadClosures (params) {
+    loadingClosures.value = true
+
     const api = jsonApi.value
-    return api.findAll('closures', params)
+    return api.findAll('closures', params).finally(() => { loadingClosures.value = false })
   }
 
   const loginUrl = computed(() => {
@@ -110,7 +115,7 @@ export const useApiStore = defineStore('api', () => {
     window.location = url
   }
 
-  const exported = { init, loading, fetchItem, fetchClosures, loadFacets, performSearch, reserveItem, loginUrl, logoutUrl, logout }
+  const exported = { init, loading, fetchItem, loadClosures, loadFacets, performSearch, reserveItem, loginUrl, logoutUrl, logout }
 
   // --------------------------------------------------
   // Internal functions and properties
@@ -143,6 +148,7 @@ export const useApiStore = defineStore('api', () => {
   async function initStores () {
     const stores = [
       useSessionStore(),
+      useClosuresStore(),
       useReservationStore(),
       useSearchStore()
     ]
