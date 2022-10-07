@@ -100,6 +100,15 @@ export const useApiStore = defineStore('api', () => {
     return api.findAll('closures', params).finally(() => { loadingClosures.value = false })
   }
 
+  function saveClosure (closure) {
+    const api = jsonApi.value
+    if (closure.id) {
+      return api.patch('closures', closure)
+    } else {
+      return api.create('closures', closure)
+    }
+  }
+
   const loginUrl = computed(() => {
     const baseUrl = apiBaseUrl.value
     return baseUrl && new URL('/auth/calnet', baseUrl)
@@ -115,7 +124,7 @@ export const useApiStore = defineStore('api', () => {
     window.location = url
   }
 
-  const exported = { init, loading, fetchItem, loadClosures, loadFacets, performSearch, reserveItem, loginUrl, logoutUrl, logout }
+  const exported = { init, loading, fetchItem, loadClosures, saveClosure, loadFacets, performSearch, reserveItem, loginUrl, logoutUrl, logout }
 
   // --------------------------------------------------
   // Internal functions and properties

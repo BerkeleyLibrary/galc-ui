@@ -8,6 +8,7 @@ export const useClosuresStore = defineStore('closures', () => {
 
   const currentClosures = ref([])
   const pastClosures = ref([])
+  const editingClosure = ref(null)
 
   // --------------------------------------------------
   // Exported functions and properties
@@ -33,7 +34,39 @@ export const useClosuresStore = defineStore('closures', () => {
     return loadCurrentClosures().then(loadPastClosures)
   }
 
-  const exported = { closed, reopenDate, currentClosures, pastClosures, activeClosure, init }
+  function newClosure () {
+    editClosure({ start_date: null, end_date: null, note: '' })
+  }
+
+  function editClosure (closure) {
+    // TODO: prevent simultaneous edits?
+    editingClosure.value = closure
+  }
+
+  function cancelEdit () {
+    editingClosure.value = null
+  }
+
+  function saveChanges () {
+    const cls = editingClosure.value
+    if (cls) {
+      const { saveClosure } = useApiStore()
+      saveClosure(cls)
+    }
+  }
+
+  const exported = {
+    closed,
+    reopenDate,
+    currentClosures,
+    pastClosures,
+    activeClosure,
+    newClosure,
+    editClosure,
+    cancelEdit,
+    saveChanges,
+    init
+  }
 
   // --------------------------------------------------
   // Internal functions and properties
