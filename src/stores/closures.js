@@ -2,6 +2,10 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useApiStore } from './api'
 
+export function newEmptyClosure () {
+  return { id: null, startDate: null, endDate: null, note: '' }
+}
+
 export const useClosuresStore = defineStore('closures', () => {
   // --------------------------------------------------
   // State
@@ -31,11 +35,12 @@ export const useClosuresStore = defineStore('closures', () => {
   })
 
   async function init () {
-    return loadCurrentClosures().then(loadPastClosures)
+    return reloadClosures()
   }
 
-  function newClosure () {
-    editClosure({ start_date: null, end_date: null, note: '' })
+  function createClosure () {
+    // TODO: prevent simultaneous edits?
+    editingClosure.value = newEmptyClosure()
   }
 
   function editClosure (closure) {
@@ -43,15 +48,21 @@ export const useClosuresStore = defineStore('closures', () => {
     editingClosure.value = closure
   }
 
+  function editActiveClosure (closure) {
+    const active = activeClosure.value
+    if (active) {
+      editingClosure.value = active
+    }
+  }
+
   function cancelEdit () {
     editingClosure.value = null
   }
 
-  function saveChanges () {
-    const cls = editingClosure.value
+  function applyEdit (cls) {
     if (cls) {
       const { saveClosure } = useApiStore()
-      saveClosure(cls)
+      saveClosure(cls).then(reloadClosures).finally(cancelEdit)
     }
   }
 
@@ -61,10 +72,12 @@ export const useClosuresStore = defineStore('closures', () => {
     currentClosures,
     pastClosures,
     activeClosure,
-    newClosure,
+    createClosure,
+    editingClosure,
     editClosure,
+    editActiveClosure,
     cancelEdit,
-    saveChanges,
+    applyEdit,
     init
   }
 
@@ -77,6 +90,10 @@ export const useClosuresStore = defineStore('closures', () => {
 
   function loadPastClosures () {
     return loadClosures(false)
+  }
+
+  function reloadClosures () {
+    return loadCurrentClosures().then(loadPastClosures)
   }
 
   function getClosuresRef (current) {

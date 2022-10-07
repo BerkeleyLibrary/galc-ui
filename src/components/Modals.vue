@@ -6,13 +6,16 @@ import { FocusTrap } from 'focus-trap-vue'
 import { useApiStore } from '../stores/api'
 import { useReservationStore } from '../stores/reservation'
 import { usePreviewStore } from '../stores/preview'
+import { useClosuresStore } from '../stores/closures'
 
 import Spinner from './Spinner.vue'
 import ReserveDialog from './ReserveDialog.vue'
 import PreviewDialog from './PreviewDialog.vue'
 import ConfirmationDialog from './ConfirmationDialog.vue'
+import EditClosureDialog from './closures/EditClosureDialog.vue'
 
 const { loading } = storeToRefs(useApiStore())
+const { editingClosure } = storeToRefs(useClosuresStore())
 const { currentReservation, completedReservation } = storeToRefs(useReservationStore())
 const { currentPreview } = storeToRefs(usePreviewStore())
 
@@ -20,6 +23,9 @@ const activeModal = computed(() => {
   if (loading.value) {
     // console.log('Spinning')
     return Spinner
+  }
+  if (editingClosure.value) {
+    return EditClosureDialog
   }
   const completedRsvn = completedReservation.value
   // console.log('completedRsvn: %o', completedRsvn)
