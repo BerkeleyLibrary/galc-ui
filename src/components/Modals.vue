@@ -46,14 +46,11 @@ const activeModal = computed(() => {
 
 const enableFocusTrap = computed({
   get () {
-    if (loading.value) {
-      // TODO: figure out how to get FocusTrap to work with (non-focusable) spinner
-      return false
-    }
-    return !!activeModal.value
+    const modal = activeModal.value
+    return !!modal && modal !== Spinner // can't trap focus in non-focusable spinner
   },
   set (v) {
-    // ignored
+    // necessary, but ignored
   }
 })
 
