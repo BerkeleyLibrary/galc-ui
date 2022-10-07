@@ -3,10 +3,11 @@ import { storeToRefs } from 'pinia/dist/pinia'
 import { useSessionStore } from '../stores/session'
 import { useApiStore } from '../stores/api'
 import { useSearchStore } from '../stores/search'
+import { useClosuresStore } from '../stores/closures'
 
 // Log out
 
-const { isAuthenticated } = storeToRefs(useSessionStore())
+const { isAuthenticated, isAdmin } = storeToRefs(useSessionStore())
 const { logout } = useApiStore()
 
 // Reset search
@@ -18,11 +19,25 @@ function doReset (event) {
   resetSearch()
 }
 
+// Admin
+
+const closures = useClosuresStore()
+const { createClosure, editActiveClosure } = closures
+const { closed } = storeToRefs(closures)
+
 </script>
 
 <template>
   <nav class="galc-toolbar-nav">
     <ul>
+      <template v-if="isAdmin">
+        <li>
+          <button v-if="closed" @click="editActiveClosure">Edit Closure</button>
+        </li>
+        <li>
+          <button @click="createClosure">Create closure</button>
+        </li>
+      </template>
       <li>
         <button v-if="isAuthenticated" @click="logout">Log out</button>
       </li>

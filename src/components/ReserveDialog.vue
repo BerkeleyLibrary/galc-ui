@@ -48,6 +48,7 @@ const item = computed(() => {
 </template>
 
 <style lang="scss">
+// TODO: share dialog styles
 .galc-reserve-dialog {
   padding: 2em;
   border: 1px solid black;

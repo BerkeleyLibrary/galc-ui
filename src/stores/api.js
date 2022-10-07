@@ -2,6 +2,7 @@ import JsonApi from 'devour-client'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import camelcaseKeys from 'camelcase-keys'
+import mapObject from 'map-obj'
 
 import { deleteParam } from '../helpers/window-location-helper'
 
@@ -11,6 +12,7 @@ import { useSearchStore } from './search'
 import { useSessionStore } from './session'
 import { useReservationStore } from './reservation'
 import { useClosuresStore } from './closures'
+import decamelize from 'decamelize'
 
 // ------------------------------------------------------------
 // Store definition
@@ -25,7 +27,7 @@ export const useApiStore = defineStore('api', () => {
   const apiBaseUrl = ref('')
   const loadingFacets = ref(false)
   const loadingItems = ref(false)
-  const loadingClosures = ref(false)
+  const loadingClosures = ref(0)
   const reservingItem = ref(false)
 
   const initialized = ref(false)
@@ -38,7 +40,7 @@ export const useApiStore = defineStore('api', () => {
       return true
     }
     // TODO: increment/decrement counters instead of flipping booleans
-    return loadingFacets.value || loadingItems.value || loadingClosures.value || reservingItem.value
+    return loadingFacets.value > 0 || loadingItems.value || loadingClosures.value || reservingItem.value
   })
 
   async function init (apiUrl) {
@@ -94,18 +96,18 @@ export const useApiStore = defineStore('api', () => {
   }
 
   function loadClosures (params) {
-    loadingClosures.value = true
+    loadingClosures.value++
 
     const api = jsonApi.value
-    return api.findAll('closures', params).finally(() => { loadingClosures.value = false })
+    return api.findAll('closures', params).finally(() => { loadingClosures.value-- })
   }
 
   function saveClosure (closure) {
     const api = jsonApi.value
     if (closure.id) {
-      return api.patch('closures', closure)
+      return api.patch('closure', closure)
     } else {
-      return api.create('closures', closure)
+      return api.create('closure', closure)
     }
   }
 
@@ -191,6 +193,7 @@ function newJsonApi (apiUrl, authToken = null) {
   const jsonApi = new JsonApi(options)
   jsonApi.axios.defaults.withCredentials = true
   jsonApi.insertMiddlewareBefore('response', camelcaseMiddleware)
+  jsonApi.insertMiddlewareBefore('axios-request', decamelizeMiddleware)
   for (const [name, attrs] of Object.entries(models)) {
     jsonApi.define(name, attrs)
   }
@@ -255,6 +258,18 @@ const models = {
   }
 }
 
+// TODO: display errors
+function handleError (msg) {
+  // TODO: transition to error state
+  return (error) => {
+    console.log(`${msg}: %o`, error)
+    return Promise.resolve({})
+  }
+}
+
+// ------------------------------------------------------------
+// Camelization/Decamelization
+
 // TODO: do this on server side with JSONAPI::Serializer.set_key_transform
 const camelcaseMiddleware = {
   name: 'camelcase-middleware',
@@ -265,11 +280,38 @@ const camelcaseMiddleware = {
   }
 }
 
-// TODO: display errors
-function handleError (msg) {
-  // TODO: transition to error state
-  return (error) => {
-    console.log(`${msg}: %o`, error)
-    return Promise.resolve({})
+const decamelizeMiddleware = {
+  name: 'decamelize-middleware',
+  req: (payload) => {
+    const axiosData = payload.req.data
+    if (axiosData) {
+      console.log('axiosData: %o', axiosData)
+      axiosData.data = decamelizeKeys(axiosData.data)
+    }
+    return payload
   }
+}
+
+function decamelizeKeys (data) {
+  console.log('decamelizing %o', data)
+  if (Array.isArray(data)) {
+    return data.map(d => decamelizeKeys(d))
+  }
+  if (!isObject(data)) {
+    return data
+  }
+  return mapObject(data, (k, v) => {
+    const key = decamelize(k)
+    const value = decamelizeKeys(v)
+    console.log('%o: %o => %o: %o', k, v, key, value)
+    return [key, value]
+  })
+}
+
+function isObject (value) {
+  return typeof value === 'object' &&
+    value !== null &&
+    !(value instanceof RegExp) &&
+    !(value instanceof Error) &&
+    !(value instanceof Date)
 }
