@@ -105,7 +105,8 @@ export const useApiStore = defineStore('api', () => {
   function saveClosure (closure) {
     const api = jsonApi.value
     if (closure.id) {
-      return api.patch('closure', closure)
+      return api.one('closure', closure.id).patch(closure)
+      // return api.patch('closure', closure)
     } else {
       return api.create('closure', closure)
     }

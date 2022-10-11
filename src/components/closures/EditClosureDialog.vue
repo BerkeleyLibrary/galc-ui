@@ -9,20 +9,14 @@ import { storeToRefs } from 'pinia'
 
 const closures = useClosuresStore()
 const { applyEdit, cancelEdit } = closures
-const { editingClosure } = storeToRefs(closures)
+const { closurePatch } = storeToRefs(closures)
 
 // ------------------------------------------------------------
 // Local state
 
-const closure = {
-  id: editingClosure.id,
-  note: editingClosure.note,
-  startDate: editingClosure.startDate,
-  endDate: editingClosure.endDate
-}
-const title = closure.id ? 'Editing Closure' : 'New Closure'
+const title = computed(() => closurePatch.value.id ? 'Editing Closure' : 'New Closure')
 
-const hasEndDate = ref(!!closure.endDate)
+const hasEndDate = ref(!!closurePatch.value.endDate)
 
 const startDateInputModel = dateInputModel('startDate')
 const endDateInputModel = dateInputModel('endDate')
@@ -33,12 +27,18 @@ const endDateInputModel = dateInputModel('endDate')
 function dateInputModel (dateAttr) {
   return computed({
     get () {
-      const date = closure[dateAttr]
-      return date ? dateToDateInput(date) : null
+      const patch = closurePatch.value
+      const date = patch[dateAttr]
+      const result = date ? dateToDateInput(date) : null
+      console.log('dateInputModel(%o).get: %o (from %o) => %o', dateAttr, date, patch, result)
+      return result
     },
     set (v) {
       // TODO: is this right?
-      closure[dateAttr] = ensureDate(v)
+      const vActual = ensureDate(v)
+      console.log('dateInputModel(%o).set: %o => %o', dateAttr, v, vActual)
+      const patch = closurePatch.value
+      patch[dateAttr] = vActual
     }
   })
 }
@@ -47,7 +47,11 @@ function dateInputModel (dateAttr) {
 // Actions
 
 function saveChanges () {
-  applyEdit(closure)
+  const patch = { ...closurePatch.value }
+  if (!hasEndDate.value) {
+    patch.endDate = null
+  }
+  applyEdit(patch)
 }
 
 </script>
@@ -55,36 +59,38 @@ function saveChanges () {
 <template>
   <section class="galc-closure-dialog" role="alertdialog" aria-modal="true" aria-labelledby="galc-closure-title" aria-describedby="galc-closure-desc">
     <h2 id="galc-closure-title">{{ title }}</h2>
-    <div id="galc-closure-desc">
-      <ul>
-        <li>Closures must have a start date.</li>
-        <li>The end date is optional; a closure without an end date will close GALC till further notice.</li>
-        <li>The note is optional.</li>
-      </ul>
-    </div>
-    <form v-if="closure" id="galc-closure-form" class="galc-closure-form">
-      <table>
+    <form id="galc-closure-form" class="galc-closure-form">
+      <table class="galc-closure-form-outer">
         <tr>
-          <th scope="row">Start date</th>
+          <th scope="row">
+            <label for="galc-closure-start-date">Close GALC from:</label>
+          </th>
           <td>
             <input id="galc-closure-start-date" v-model.lazy="startDateInputModel" type="date" required>
           </td>
         </tr>
         <tr>
-          <th scope="row">Has end date?</th>
+          <th scope="row" rowspan="2">
+            <label for="galc-closure-end-date">Until:</label>
+          </th>
           <td>
-            <input id="galc-closure-has-end-date`" v-model="hasEndDate" type="checkbox">
+            <input id="galc-closure-indefinite" v-model="hasEndDate" type="radio" :value="false">
+            <label for="galc-closure-indefinite">further notice</label>
           </td>
         </tr>
         <tr>
-          <th scope="row">End date</th>
           <td>
+            <input id="galc-closure-definite" v-model="hasEndDate" type="radio" :value="true">
+            <label for="galc-closure-end-date">specified date:</label>
             <input v-if="hasEndDate" id="galc-closure-end-date" v-model.lazy="endDateInputModel" type="date" required>
             <input v-else id="galc-closure-end-date" type="date" :value="endDateInputModel" disabled>
           </td>
         </tr>
       </table>
     </form>
+    <p id="galc-closure-desc">
+      Close GALC either until further notice, or until a specified reopening date.
+    </p>
     <div class="galc-closure-actions">
       <button class="galc-closure-cancel" @click="cancelEdit">Cancel</button>
       <button class="galc-closure-confirm" @click="saveChanges">Save Changes</button>
@@ -99,6 +105,56 @@ function saveChanges () {
   border: 1px solid black;
   background-color: white;
   max-width: 1075px;
+
+  p#galc-closure-desc {
+    margin-left: 1rem;
+    font-size: 1rem;
+  }
+
+  form.galc-closure-form {
+    margin-left: 1rem;
+    margin-bottom: 1rem;
+
+    label {
+      display: inline-block;
+      margin-right: 0.5rem;
+    }
+
+    table {
+
+      th {
+        text-align: right;
+        //padding-right: 0.5rem;
+      }
+
+      th, td {
+        vertical-align: top;
+        //border: 1px solid blue;
+        line-height: 2rem;
+
+        white-space: nowrap;
+      }
+    }
+
+    input[type="date"], input[type="text"] {
+      margin-top: auto;
+      margin-bottom: auto;
+      width: auto;
+
+      display: inline-block;
+
+      &:disabled {
+        color: #3b7ea1;
+      }
+    }
+
+    input[type="radio"] {
+      vertical-align: middle;
+      height: 40px;
+      margin-bottom: 2px;
+      margin-right: 0.25rem;
+    }
+  }
 
   .galc-closure-actions {
     display: flex;

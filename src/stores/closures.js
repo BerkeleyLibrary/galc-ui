@@ -12,7 +12,7 @@ export const useClosuresStore = defineStore('closures', () => {
 
   const currentClosures = ref([])
   const pastClosures = ref([])
-  const editingClosure = ref(null)
+  const closurePatch = ref(null)
 
   // --------------------------------------------------
   // Exported functions and properties
@@ -40,23 +40,23 @@ export const useClosuresStore = defineStore('closures', () => {
 
   function createClosure () {
     // TODO: prevent simultaneous edits?
-    editingClosure.value = newEmptyClosure()
+    closurePatch.value = newEmptyClosure()
   }
 
   function editClosure (closure) {
     // TODO: prevent simultaneous edits?
-    editingClosure.value = closure
+    closurePatch.value = newPatch(closure)
   }
 
   function editActiveClosure (closure) {
     const active = activeClosure.value
     if (active) {
-      editingClosure.value = active
+      editClosure(active)
     }
   }
 
   function cancelEdit () {
-    editingClosure.value = null
+    closurePatch.value = null
   }
 
   function applyEdit (cls) {
@@ -73,7 +73,7 @@ export const useClosuresStore = defineStore('closures', () => {
     pastClosures,
     activeClosure,
     createClosure,
-    editingClosure,
+    closurePatch,
     editClosure,
     editActiveClosure,
     cancelEdit,
@@ -106,6 +106,15 @@ export const useClosuresStore = defineStore('closures', () => {
 
     const params = { 'filter[current': current }
     return loadClosures(params).then(({ data }) => { closures.value = data })
+  }
+
+  function newPatch (cls) {
+    return {
+      id: cls.id,
+      note: cls.note,
+      startDate: cls.startDate,
+      endDate: cls.endDate
+    }
   }
 
   // --------------------------------------------------

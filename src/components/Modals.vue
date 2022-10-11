@@ -15,7 +15,7 @@ import ConfirmationDialog from './ConfirmationDialog.vue'
 import EditClosureDialog from './closures/EditClosureDialog.vue'
 
 const { loading } = storeToRefs(useApiStore())
-const { editingClosure } = storeToRefs(useClosuresStore())
+const { closurePatch } = storeToRefs(useClosuresStore())
 const { currentReservation, completedReservation } = storeToRefs(useReservationStore())
 const { currentPreview } = storeToRefs(usePreviewStore())
 
@@ -24,7 +24,7 @@ const activeModal = computed(() => {
     // console.log('Spinning')
     return Spinner
   }
-  if (editingClosure.value) {
+  if (closurePatch.value) {
     return EditClosureDialog
   }
   const completedRsvn = completedReservation.value
