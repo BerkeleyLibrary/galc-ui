@@ -22,7 +22,7 @@ const { items, hasResults, searchPerformed } = storeToRefs(useResultStore())
             <PageNav name="header" class="galc-page-nav"/>
           </div>
           <ul class="galc-results-list">
-            <li v-for="item in items" :key="item.id">
+            <li v-for="item of items" :key="item.id">
               <Result :item="item"/>
             </li>
           </ul>

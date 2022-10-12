@@ -42,6 +42,16 @@ export function dateToISO8601 (dateVal) {
   }
 }
 
+export function formatPlainDate (date) {
+  try {
+    const d = ensureDate(date)
+    return formatDate(d, rawDateFmtISO)
+  } catch (e) {
+    console.log(e)
+    return null
+  }
+}
+
 export function formatDateTime (date) {
   try {
     const d = ensureDate(date)

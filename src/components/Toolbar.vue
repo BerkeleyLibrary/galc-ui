@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia/dist/pinia'
 import { useSessionStore } from '../stores/session'
 import { useApiStore } from '../stores/api'
 import { useSearchStore } from '../stores/search'
-import { useClosuresStore } from '../stores/closures'
+import { useAdminStore } from '../stores/admin'
 
 // Log out
 
@@ -21,21 +21,19 @@ function doReset (event) {
 
 // Admin
 
-const closures = useClosuresStore()
-const { createClosure, editActiveClosure } = closures
-const { closed } = storeToRefs(closures)
+const { showClosures, showResults } = useAdminStore()
 
 </script>
 
 <template>
-  <nav class="galc-toolbar-nav">
+  <nav class="galc-toolbar">
     <ul>
       <template v-if="isAdmin">
         <li>
-          <button v-if="closed" @click="editActiveClosure">Edit Closure</button>
+          <button @click="showResults">Show Prints</button>
         </li>
         <li>
-          <button @click="createClosure">Create closure</button>
+          <button @click="showClosures">Show Closures</button>
         </li>
       </template>
       <li>
@@ -49,7 +47,7 @@ const { closed } = storeToRefs(closures)
 </template>
 
 <style lang="scss">
-.galc-toolbar-nav {
+.galc-toolbar {
   @media only screen and (max-width: 700px) {
     margin-bottom: -36px; // overlap show/hide facets button
   }
