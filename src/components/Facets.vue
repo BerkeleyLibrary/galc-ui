@@ -46,6 +46,10 @@ div.galc-facets {
     label.show-facets-label {
       display: none;
     }
+
+    form.galc-facet-form {
+      width: 150px;
+    }
   }
 
   @media only screen and (max-width: 700px) {

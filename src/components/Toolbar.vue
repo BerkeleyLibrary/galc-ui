@@ -21,21 +21,22 @@ function doReset (event) {
 
 // Admin
 
-const { showClosures, showResults } = useAdminStore()
+const adminStore = useAdminStore()
+const { showClosures, showItems } = adminStore
 
 </script>
 
 <template>
   <nav class="galc-toolbar">
+    <ul v-if="isAdmin">
+      <li>
+        <button @click="showItems">Show/Edit Prints</button>
+      </li>
+      <li>
+        <button @click="showClosures">Show/Edit Closures</button>
+      </li>
+    </ul>
     <ul>
-      <template v-if="isAdmin">
-        <li>
-          <button @click="showResults">Show Prints</button>
-        </li>
-        <li>
-          <button @click="showClosures">Show Closures</button>
-        </li>
-      </template>
       <li>
         <button v-if="isAuthenticated" @click="logout">Log out</button>
       </li>
@@ -47,10 +48,13 @@ const { showClosures, showResults } = useAdminStore()
 </template>
 
 <style lang="scss">
-.galc-toolbar {
+nav.galc-toolbar {
   @media only screen and (max-width: 700px) {
     margin-bottom: -36px; // overlap show/hide facets button
   }
+
+  display: flex;
+  justify-content: space-between;
 
   ul {
     display: flex;
@@ -66,6 +70,7 @@ const { showClosures, showResults } = useAdminStore()
       justify-content: start;
 
       button {
+        color: #000;
         line-height: inherit;
         font-size: 1rem;
         line-height: 1.15;
@@ -80,13 +85,7 @@ const { showClosures, showResults } = useAdminStore()
         width: auto;
         transition: background-color .25s, color .25s;
 
-        // TODO: Do we ever do this?
-        &:disabled {
-          color: #ddd;
-        }
-
         &:not(:disabled) {
-          color: #000;
           text-decoration: underline;
           text-decoration-color: #fdb515;
           text-decoration-skip-ink: none;
