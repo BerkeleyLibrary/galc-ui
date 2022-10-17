@@ -13,9 +13,9 @@ import deleteIcon from '../../assets/trash-alt.svg'
 // --------------------------------------------------
 // Stores
 
-const closuresStor = useClosuresStore()
-const { currentClosures, pastClosures } = storeToRefs(closuresStor)
-const { editClosure, deleteClosure } = closuresStor
+const closuresStore = useClosuresStore()
+const { currentClosures, pastClosures } = storeToRefs(closuresStore)
+const { editClosure, deleteClosure } = closuresStore
 
 // --------------------------------------------------
 // Local state
@@ -83,19 +83,18 @@ function formatVal (val) {
   return val instanceof Date ? formatPlainDate(val) : val
 }
 
-function editHandler (closure) {
-  return (event) => {
-    event.target.blur()
-    editClosure(closure)
-  }
+function editHandler (closure, event) {
+  console.log('document.activeElement: %o', document.activeElement)
+  console.log('blurring %o', event.target)
+  event.target.blur()
+  // console.log('document.activeElement: %o', document.activeElement)
+  editClosure(closure)
 }
 
 // TODO: confirmation
-function deleteHandler (closure) {
-  return (event) => {
-    event.target.blur()
-    deleteClosure(closure)
-  }
+function deleteHandler (closure, event) {
+  event.target.blur()
+  deleteClosure(closure)
 }
 
 </script>
@@ -129,7 +128,7 @@ function deleteHandler (closure) {
         <!-- TODO: create button -->
         <tr v-for="closure of closures" :key="closure.id">
           <td class="galc-control">
-            <button @click="editHandler(closure)">
+            <button @click="editHandler(closure, $event)">
               <img class="galc-icon" :alt="`edit closure ${closure.id}`" :src="editIcon">
             </button>
           </td>
@@ -137,7 +136,7 @@ function deleteHandler (closure) {
             {{ formatVal(closure[attr]) }}
           </td>
           <td class="galc-control">
-            <button @click="deleteHandler(closure)">
+            <button @click="deleteHandler(closure, $event)">
               <img class="galc-icon" :alt="`delete closure ${closure.id}`" :src="deleteIcon">
             </button>
           </td>
@@ -199,6 +198,7 @@ function deleteHandler (closure) {
     display: grid;
     grid-template-columns: min-content auto auto minmax(0, 1fr) min-content;
     column-gap: 1rem;
+    row-gap: 0.25rem;
 
     width: 100%;
 
@@ -258,17 +258,32 @@ function deleteHandler (closure) {
     td.galc-control {
       button {
         padding: 0;
-
       }
     }
 
     tbody {
       button {
+        display: block;
+        appearance: none;
+        border: 3px solid transparent;
+        border-radius: 4px;
+        height: min-content;
+
         &:hover, &:focus {
-          img.galc-icon {
-            border: 3px solid #fdb515;
+          img {
             background-color: #fdb515;
           }
+        }
+
+        &:focus {
+          img {
+            border: 3px solid transparent;
+          }
+        }
+
+        img {
+          margin-bottom: 0;
+          display: block;
         }
       }
     }
@@ -287,6 +302,8 @@ function deleteHandler (closure) {
   border: 3px solid transparent;
   border-radius: 4px;
   margin-bottom: -0.2rem;
+  pointer-events: none;
+  outline: none !important;
 }
 
 </style>
