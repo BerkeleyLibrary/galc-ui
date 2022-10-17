@@ -41,11 +41,13 @@ export const useClosuresStore = defineStore('closures', () => {
   function createClosure () {
     // TODO: prevent simultaneous edits?
     closurePatch.value = newEmptyClosure()
+    console.log('closurePatch.value = %o', closurePatch.value)
   }
 
   function editClosure (closure) {
     // TODO: prevent simultaneous edits?
     closurePatch.value = newPatch(closure)
+    console.log('closurePatch.value = %o', closurePatch.value)
   }
 
   function editActiveClosure (closure) {
@@ -56,6 +58,7 @@ export const useClosuresStore = defineStore('closures', () => {
   }
 
   function cancelEdit () {
+    console.log('setting closurePatch.value to null')
     closurePatch.value = null
   }
 

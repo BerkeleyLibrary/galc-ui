@@ -18,8 +18,48 @@ const title = computed(() => closurePatch.value.id ? 'Editing Closure' : 'New Cl
 
 const hasEndDate = ref(!!closurePatch.value.endDate)
 
+// TODO: separate hasEndDate from whether end date has a valid value
+const hasStartDate = computed(() => {
+  try {
+    let startDate = closurePatch.value.startDate
+    if (startDate) {
+      startDate = ensureDate(startDate)
+      console.log('startDate = %o (%o)', startDate, startDate instanceof Date)
+      if (startDate instanceof Date) {
+        return !isNaN(startDate.getTime())
+      }
+    }
+  } catch (e) {
+    console.log(e)
+  }
+  return false
+})
+
 const startDateInputModel = dateInputModel('startDate')
 const endDateInputModel = dateInputModel('endDate')
+
+const validationErrors = computed(() => {
+  const errors = {}
+  const patch = closurePatch.value
+  if (hasStartDate.value) {
+    if (hasEndDate.value) {
+      const endDate = ensureDate(patch.endDate)
+      const startDate = ensureDate(patch.startDate)
+      console.log('%o <= %o => %o', endDate, startDate, endDate <= startDate)
+      if (endDate <= startDate) {
+        errors.endDate = 'Closure end date must be after start date'
+      }
+    }
+  } else {
+    errors.startDate = 'Closure must have a start date'
+  }
+  console.log('validationErrors: %o', errors)
+  return errors
+})
+
+const canSave = computed(() => {
+  return Object.keys(validationErrors.value).length === 0
+})
 
 // ------------------------------------------------------------
 // Helper functions
@@ -30,13 +70,11 @@ function dateInputModel (dateAttr) {
       const patch = closurePatch.value
       const date = patch[dateAttr]
       const result = date ? dateToDateInput(date) : null
-      // console.log('dateInputModel(%o).get: %o (from %o) => %o', dateAttr, date, patch, result)
       return result
     },
     set (v) {
       // TODO: is this right?
       const vActual = ensureDate(v)
-      // console.log('dateInputModel(%o).set: %o => %o', dateAttr, v, vActual)
       const patch = closurePatch.value
       patch[dateAttr] = vActual
     }
@@ -59,41 +97,49 @@ function saveChanges () {
 <template>
   <section class="galc-closure-dialog" role="alertdialog" aria-modal="true" aria-labelledby="galc-closure-title" aria-describedby="galc-closure-desc">
     <h2 id="galc-closure-title">{{ title }}</h2>
-    <form id="galc-closure-form" class="galc-closure-form">
-      <table class="galc-closure-form-outer">
-        <tr>
-          <th scope="row">
-            <label for="galc-closure-start-date">Close GALC from:</label>
-          </th>
-          <td>
-            <input id="galc-closure-start-date" v-model.lazy="startDateInputModel" type="date" required>
-          </td>
-        </tr>
-        <tr>
-          <th scope="row" rowspan="2">
-            <label for="galc-closure-end-date">Until:</label>
-          </th>
-          <td>
-            <input id="galc-closure-indefinite" v-model="hasEndDate" type="radio" :value="false">
-            <label for="galc-closure-indefinite">further notice</label>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <input id="galc-closure-definite" v-model="hasEndDate" type="radio" :value="true">
-            <label for="galc-closure-end-date">specified date:</label>
-            <input v-if="hasEndDate" id="galc-closure-end-date" v-model.lazy="endDateInputModel" type="date" required>
-            <input v-else id="galc-closure-end-date" type="date" :value="endDateInputModel" disabled>
-          </td>
-        </tr>
-      </table>
-    </form>
     <p id="galc-closure-desc">
       Close GALC either until further notice, or until a specified reopening date.
     </p>
+    <form id="galc-closure-form" class="galc-closure-form">
+      <table class="galc-closure-form-outer">
+        <tbody :class="{ 'galc-closure-invalid': !!validationErrors.startDate }">
+          <tr>
+            <th scope="row">
+              <label for="galc-closure-start-date">Close GALC from:</label>
+            </th>
+            <td>
+              <input id="galc-closure-start-date" v-model.lazy="startDateInputModel" type="date" required>
+            </td>
+          </tr>
+        </tbody>
+        <tbody :class="{ 'galc-closure-invalid': !!validationErrors.endDate }">
+          <tr>
+            <th scope="row" rowspan="2">
+              <label for="galc-closure-end-date">Until:</label>
+            </th>
+            <td>
+              <input id="galc-closure-indefinite" v-model="hasEndDate" type="radio" :value="false">
+              <label for="galc-closure-indefinite">further notice</label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input id="galc-closure-definite" v-model="hasEndDate" type="radio" :value="true">
+              <label for="galc-closure-end-date">specified date:</label>
+              <input v-if="hasEndDate" id="galc-closure-end-date" v-model.lazy="endDateInputModel" type="date" required>
+              <input v-else id="galc-closure-end-date" type="date" :value="endDateInputModel" disabled>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+    <p v-for="(validationError, attr) of validationErrors" :key="`validation-error-${attr}`" class="galc-validation-error">
+      {{ validationError }}
+    </p>
     <div class="galc-closure-actions">
       <button class="galc-closure-cancel" @click="cancelEdit">Cancel</button>
-      <button class="galc-closure-confirm" @click="saveChanges">Save Changes</button>
+      <button v-if="canSave" class="galc-closure-confirm" @click="saveChanges">Save Changes</button>
+      <button v-else class="galc-closure-confirm" disabled>Save Changes</button>
     </div>
   </section>
 </template>
@@ -154,6 +200,26 @@ function saveChanges () {
       margin-bottom: 2px;
       margin-right: 0.25rem;
     }
+
+    .galc-closure-invalid {
+      input[type="date"] {
+        border: 3px solid red;
+      }
+    }
+  }
+
+  p.galc-validation-error {
+    margin-left: 1rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #d00000;
+
+    &::before {
+      content: '❌';
+      font-size: 0.75rem;
+      margin-right: 0.25rem;
+      vertical-align: top;
+    }
   }
 
   .galc-closure-actions {
@@ -184,12 +250,17 @@ function saveChanges () {
       }
 
       &.galc-closure-confirm {
-        border: 1px solid #fdb515;
+        border: 1px solid transparent;
 
         &:hover {
           border-color: black;
           background-color: #000;
           color: #fff;
+        }
+
+        &:disabled {
+          color: #46535e;
+          background-color: #eeeeee;
         }
       }
     }

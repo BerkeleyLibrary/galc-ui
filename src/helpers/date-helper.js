@@ -24,7 +24,6 @@ export function dateToDateInput (date) {
   try {
     const d = ensureDate(date)
     const result = formatDate(d, rawDateFmtISO)
-    console.log('date: %o => d: %o => result: %o', date, d, result)
     return result
   } catch (e) {
     console.log(e)
