@@ -105,7 +105,10 @@ export const useClosuresStore = defineStore('closures', () => {
     const { loadClosures } = useApiStore()
 
     const params = { 'filter[current': current }
-    return loadClosures(params).then(({ data }) => { closures.value = data })
+    return loadClosures(params).then(({ data }) => {
+      closures.value = data
+      console.log('loadClosures(%o): %o', current, data)
+    })
   }
 
   function newPatch (cls) {
