@@ -255,7 +255,8 @@ const models = {
     startDate: null,
     endDate: null,
     createdAt: null,
-    updatedAt: null
+    updatedAt: null,
+    current: false
   }
 }
 

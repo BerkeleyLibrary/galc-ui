@@ -64,6 +64,10 @@ nav.galc-toolbar {
     margin-top: 0;
     margin-bottom: 0;
 
+    &:only-child {
+      margin-left: auto;
+    }
+
     li {
       display: flex;
       flex-direction: column;

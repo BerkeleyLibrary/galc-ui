@@ -44,19 +44,21 @@ function setSortAttr (attr, event) {
   }
 }
 
-const closures = computed(() => {
+const allClosures = computed(() => {
   const current = currentClosures.value
-  const cc = [...current]
+  const cc = [{ current: true, closures: current }]
   if (showPast.value) {
     const past = pastClosures.value
-    cc.push(...past)
+    cc.push({ current: false, closures: past })
   }
   const attr = sortAttr.value
   if (attr) {
     const sortDirVal = sortDir.value
     const attrCompare = comparatorFor(attr)
     const compareFn = (a, b) => { return sortDirVal * attrCompare(a, b) }
-    cc.sort(compareFn)
+    for (const { closures } of cc) {
+      closures.sort(compareFn)
+    }
   }
   return cc
 })
@@ -84,10 +86,7 @@ function formatVal (val) {
 }
 
 function editHandler (closure, event) {
-  console.log('document.activeElement: %o', document.activeElement)
-  console.log('blurring %o', event.target)
   event.target.blur()
-  // console.log('document.activeElement: %o', document.activeElement)
   editClosure(closure)
 }
 
@@ -106,43 +105,46 @@ function deleteHandler (closure, event) {
       <input id="show-past-closures" v-model="showPast" type="checkbox">
       <label for="show-past-closures">Show past closures</label>
     </form>
-    <table class="galc-closures-table">
-      <thead>
-        <tr>
-          <th class="galc-control" scope="col">
-            Edit
-          </th>
-          <th v-for="attr of attrs" :key="attr" :class="{ 'galc-note-attr': attr === 'note', 'galc-date-attr': attr.includes('Date')}" scope="col">
-            <button @click="setSortAttr(attr, $event)">
-              {{ startCase(attr) }}
-              <img v-if="attr === sortAttr" class="galc-icon" :src="sortIndicator" :alt="sortIndicatorAlt">
-              <img v-else class="galc-icon galc-icon-hidden" :src="sortIndicator" :alt="`Sort by ${startCase(attr)}`">
-            </button>
-          </th>
-          <th class="galc-control" scope="col">
-            Delete
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- TODO: create button -->
-        <tr v-for="closure of closures" :key="closure.id">
-          <td class="galc-control">
-            <button @click="editHandler(closure, $event)">
-              <img class="galc-icon" :alt="`edit closure ${closure.id}`" :src="editIcon">
-            </button>
-          </td>
-          <td v-for="attr of attrs" :key="`${closure.id}-${attr}`" class="galc-attrval" :class="{ 'galc-note-attr': attr === 'note', 'galc-date-attr': attr.includes('Date')}">
-            {{ formatVal(closure[attr]) }}
-          </td>
-          <td class="galc-control">
-            <button @click="deleteHandler(closure, $event)">
-              <img class="galc-icon" :alt="`delete closure ${closure.id}`" :src="deleteIcon">
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div v-for="{current, closures} of allClosures" :key="`galc-closures-${current ? 'active' : 'past'}`" class="galc-closures-table-outer">
+      <h4>{{ current ? 'Active closures' : 'Past closures' }}</h4>
+      <table class="galc-closures-table">
+        <thead>
+          <tr>
+            <th class="galc-control" scope="col">
+              Edit
+            </th>
+            <th v-for="attr of attrs" :key="attr" :class="{ 'galc-note-attr': attr === 'note' }" scope="col">
+              <button @click="setSortAttr(attr, $event)">
+                {{ startCase(attr) }}
+                <img v-if="attr === sortAttr" class="galc-icon" :src="sortIndicator" :alt="sortIndicatorAlt">
+                <img v-else class="galc-icon galc-icon-hidden" :src="sortIndicator" :alt="`Sort by ${startCase(attr)}`">
+              </button>
+            </th>
+            <th class="galc-control" scope="col">
+              Delete
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- TODO: create button -->
+          <tr v-for="closure of closures" :key="closure.id" :class="{ 'galc-active-closure': closure.current }">
+            <td class="galc-control">
+              <button @click="editHandler(closure, $event)">
+                <img class="galc-icon" :alt="`edit closure ${closure.id}`" :src="editIcon">
+              </button>
+            </td>
+            <td v-for="attr of attrs" :key="`${closure.id}-${attr}`" class="galc-attrval" :class="{ 'galc-note-attr': attr === 'note' }">
+              {{ formatVal(closure[attr]) }}
+            </td>
+            <td class="galc-control">
+              <button @click="deleteHandler(closure, $event)">
+                <img class="galc-icon" :alt="`delete closure ${closure.id}`" :src="deleteIcon">
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 </template>
 
@@ -152,6 +154,18 @@ function deleteHandler (closure, event) {
   grid-template-columns: min-content minmax(0, 1fr);
   align-items: start;
   justify-items: start;
+
+  h3, h4 {
+    font-size: 1.125rem;
+    border-bottom: 1px solid #ddd5c7;
+    width: 100%;
+    margin-bottom: 0.5em;
+    margin-top: 0;
+  }
+
+  h3 {
+    font-weight: normal;
+  }
 
   form.galc-closures-selection {
     display: grid;
@@ -163,12 +177,6 @@ function deleteHandler (closure, event) {
     h3 {
       grid-column: 1 / 3;
       grid-row: 1;
-
-      font-weight: normal;
-      font-size: 1.125rem;
-      border-bottom: 1px solid #ddd5c7;
-      width: 100%;
-      margin-bottom: 0.5em;
     }
 
     input[type=checkbox] {
@@ -194,13 +202,19 @@ function deleteHandler (closure, event) {
 
   }
 
+  div.galc-closures-table-outer {
+    grid-column: 2;
+    width: 100%;
+  }
+
   table.galc-closures-table {
+    width: 100%;
+    margin-bottom: 1.5rem;
+
     display: grid;
     grid-template-columns: min-content auto auto minmax(0, 1fr) min-content;
     column-gap: 1rem;
     row-gap: 0.25rem;
-
-    width: 100%;
 
     thead, tbody, tr {
       display: contents;
@@ -210,6 +224,7 @@ function deleteHandler (closure, event) {
       th {
         padding: 2px;
         border-bottom: 1px solid #ddd5c7;
+        font-weight: normal;
 
         button {
           height: 1.3rem !important;
