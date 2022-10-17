@@ -20,7 +20,7 @@ const { editClosure, deleteClosure } = closuresStor
 // --------------------------------------------------
 // Local state
 
-const showPast = ref(false)
+const showPast = ref(true)
 
 const sortAttr = ref('startDate')
 const sortDir = ref(1)
@@ -34,7 +34,8 @@ const sortIndicatorAlt = computed(() => {
 
 const attrs = ['startDate', 'endDate', 'note']
 
-function setSortAttr (attr) {
+function setSortAttr (attr, event) {
+  event.target.blur()
   if (attr === sortAttr.value) {
     const sortDirVal = sortDir.value
     sortDir.value = -sortDirVal
@@ -64,7 +65,7 @@ function comparatorFor (attr) {
   return (a, b) => {
     const aVal = a ? a[attr] : null
     const bVal = b ? b[attr] : null
-    compare(aVal, bVal)
+    return compare(aVal, bVal)
   }
 }
 
@@ -101,18 +102,25 @@ function deleteHandler (closure) {
 
 <template>
   <section class="galc-closures">
-    <h3>GALC Closures</h3>
+    <form class="galc-closures-selection">
+      <h3>GALC Closures</h3>
+      <input id="show-past-closures" v-model="showPast" type="checkbox">
+      <label for="show-past-closures">Show past closures</label>
+    </form>
     <table class="galc-closures-table">
       <thead>
         <tr>
-          <th>
+          <th class="galc-control" scope="col">
             Edit
           </th>
-          <th v-for="attr of attrs" :key="attr" scope="col" class="galc-control" @click="setSortAttr(attr)">
-            {{ startCase(attr) }}
-            <img v-if="attr === sortAttr" class="galc-icon" :src="sortIndicator" :alt="sortIndicatorAlt">
+          <th v-for="attr of attrs" :key="attr" :class="{ 'galc-note-attr': attr === 'note', 'galc-date-attr': attr.includes('Date')}" scope="col">
+            <button @click="setSortAttr(attr, $event)">
+              {{ startCase(attr) }}
+              <img v-if="attr === sortAttr" class="galc-icon" :src="sortIndicator" :alt="sortIndicatorAlt">
+              <img v-else class="galc-icon galc-icon-hidden" :src="sortIndicator" :alt="`Sort by ${startCase(attr)}`">
+            </button>
           </th>
-          <th>
+          <th class="galc-control" scope="col">
             Delete
           </th>
         </tr>
@@ -125,7 +133,7 @@ function deleteHandler (closure) {
               <img class="galc-icon" :alt="`edit closure ${closure.id}`" :src="editIcon">
             </button>
           </td>
-          <td v-for="attr of attrs" :key="`${closure.id}-${attr}`" class="galc-attrval">
+          <td v-for="attr of attrs" :key="`${closure.id}-${attr}`" class="galc-attrval" :class="{ 'galc-note-attr': attr === 'note', 'galc-date-attr': attr.includes('Date')}">
             {{ formatVal(closure[attr]) }}
           </td>
           <td class="galc-control">
@@ -140,42 +148,145 @@ function deleteHandler (closure) {
 </template>
 
 <style lang="scss">
+.galc-closures {
+  display: grid;
+  grid-template-columns: min-content minmax(0, 1fr);
+  align-items: start;
+  justify-items: start;
+
+  form.galc-closures-selection {
+    display: grid;
+    grid-template-columns: min-content max-content;
+    column-gap: 0.5rem;
+    margin-right: 2rem;
+    width: 150px;
+
+    h3 {
+      grid-column: 1 / 3;
+      grid-row: 1;
+
+      font-weight: normal;
+      font-size: 1.125rem;
+      border-bottom: 1px solid #ddd5c7;
+      width: 100%;
+      margin-bottom: 0.5em;
+    }
+
+    input[type=checkbox] {
+      grid-column: 1;
+      grid-row: 2;
+      margin-top: 0.15rem;
+
+      @media only screen and (max-width: 700px) {
+        -webkit-transform: scale(1.25);
+      }
+    }
+
+    label {
+      grid-column: 2;
+      grid-row: 2;
+      display: block;
+      white-space: nowrap;
+      height: min-content;
+      font-weight: normal;
+      line-height: 1.15;
+      cursor: pointer;
+    }
+
+  }
+
+  table.galc-closures-table {
+    display: grid;
+    grid-template-columns: min-content auto auto minmax(0, 1fr) min-content;
+    column-gap: 1rem;
+
+    width: 100%;
+
+    thead, tbody, tr {
+      display: contents;
+    }
+
+    thead {
+      th {
+        padding: 2px;
+        border-bottom: 1px solid #ddd5c7;
+
+        button {
+          height: 1.3rem !important;
+          display: block;
+          appearance: none;
+
+          text-align: left;
+          padding: 0;
+          width: auto;
+
+          text-decoration: none;
+          text-decoration-color: white;
+          transition: text-decoration .25s;
+
+          &:hover {
+            text-decoration: underline;
+            text-decoration-color: #fdb515;
+            text-decoration-skip-ink: none;
+            text-decoration-thickness: 3px;
+          }
+
+          img.galc-icon-hidden {
+            opacity: 0;
+          }
+        }
+      }
+    }
+
+    th, td {
+      padding-left: 0.25rem;
+      text-align: left;
+
+      &.galc-control {
+        text-align: center;
+      }
+
+      &:not(.galc-note-attr) {
+        white-space: nowrap;
+      }
+
+      button {
+        background-color: transparent;
+      }
+    }
+
+    td.galc-control {
+      button {
+        padding: 0;
+
+      }
+    }
+
+    tbody {
+      button {
+        &:hover, &:focus {
+          img.galc-icon {
+            border: 3px solid #fdb515;
+            background-color: #fdb515;
+          }
+        }
+      }
+    }
+  }
+}
+
 // TODO: share global CSS class with thumbnail?
 .galc-control {
   cursor: pointer;
 }
 
-img.galc-icon {
+.galc-icon {
   display: inline-block;
   height: 1.3rem !important;
   width: 1.3rem;
   border: 3px solid transparent;
   border-radius: 4px;
   margin-bottom: -0.2rem;
-}
-
-table.galc-closures-table {
-  th, td {
-    padding: 0.5rem;
-    border: 1px solid blue;
-  }
-
-  td.galc-attrval {
-    width: 25%;
-  }
-
-  td.galc-control {
-    button {
-      background-color: transparent;
-
-      &:hover, &:focus {
-        img.galc-icon {
-          border: 3px solid #fdb515;
-          background-color: #fdb515;
-        }
-      }
-    }
-  }
 }
 
 </style>
