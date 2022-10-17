@@ -30,13 +30,13 @@ function dateInputModel (dateAttr) {
       const patch = closurePatch.value
       const date = patch[dateAttr]
       const result = date ? dateToDateInput(date) : null
-      console.log('dateInputModel(%o).get: %o (from %o) => %o', dateAttr, date, patch, result)
+      // console.log('dateInputModel(%o).get: %o (from %o) => %o', dateAttr, date, patch, result)
       return result
     },
     set (v) {
       // TODO: is this right?
       const vActual = ensureDate(v)
-      console.log('dateInputModel(%o).set: %o => %o', dateAttr, v, vActual)
+      // console.log('dateInputModel(%o).set: %o => %o', dateAttr, v, vActual)
       const patch = closurePatch.value
       patch[dateAttr] = vActual
     }
