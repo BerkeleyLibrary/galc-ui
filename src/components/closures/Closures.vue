@@ -44,6 +44,7 @@ function setSortAttr (attr, event) {
   }
 }
 
+// TODO: separate future & active
 const allClosures = computed(() => {
   const current = currentClosures.value
   const cc = [{ current: true, closures: current }]
@@ -90,6 +91,7 @@ function editHandler (closure, event) {
   editClosure(closure)
 }
 
+// TODO: get delete working
 // TODO: confirmation
 function deleteHandler (closure, event) {
   event.target.blur()
