@@ -18,41 +18,29 @@ const title = computed(() => closurePatch.value.id ? 'Editing Closure' : 'New Cl
 
 const hasEndDate = ref(!!closurePatch.value.endDate)
 
-// TODO: separate hasEndDate from whether end date has a valid value
-const hasStartDate = computed(() => {
-  try {
-    let startDate = closurePatch.value.startDate
-    if (startDate) {
-      startDate = ensureDate(startDate)
-      console.log('startDate = %o (%o)', startDate, startDate instanceof Date)
-      if (startDate instanceof Date) {
-        return !isNaN(startDate.getTime())
-      }
-    }
-  } catch (e) {
-    console.log(e)
-  }
-  return false
-})
-
 const startDateInputModel = dateInputModel('startDate')
 const endDateInputModel = dateInputModel('endDate')
+
+// ------------------------------------------------------------
+// Validation
 
 const validationErrors = computed(() => {
   const errors = {}
   const patch = closurePatch.value
-  if (hasStartDate.value) {
-    if (hasEndDate.value) {
-      const endDate = ensureDate(patch.endDate)
-      const startDate = ensureDate(patch.startDate)
-      console.log('%o <= %o => %o', endDate, startDate, endDate <= startDate)
-      if (endDate <= startDate) {
-        errors.endDate = 'Closure end date must be after start date'
-      }
-    }
-  } else {
-    errors.startDate = 'Closure must have a start date'
+  const startDateValid = isValidDate(patch.startDate)
+  if (!startDateValid) {
+    errors.startDate = 'You must specify a start date.'
   }
+  if (hasEndDate.value) {
+    const endDateValid = isValidDate(patch.endDate)
+    if (!endDateValid) {
+      errors.endDate = 'You must specify an end date.'
+    } else if (startDateValid && !isDateRangeValid()) {
+      errors.startDate = 'The start date must be at least one day after the end date.'
+      errors.endDate = 'The end date must be at least one day after the start date.'
+    }
+  }
+
   console.log('validationErrors: %o', errors)
   return errors
 })
@@ -79,6 +67,27 @@ function dateInputModel (dateAttr) {
       patch[dateAttr] = vActual
     }
   })
+}
+
+function isDateRangeValid () {
+  const patch = closurePatch.value
+  const startDate = ensureDate(patch.startDate)
+  const endDate = ensureDate(patch.endDate)
+  return startDate < endDate
+}
+
+function isValidDate (date) {
+  try {
+    if (date) {
+      const dateActual = ensureDate(date)
+      if (dateActual instanceof Date) {
+        return !isNaN(dateActual.getTime())
+      }
+    }
+  } catch (e) {
+    console.log(e)
+  }
+  return false
 }
 
 // ------------------------------------------------------------
