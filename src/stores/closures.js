@@ -14,16 +14,13 @@ export const useClosuresStore = defineStore('closures', () => {
   const closurePatch = ref(null)
 
   // --------------------------------------------------
-  // Exported functions and properties
+  // Exported computed properties
 
   const currentClosures = computed(() => closures.value.filter(c => c.current))
 
-  const pastClosures = computed(() => closures.value.filter(c => c.past))
-
-  const futureClosures = computed(() => closures.value.filter(c => c.future))
-
   const closed = computed(() => {
-    return !!activeClosure.value
+    const cc = currentClosures.value
+    return Array.isArray(cc) && cc.length > 0
   })
 
   const reopenDate = computed(() => {
@@ -31,13 +28,8 @@ export const useClosuresStore = defineStore('closures', () => {
     return cls && cls.endDate
   })
 
-  const activeClosure = computed(() => {
-    const cc = currentClosures.value
-    if (Array.isArray(cc) && cc.length > 0) {
-      return cc[0]
-    }
-    return null
-  })
+  // --------------------------------------------------
+  // Exported functions
 
   async function init () {
     return reloadClosures()
@@ -55,13 +47,6 @@ export const useClosuresStore = defineStore('closures', () => {
     console.log('closurePatch.value = %o', closurePatch.value)
   }
 
-  function editActiveClosure (closure) {
-    const active = activeClosure.value
-    if (active) {
-      editClosure(active)
-    }
-  }
-
   function cancelEdit () {
     console.log('setting closurePatch.value to null')
     closurePatch.value = null
@@ -77,21 +62,26 @@ export const useClosuresStore = defineStore('closures', () => {
   const exported = {
     closed,
     reopenDate,
-    currentClosures,
-    pastClosures,
-    futureClosures,
-    activeClosure,
+    closures,
     createClosure,
     closurePatch,
     editClosure,
-    editActiveClosure,
     cancelEdit,
     applyEdit,
     init
   }
 
   // --------------------------------------------------
-  // Internal functions and properties
+  // Internal computed properties
+
+  const activeClosure = computed(() => {
+    const cc = currentClosures.value
+    const hasCurrent = Array.isArray(cc) && cc.length > 0
+    return hasCurrent ? cc[0] : null
+  })
+
+  // --------------------------------------------------
+  // Internal functions
 
   function reloadClosures () {
     const { loadClosures } = useApiStore()

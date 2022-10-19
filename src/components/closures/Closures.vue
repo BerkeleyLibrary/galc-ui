@@ -14,55 +14,82 @@ import deleteIcon from '../../assets/trash-alt.svg'
 // Stores
 
 const closuresStore = useClosuresStore()
-const { currentClosures, pastClosures } = storeToRefs(closuresStore)
+const { closures } = storeToRefs(closuresStore)
 const { editClosure, deleteClosure } = closuresStore
+
+// --------------------------------------------------
+// Constants
+
+const attrs = ['startDate', 'endDate', 'note']
 
 // --------------------------------------------------
 // Local state
 
-const showPast = ref(true)
+const showFlags = ref({
+  future: true,
+  current: true,
+  past: true
+})
 
-const sortAttr = ref('startDate')
-const sortDir = ref(1)
+const sortAttrRef = ref('startDate')
+const sortDirRef = ref(1)
+
+// --------------------------------------------------
+// Computed properties
 
 const sortIndicator = computed(() => {
-  return sortDir.value === -1 ? angleUp : angleDown
+  return sortDirRef.value === -1 ? angleUp : angleDown
 })
 const sortIndicatorAlt = computed(() => {
-  return `sorted ${sortDir.value === -1 ? 'descending' : 'ascending'}`
+  return `sorted ${sortDirRef.value === -1 ? 'descending' : 'ascending'}`
 })
 
-const attrs = ['startDate', 'endDate', 'note']
+const closuresToShow = computed(() => {
+  const allClosures = closures.value
+  const groupedClosures = {}
+  for (const [period, flag] of Object.entries(showFlags.value)) {
+    console.log('[%o, %o]', period, flag)
+    if (flag) {
+      const cls = allClosures.filter(c => c[period])
+      const sortAttr = sortAttrRef.value
+      if (sortAttr) {
+        const sortDir = sortDirRef.value
+        const attrCompare = comparatorFor(sortAttr)
+        cls.sort((a, b) => sortDir * attrCompare(a, b))
+      }
+      groupedClosures[period] = cls
+    }
+  }
+  return groupedClosures
+})
 
-function setSortAttr (attr, event) {
+// --------------------------------------------------
+// Event handlers
+
+function setSortAttr (sortAttr, event) {
   event.target.blur()
-  if (attr === sortAttr.value) {
-    const sortDirVal = sortDir.value
-    sortDir.value = -sortDirVal
+  if (sortAttr === sortAttrRef.value) {
+    const sortDir = sortDirRef.value
+    sortDirRef.value = -sortDir
   } else {
-    sortAttr.value = attr
+    sortAttrRef.value = sortAttr
   }
 }
 
-// TODO: separate future & active
-const allClosures = computed(() => {
-  const current = currentClosures.value
-  const cc = [{ current: true, closures: current }]
-  if (showPast.value) {
-    const past = pastClosures.value
-    cc.push({ current: false, closures: past })
-  }
-  const attr = sortAttr.value
-  if (attr) {
-    const sortDirVal = sortDir.value
-    const attrCompare = comparatorFor(attr)
-    const compareFn = (a, b) => { return sortDirVal * attrCompare(a, b) }
-    for (const { closures } of cc) {
-      closures.sort(compareFn)
-    }
-  }
-  return cc
-})
+function editHandler (closure, event) {
+  event.target.blur()
+  editClosure(closure)
+}
+
+// TODO: get delete working
+// TODO: confirmation
+function deleteHandler (closure, event) {
+  event.target.blur()
+  deleteClosure(closure)
+}
+
+// --------------------------------------------------
+// Helper functions
 
 function comparatorFor (attr) {
   return (a, b) => {
@@ -86,29 +113,21 @@ function formatVal (val) {
   return val instanceof Date ? formatPlainDate(val) : val
 }
 
-function editHandler (closure, event) {
-  event.target.blur()
-  editClosure(closure)
-}
-
-// TODO: get delete working
-// TODO: confirmation
-function deleteHandler (closure, event) {
-  event.target.blur()
-  deleteClosure(closure)
-}
-
 </script>
 
 <template>
   <section class="galc-closures">
     <form class="galc-closures-selection">
       <h3>GALC Closures</h3>
-      <input id="show-past-closures" v-model="showPast" type="checkbox">
-      <label for="show-past-closures">Show past closures</label>
+      <ul class="galc-show-closures-controls">
+        <li v-for="(flag, period) in showFlags" :key="`show-${period}-closures`">
+          <input :id="`show-${period}-closures`" v-model="showFlags[period]" type="checkbox">
+          <label :for="`show-${period}-closures`">{{ startCase(period) }}</label>
+        </li>
+      </ul>
     </form>
-    <div v-for="{current, closures} of allClosures" :key="`galc-closures-${current ? 'active' : 'past'}`" class="galc-closures-table-outer">
-      <h4>{{ current ? 'Active closures' : 'Past closures' }}</h4>
+    <div v-for="(cls, period) of closuresToShow" :key="`galc-closures-${period}`" class="galc-closures-table-outer">
+      <h4>{{ startCase(period) }} closures</h4>
       <table class="galc-closures-table">
         <thead>
           <tr>
@@ -118,7 +137,7 @@ function deleteHandler (closure, event) {
             <th v-for="attr of attrs" :key="attr" :class="{ 'galc-note-attr': attr === 'note' }" scope="col">
               <button @click="setSortAttr(attr, $event)">
                 {{ startCase(attr) }}
-                <img v-if="attr === sortAttr" class="galc-icon" :src="sortIndicator" :alt="sortIndicatorAlt">
+                <img v-if="attr === sortAttrRef" class="galc-icon" :src="sortIndicator" :alt="sortIndicatorAlt">
                 <img v-else class="galc-icon galc-icon-hidden" :src="sortIndicator" :alt="`Sort by ${startCase(attr)}`">
               </button>
             </th>
@@ -129,7 +148,7 @@ function deleteHandler (closure, event) {
         </thead>
         <tbody>
           <!-- TODO: create button -->
-          <tr v-for="closure of closures" :key="closure.id" :class="{ 'galc-active-closure': closure.current }">
+          <tr v-for="closure of cls" :key="closure.id" :class="{ 'galc-active-closure': closure.current }">
             <td class="galc-control">
               <button @click="editHandler(closure, $event)">
                 <img class="galc-icon" :alt="`edit closure ${closure.id}`" :src="editIcon">
@@ -181,9 +200,17 @@ function deleteHandler (closure, event) {
       grid-row: 1;
     }
 
+    ul.galc-show-closures-controls {
+      display: contents;
+      font-size: 1rem;
+
+      li {
+        display: contents;
+      }
+    }
+
     input[type=checkbox] {
       grid-column: 1;
-      grid-row: 2;
       margin-top: 0.15rem;
 
       @media only screen and (max-width: 700px) {
@@ -193,7 +220,6 @@ function deleteHandler (closure, event) {
 
     label {
       grid-column: 2;
-      grid-row: 2;
       display: block;
       white-space: nowrap;
       height: min-content;
