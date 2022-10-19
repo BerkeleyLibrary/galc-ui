@@ -10,12 +10,17 @@ export const useClosuresStore = defineStore('closures', () => {
   // --------------------------------------------------
   // State
 
-  const currentClosures = ref([])
-  const pastClosures = ref([])
+  const closures = ref([])
   const closurePatch = ref(null)
 
   // --------------------------------------------------
   // Exported functions and properties
+
+  const currentClosures = computed(() => closures.value.filter(c => c.current))
+
+  const pastClosures = computed(() => closures.value.filter(c => c.past))
+
+  const futureClosures = computed(() => closures.value.filter(c => c.future))
 
   const closed = computed(() => {
     return !!activeClosure.value
@@ -74,6 +79,7 @@ export const useClosuresStore = defineStore('closures', () => {
     reopenDate,
     currentClosures,
     pastClosures,
+    futureClosures,
     activeClosure,
     createClosure,
     closurePatch,
@@ -87,31 +93,9 @@ export const useClosuresStore = defineStore('closures', () => {
   // --------------------------------------------------
   // Internal functions and properties
 
-  function loadCurrentClosures () {
-    return loadClosures(true)
-  }
-
-  function loadPastClosures () {
-    return loadClosures(false)
-  }
-
   function reloadClosures () {
-    return loadCurrentClosures().then(loadPastClosures)
-  }
-
-  function getClosuresRef (current) {
-    return current ? currentClosures : pastClosures
-  }
-
-  function loadClosures (current) {
-    const closures = getClosuresRef(current)
     const { loadClosures } = useApiStore()
-
-    const params = { 'filter[current': current }
-    return loadClosures(params).then(({ data }) => {
-      closures.value = data
-      console.log('loadClosures(%o): %o', current, data)
-    })
+    return loadClosures().then(({ data }) => { closures.value = data })
   }
 
   function newPatch (cls) {
