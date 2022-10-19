@@ -25,10 +25,7 @@ export const useApiStore = defineStore('api', () => {
 
   const jsonApi = ref(null)
   const apiBaseUrl = ref('')
-  const loadingFacets = ref(false)
-  const loadingItems = ref(false)
-  const loadingClosures = ref(0)
-  const reservingItem = ref(false)
+  const loadCount = ref(0)
 
   const initialized = ref(false)
 
@@ -39,8 +36,7 @@ export const useApiStore = defineStore('api', () => {
     if (!initialized.value) {
       return true
     }
-    // TODO: increment/decrement counters instead of flipping booleans
-    return loadingFacets.value > 0 || loadingItems.value || loadingClosures.value || reservingItem.value
+    return loadCount.value > 0
   })
 
   async function init (apiUrl) {
@@ -52,61 +48,58 @@ export const useApiStore = defineStore('api', () => {
   }
 
   function loadFacets () {
-    loadingFacets.value = true
+    incrementLoadCount()
 
     const api = jsonApi.value
     return api
       .findAll('facets', { include: 'terms' })
       .then(facetsLoaded)
       .catch(handleError('loadFacets() failed'))
-      .finally(() => { loadingFacets.value = false })
+      .finally(decrementLoadCount)
   }
 
   function performSearch (params) {
-    loadingItems.value = true
+    incrementLoadCount()
 
-    const api = jsonApi.value
-
-    return api
+    return jsonApi.value
       .findAll('items', { include: 'terms', ...params })
       .then(resultsFound)
       .catch(handleError('performSearch() failed'))
-      .finally(() => { loadingItems.value = false })
-  }
-
-  function fetchItem (itemId) {
-    const api = jsonApi.value
-    return api.find('item', itemId, { include: 'terms' })
-      .catch(handleError(`fetchItem(${itemId}) failed`))
+      .finally(decrementLoadCount)
   }
 
   function reserveItem (itemId) {
     // console.log('reserveItem(%o)', itemId)
 
-    reservingItem.value = true
+    loadCount.value++
 
     const { itemReserved } = useReservationStore()
 
-    const api = jsonApi.value
-    return api
+    return jsonApi.value
       .create('reservation', { item: { id: itemId } })
       .then(itemReserved)
       .catch(handleError(`reserveItem(${itemId}) failed`))
-      .finally(() => { reservingItem.value = false })
+      .finally(decrementLoadCount)
   }
 
-  function loadClosures (params) {
-    loadingClosures.value++
+  function loadClosures (params = {}) {
+    incrementLoadCount()
 
-    const api = jsonApi.value
-    return api.findAll('closures', params).finally(() => { loadingClosures.value-- })
+    return jsonApi.value
+      .findAll('closures', params)
+      .finally(decrementLoadCount)
+  }
+
+  function fetchItem (itemId) {
+    return jsonApi.value
+      .find('item', itemId, { include: 'terms' })
+      .catch(handleError(`fetchItem(${itemId}) failed`))
   }
 
   function saveClosure (closure) {
     const api = jsonApi.value
     if (closure.id) {
       return api.one('closure', closure.id).patch(closure)
-      // return api.patch('closure', closure)
     } else {
       return api.create('closure', closure)
     }
@@ -127,7 +120,19 @@ export const useApiStore = defineStore('api', () => {
     window.location = url
   }
 
-  const exported = { init, loading, fetchItem, loadClosures, saveClosure, loadFacets, performSearch, reserveItem, loginUrl, logoutUrl, logout }
+  const exported = {
+    init,
+    loading,
+    fetchItem,
+    loadClosures,
+    saveClosure,
+    loadFacets,
+    performSearch,
+    reserveItem,
+    loginUrl,
+    logoutUrl,
+    logout
+  }
 
   // --------------------------------------------------
   // Internal functions and properties
@@ -178,6 +183,14 @@ export const useApiStore = defineStore('api', () => {
   function facetsLoaded ({ data }) {
     const facets = useFacetStore()
     facets.facets = data
+  }
+
+  function incrementLoadCount () {
+    loadCount.value++
+  }
+
+  function decrementLoadCount () {
+    loadCount.value--
   }
 
   // --------------------------------------------------
@@ -256,7 +269,9 @@ const models = {
     endDate: null,
     createdAt: null,
     updatedAt: null,
-    current: false
+    current: false,
+    past: false,
+    future: false
   }
 }
 
