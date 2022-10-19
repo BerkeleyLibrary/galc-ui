@@ -48,7 +48,6 @@ const closuresToShow = computed(() => {
   const allClosures = closures.value
   const groupedClosures = {}
   for (const [period, flag] of Object.entries(showFlags.value)) {
-    console.log('[%o, %o]', period, flag)
     if (flag) {
       const cls = allClosures.filter(c => c[period])
       const sortAttr = sortAttrRef.value

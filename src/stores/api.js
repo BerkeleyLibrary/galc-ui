@@ -105,6 +105,10 @@ export const useApiStore = defineStore('api', () => {
     }
   }
 
+  function deleteClosure (closure) {
+    return jsonApi.value.destroy('closure', closure.id)
+  }
+
   const loginUrl = computed(() => {
     const baseUrl = apiBaseUrl.value
     return baseUrl && new URL('/auth/calnet', baseUrl)
@@ -126,6 +130,7 @@ export const useApiStore = defineStore('api', () => {
     fetchItem,
     loadClosures,
     saveClosure,
+    deleteClosure,
     loadFacets,
     performSearch,
     reserveItem,
@@ -292,7 +297,9 @@ const camelcaseMiddleware = {
   name: 'camelcase-middleware',
   res: (payload) => {
     const axiosData = payload.res.data
-    axiosData.data = camelcaseKeys(axiosData.data, { deep: true })
+    if (typeof axiosData === 'object') {
+      axiosData.data = camelcaseKeys(axiosData.data, { deep: true })
+    }
     return payload
   }
 }
@@ -302,7 +309,6 @@ const decamelizeMiddleware = {
   req: (payload) => {
     const axiosData = payload.req.data
     if (axiosData) {
-      console.log('axiosData: %o', axiosData)
       axiosData.data = decamelizeKeys(axiosData.data)
     }
     return payload
