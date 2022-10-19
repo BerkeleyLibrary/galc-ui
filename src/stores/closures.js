@@ -47,6 +47,13 @@ export const useClosuresStore = defineStore('closures', () => {
     console.log('closurePatch.value = %o', closurePatch.value)
   }
 
+  // TODO: confirmation
+  function deleteClosure (closure) {
+    const { deleteClosure } = useApiStore()
+    return deleteClosure(closure)
+      .then(reloadClosures)
+  }
+
   function cancelEdit () {
     console.log('setting closurePatch.value to null')
     closurePatch.value = null
@@ -66,6 +73,7 @@ export const useClosuresStore = defineStore('closures', () => {
     createClosure,
     closurePatch,
     editClosure,
+    deleteClosure,
     cancelEdit,
     applyEdit,
     init
