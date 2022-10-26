@@ -1,7 +1,8 @@
-import { defineStore } from 'pinia'
+import { defineStore, storeToRefs } from 'pinia'
 import { ref } from 'vue'
 import { useApiStore } from './api'
 import { useSearchStore } from './search'
+import { useResultStore } from './results'
 
 export function newEmptyItem () {
   return {
@@ -41,6 +42,10 @@ export const useItemsStore = defineStore('items', () => {
   // --------------------------------------------------
   // Exported functions
 
+  function newItem () {
+    itemPatch.value = newEmptyItem()
+  }
+
   function editItem (item) {
     itemPatch.value = newPatch(item)
     console.log('itemPatch.value = %o', itemPatch.value)
@@ -54,8 +59,18 @@ export const useItemsStore = defineStore('items', () => {
     }
   }
 
+  function revertEdit () {
+    const itemId = itemPatch.value.id
+    if (itemId) {
+      const { items } = storeToRefs(useResultStore())
+      const item = items.value.find((it) => it.id === itemId)
+      editItem(item)
+    } else {
+      newItem()
+    }
+  }
+
   function cancelEdit () {
-    console.log('setting itemPatch.value to null')
     itemPatch.value = null
   }
 
@@ -93,5 +108,5 @@ export const useItemsStore = defineStore('items', () => {
   // --------------------------------------------------
   // Store definition
 
-  return { itemPatch, editItem, applyEdit, cancelEdit }
+  return { itemPatch, editItem, applyEdit, revertEdit, cancelEdit }
 })

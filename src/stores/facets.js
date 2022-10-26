@@ -48,7 +48,7 @@ export const useFacetStore = defineStore('facets', () => {
     facetExpanded.value = {}
   }
 
-  function facetForName(name) {
+  function facetForName (name) {
     return facets.value.find((f) => f.name === name)
   }
 

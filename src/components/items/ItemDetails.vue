@@ -1,6 +1,7 @@
 <script setup>
 import { storeToRefs } from 'pinia'
 import { useFacetStore } from '../../stores/facets'
+import { computed } from 'vue'
 
 // ------------------------------------------------------------
 // Store
@@ -15,25 +16,21 @@ const props = defineProps({
 })
 
 // ------------------------------------------------------------
-// Local state
-
-// TODO: does this need to be reactive?
-const facetTerms = getFacetTerms()
-
-const metadata = {
-  Date: props.item.date || 'No Date',
-  Decade: facetValue('Decade'),
-  Size: facetValue('Size'),
-  Dimensions: props.item.dimensions,
-  Genre: facetValue('Genre'),
-  Colors: facetValue('Colors'),
-  Series: props.item.series
-}
-
-// ------------------------------------------------------------
 // Helper functions
 
-function getFacetTerms () {
+const metadata = computed(() => {
+  return {
+    Date: props.item.date || 'No Date',
+    Decade: facetValue('Decade'),
+    Size: facetValue('Size'),
+    Dimensions: props.item.dimensions,
+    Genre: facetValue('Genre'),
+    Colors: facetValue('Colors'),
+    Series: props.item.series
+  }
+})
+
+const facetTerms = computed(() => {
   const item = props.item
   const terms = {}
   if (item.terms) {
@@ -46,10 +43,10 @@ function getFacetTerms () {
     }
   }
   return terms
-}
+})
 
 function facetValue (facetName) {
-  const terms = facetTerms[facetName]
+  const terms = facetTerms.value[facetName]
   if (terms) {
     return terms.join(', ')
   }
