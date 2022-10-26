@@ -2,17 +2,20 @@
 import { storeToRefs } from 'pinia'
 import { useFacetStore } from '../../stores/facets'
 import { computed } from 'vue'
+import { useSessionStore } from '../../stores/session'
 
 // ------------------------------------------------------------
 // Store
 
 const { facets } = storeToRefs(useFacetStore())
+const { isAdmin } = storeToRefs(useSessionStore())
 
 // ------------------------------------------------------------
 // Properties
 
 const props = defineProps({
-  item: { type: Object, default: null }
+  item: { type: Object, default: null },
+  suppressAdmin: { type: Boolean, default: false }
 })
 
 // ------------------------------------------------------------
@@ -27,6 +30,22 @@ const metadata = computed(() => {
     Genre: facetValue('Genre'),
     Colors: facetValue('Colors'),
     Series: props.item.series
+  }
+})
+
+const adminMetadata = computed(() => {
+  if (!isAdmin.value || props.suppressAdmin) {
+    return {}
+  }
+  return {
+    'MMS ID': props.item.mmsId,
+    Barcode: props.item.barcode,
+    Circulation: props.item.circulation,
+    Location: props.item.location,
+    Value: props.item.value,
+    'Appraisal Date': props.item.appraisalDate,
+    Notes: props.item.notes,
+    'Suppressed?': props.item.suppressed ? 'yes' : 'no'
   }
 })
 
@@ -79,6 +98,13 @@ function getFacetName (term) {
             <td>{{ v }}</td>
           </tr>
         </template>
+        <template v-for="(v, k) in adminMetadata" :key="k">
+          <tr>
+            <th scope="row">{{ k }}</th>
+            <td v-if="v">{{ v }}</td>
+            <td v-else style="color: #ddd5c7;">—none—</td>
+          </tr>
+        </template>
       </table>
     </div>
   </div>
@@ -129,6 +155,7 @@ function getFacetName (term) {
 
     th {
       text-align: left;
+      white-space: nowrap;
     }
 
     td {
