@@ -30,10 +30,10 @@ const { showClosures, showItems } = adminStore
   <nav class="galc-toolbar">
     <ul v-if="isAdmin">
       <li>
-        <button @click="showItems">Show/Edit Prints</button>
+        <button @click="showItems">Manage Prints</button>
       </li>
       <li>
-        <button @click="showClosures">Show/Edit Closures</button>
+        <button @click="showClosures">Manage Closures</button>
       </li>
     </ul>
     <ul>
