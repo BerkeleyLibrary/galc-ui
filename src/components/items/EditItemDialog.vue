@@ -5,6 +5,7 @@ import { useItemsStore } from '../../stores/items'
 
 import ItemDetails from './ItemDetails.vue'
 import ItemImage from './ItemImage.vue'
+import ItemAttributeField from './ItemAttributeField.vue'
 
 // ------------------------------------------------------------
 // Stores
@@ -12,6 +13,33 @@ import ItemImage from './ItemImage.vue'
 const items = useItemsStore()
 const { applyEdit, cancelEdit } = items
 const { itemPatch } = storeToRefs(items)
+
+// ------------------------------------------------------------
+// Constants
+
+// TODO: real i18n
+const attrs = {
+  artist: 'Artist',
+  artistUrl: 'Artist URL',
+  title: 'Title',
+  date: 'Date',
+  decade: 'Decade',
+  description: 'Description',
+  medium: 'Medium',
+  genre: 'Genre',
+  appearance: 'Appearance',
+  dimensions: 'Dimensions',
+  size: 'Size',
+  series: 'Series',
+  mmsId: 'MMS ID',
+  barcode: 'Barcode',
+  circulation: 'Circulation',
+  location: 'Location',
+  value: 'Value',
+  appraisalDate: 'Appraisal Date',
+  notes: 'Notes',
+  image: 'Image Filename'
+}
 
 // ------------------------------------------------------------
 // Local state
@@ -25,6 +53,9 @@ function saveChanges () {
   applyEdit(patch)
 }
 
+function isFacet (label) {
+  return facetNames.value.includes(label)
+}
 </script>
 
 <template>
@@ -36,6 +67,18 @@ function saveChanges () {
         <ItemImage :image-uri="itemPatch.thumbnailUri" :alt="`thumbnail of “${itemPatch.title}” by ${itemPatch.artist}`"/>
       </div>
       <ItemDetails :item="itemPatch"/>
+
+      <form class="galc-edit-item-form">
+        <table>
+          <!-- TODO: make this a component -->
+          <tr v-for="(label, attr) in attrs">
+            <th scope="row">{{ label }}</th>
+            <td>
+              <ItemAttributeField :attr="attr" :label="label"/>
+            </td>
+          </tr>
+        </table>
+      </form>
     </section>
 
     <div class="galc-edit-item-actions">
@@ -52,6 +95,8 @@ function saveChanges () {
   border: 1px solid black;
   background-color: white;
   max-width: 1075px;
+  max-height: 100%;
+  overflow-y: scroll;
 
   .galc-edit-item-item {
     display: grid;
@@ -63,6 +108,18 @@ function saveChanges () {
         margin-right: auto;
       }
     }
+
+    .galc-edit-item-form {
+      grid-column: 2;
+      margin-bottom: 1rem;
+
+      table {
+        th {
+          text-align: left;
+        }
+      }
+    }
+
   }
 
   .galc-edit-item-actions {
