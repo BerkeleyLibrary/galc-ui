@@ -1,17 +1,21 @@
 <script setup>
 import { computed } from 'vue'
-import { useResultStore } from '../stores/results'
+import { storeToRefs } from 'pinia'
 
 import ItemDetails from './ItemDetails.vue'
 import ItemImage from './ItemImage.vue'
+import EditItemButton from './EditItemButton.vue'
 import ReserveButton from './ReserveButton.vue'
-import { usePreviewStore } from '../stores/preview'
+import { usePreviewStore } from '../../stores/preview'
+import { useResultStore } from '../../stores/results'
+import { useSessionStore } from '../../stores/session'
 
 // ------------------------------------------------------------
 // Store
 
 const { startPreview } = usePreviewStore()
 const { getAvailability } = useResultStore()
+const { isAdmin } = storeToRefs(useSessionStore())
 
 // ------------------------------------------------------------
 // Properties
@@ -41,6 +45,7 @@ function showPreview (event) {
     </div>
     <ItemDetails :item="item"/>
     <div class="galc-result-actions">
+      <EditItemButton v-if="isAdmin" :item="item"/>
       <ReserveButton :item="item" :available="available"/>
     </div>
   </section>

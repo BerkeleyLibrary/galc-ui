@@ -5,7 +5,7 @@ import { useResultStore } from '../stores/results'
 
 import Facets from './Facets.vue'
 import PageNav from './PageNav.vue'
-import Result from './Result.vue'
+import Result from './items/Result.vue'
 import TermDeselection from './TermDeselection.vue'
 
 const { items, hasResults, searchPerformed } = storeToRefs(useResultStore())
