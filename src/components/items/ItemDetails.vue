@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia'
-import { useFacetStore } from '../stores/facets'
+import { useFacetStore } from '../../stores/facets'
 
 // ------------------------------------------------------------
 // Store

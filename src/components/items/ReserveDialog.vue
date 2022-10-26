@@ -1,8 +1,8 @@
 <script setup>
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useSessionStore } from '../stores/session'
-import { useReservationStore } from '../stores/reservation'
+import { useSessionStore } from '../../stores/session'
+import { useReservationStore } from '../../stores/reservation'
 
 import ItemDetails from './ItemDetails.vue'
 import ItemImage from './ItemImage.vue'

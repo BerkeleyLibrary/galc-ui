@@ -1,11 +1,11 @@
 <script setup>
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
-import { useApiStore } from '../stores/api'
-import { useSessionStore } from '../stores/session'
-import { useReservationStore } from '../stores/reservation'
+import { useApiStore } from '../../stores/api'
+import { useSessionStore } from '../../stores/session'
+import { useReservationStore } from '../../stores/reservation'
 import formatInTimeZone from 'date-fns-tz/formatInTimeZone'
-import { useClosuresStore } from '../stores/closures'
+import { useClosuresStore } from '../../stores/closures'
 
 // ------------------------------------------------------------
 // Store

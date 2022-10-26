@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia'
-import { usePreviewStore } from '../stores/preview'
+import { usePreviewStore } from '../../stores/preview'
 
 import ItemImage from './ItemImage.vue'
 

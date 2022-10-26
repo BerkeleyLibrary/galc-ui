@@ -7,14 +7,17 @@ import { useApiStore } from '../stores/api'
 import { useReservationStore } from '../stores/reservation'
 import { usePreviewStore } from '../stores/preview'
 import { useClosuresStore } from '../stores/closures'
+import { useItemsStore } from '../stores/items'
 
 import Spinner from './Spinner.vue'
-import ReserveDialog from './ReserveDialog.vue'
-import PreviewDialog from './PreviewDialog.vue'
+import ReserveDialog from './items/ReserveDialog.vue'
+import PreviewDialog from './items/PreviewDialog.vue'
 import ConfirmationDialog from './ConfirmationDialog.vue'
 import EditClosureDialog from './closures/EditClosureDialog.vue'
+import EditItemDialog from './items/EditItemDialog.vue'
 
 const { loading } = storeToRefs(useApiStore())
+const { itemPatch } = storeToRefs(useItemsStore())
 const { closurePatch } = storeToRefs(useClosuresStore())
 const { currentReservation, completedReservation } = storeToRefs(useReservationStore())
 const { currentPreview } = storeToRefs(usePreviewStore())
@@ -23,6 +26,9 @@ const activeModal = computed(() => {
   if (loading.value) {
     // console.log('Spinning')
     return Spinner
+  }
+  if (itemPatch.value) {
+    return EditItemDialog
   }
   if (closurePatch.value) {
     return EditClosureDialog

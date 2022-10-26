@@ -93,7 +93,11 @@ export const useSearchStore = defineStore('search', () => {
     state.value = emptyState()
   }
 
-  const exported = { init, keywords, page, selectedTerms, resetSearch, canResetSearch }
+  function refreshSearch () {
+    return doSearch(state)
+  }
+
+  const exported = { init, keywords, page, selectedTerms, refreshSearch, resetSearch, canResetSearch }
 
   // --------------------------------------------------
   // Internal functions and properties
@@ -129,7 +133,7 @@ export const useSearchStore = defineStore('search', () => {
     const filterParams = jsonizeParams(searchParams)
 
     setParams(searchParams)
-    performSearch(filterParams)
+    return performSearch(filterParams)
   }
 
   // TODO: share code with searchFrom()?

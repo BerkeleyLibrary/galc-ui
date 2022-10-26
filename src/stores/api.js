@@ -96,6 +96,15 @@ export const useApiStore = defineStore('api', () => {
       .catch(handleError(`fetchItem(${itemId}) failed`))
   }
 
+  function saveItem (item) {
+    const api = jsonApi.value
+    if (item.id) {
+      return api.one('item', item.id).patch(item)
+    } else {
+      return api.create('item', item)
+    }
+  }
+
   function saveClosure (closure) {
     const api = jsonApi.value
     if (closure.id) {
@@ -130,6 +139,7 @@ export const useApiStore = defineStore('api', () => {
     fetchItem,
     loadClosures,
     saveClosure,
+    saveItem,
     deleteClosure,
     loadFacets,
     performSearch,
