@@ -52,34 +52,35 @@ function saveChanges () {
   const patch = { ...itemPatch.value }
   applyEdit(patch)
 }
-
-function isFacet (label) {
-  return facetNames.value.includes(label)
-}
 </script>
 
 <template>
   <section class="galc-edit-item-dialog" role="alertdialog" aria-modal="true" aria-labelledby="galc-dialog-title" aria-describedby="galc-edit-item-message">
     <h2 id="galc-dialog-title">{{ title }}</h2>
 
-    <section class="galc-edit-item-item">
+    <section class="galc-edit-item-preview">
       <div class="galc-result-thumbnail">
         <ItemImage :image-uri="itemPatch.thumbnailUri" :alt="`thumbnail of “${itemPatch.title}” by ${itemPatch.artist}`"/>
       </div>
       <ItemDetails :item="itemPatch"/>
-
-      <form class="galc-edit-item-form">
-        <table>
-          <!-- TODO: make this a component -->
-          <tr v-for="(label, attr) in attrs">
-            <th scope="row">{{ label }}</th>
-            <td>
-              <ItemAttributeField :attr="attr" :label="label"/>
-            </td>
-          </tr>
-        </table>
-      </form>
     </section>
+
+    <form class="galc-edit-item-form">
+      <table>
+        <tr>
+          <th scope="row">Suppressed</th>
+          <td style="vertical-align: center;">
+            <input v-model="itemPatch.suppressed" type="checkbox">
+          </td>
+        </tr>
+        <tr v-for="(label, attr) in attrs" :key="`${attr}-row`">
+          <th scope="row">{{ label }}</th>
+          <td>
+            <ItemAttributeField :attr="attr" :label="label"/>
+          </td>
+        </tr>
+      </table>
+    </form>
 
     <div class="galc-edit-item-actions">
       <button class="galc-edit-item-cancel" @click="cancelEdit">Cancel</button>
@@ -97,29 +98,50 @@ function isFacet (label) {
   max-width: 1075px;
   max-height: 100%;
   overflow-y: scroll;
+  width: 100%;
 
-  .galc-edit-item-item {
+  .galc-edit-item-form {
+    margin-bottom: 1rem;
+
+    table {
+      width: 100%;
+
+      th {
+        text-align: right;
+        vertical-align: top;
+        padding-top: 0.5rem;
+        padding-right: 1rem;
+        width: 25%;
+      }
+
+      td {
+        width: 75%;
+
+        input[type=checkbox] {
+          height: 44px;
+        }
+      }
+    }
+  }
+
+  .galc-edit-item-preview {
+    border: 1px solid black;
+    padding: 1rem;
+    margin: 1rem;
+
     display: grid;
     grid-template-columns: min(180px, 45%) minmax(0, 1fr);
     grid-column-gap: 0.75rem;
+
+    h3 {
+      grid-column: 1 / 3;
+    }
 
     @media only screen and (min-width: 700px) {
       .galc-item-details {
         margin-right: auto;
       }
     }
-
-    .galc-edit-item-form {
-      grid-column: 2;
-      margin-bottom: 1rem;
-
-      table {
-        th {
-          text-align: left;
-        }
-      }
-    }
-
   }
 
   .galc-edit-item-actions {
@@ -139,7 +161,7 @@ function isFacet (label) {
       color: #000;
       font-size: 1rem;
 
-      &.galc-edit-item-cancel {
+      &.galc-edit-item-cancel, &.galc-edit-item-revert {
         background-color: white;
         border: 1px solid black;
 
