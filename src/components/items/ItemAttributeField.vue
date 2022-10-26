@@ -91,5 +91,9 @@ const selectHeightPx = computed(() => {
   select {
     margin-bottom: 20px;
   }
+
+  input, select {
+    width: available;
+  }
 }
 </style>

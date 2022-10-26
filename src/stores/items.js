@@ -60,10 +60,8 @@ export const useItemsStore = defineStore('items', () => {
   }
 
   function revertEdit () {
-    const itemId = itemPatch.value.id
-    if (itemId) {
-      const { items } = storeToRefs(useResultStore())
-      const item = items.value.find((it) => it.id === itemId)
+    const item = itemForId(itemPatch.value.id)
+    if (item) {
       editItem(item)
     } else {
       newItem()
@@ -72,6 +70,14 @@ export const useItemsStore = defineStore('items', () => {
 
   function cancelEdit () {
     itemPatch.value = null
+  }
+
+  function itemForId (itemId) {
+    if (itemId) {
+      const { items } = storeToRefs(useResultStore())
+      const item = items.value.find((it) => it.id === itemId)
+      return item
+    }
   }
 
   // --------------------------------------------------
@@ -108,5 +114,5 @@ export const useItemsStore = defineStore('items', () => {
   // --------------------------------------------------
   // Store definition
 
-  return { itemPatch, editItem, applyEdit, revertEdit, cancelEdit }
+  return { itemPatch, editItem, itemForId, applyEdit, revertEdit, cancelEdit }
 })

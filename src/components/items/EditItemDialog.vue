@@ -11,7 +11,7 @@ import ItemAttributeField from './ItemAttributeField.vue'
 // Stores
 
 const items = useItemsStore()
-const { applyEdit, cancelEdit } = items
+const { itemForId, applyEdit, cancelEdit } = items
 const { itemPatch } = storeToRefs(items)
 
 // ------------------------------------------------------------
@@ -44,7 +44,11 @@ const attrs = {
 // ------------------------------------------------------------
 // Local state
 
-const title = computed(() => itemPatch.value.id ? 'Editing Print' : 'New Print')
+const originalItem = computed(() => itemForId(itemPatch.value.id))
+const title = computed(() => {
+  const item = originalItem.value
+  return item ? `Editing ‘${item.title}’` : 'New Print'
+})
 
 // TODO: track whether we've changed anything, disable save if not
 
@@ -58,7 +62,15 @@ function saveChanges () {
   <section class="galc-edit-item-dialog" role="alertdialog" aria-modal="true" aria-labelledby="galc-dialog-title" aria-describedby="galc-edit-item-message">
     <h2 id="galc-dialog-title">{{ title }}</h2>
 
+    <!--    <section v-if="originalItem" class="galc-edit-item-original">-->
+    <!--      <div class="galc-result-thumbnail">-->
+    <!--        <ItemImage :image-uri="originalItem.thumbnailUri" :alt="`thumbnail of “${originalItem.title}” by ${itemPatch.artist}`"/>-->
+    <!--      </div>-->
+    <!--      <ItemDetails :item="originalItem"/>-->
+    <!--    </section>-->
+
     <section class="galc-edit-item-preview">
+      <h3>Preview</h3>
       <div class="galc-result-thumbnail">
         <ItemImage :image-uri="itemPatch.thumbnailUri" :alt="`thumbnail of “${itemPatch.title}” by ${itemPatch.artist}`"/>
       </div>
@@ -66,17 +78,18 @@ function saveChanges () {
     </section>
 
     <form class="galc-edit-item-form">
+      <h3>Edit Attributes</h3>
       <table>
-        <tr>
-          <th scope="row">Suppressed</th>
-          <td style="vertical-align: center;">
-            <input v-model="itemPatch.suppressed" type="checkbox">
+        <tr v-for="(label, attr) in attrs" :key="`${attr}-row`">
+          <th scope="row"><label for="`galc-${attr}-field`">{{ label }}</label></th>
+          <td>
+            <ItemAttributeField :id="`galc-${attr}-field`" :attr="attr" :label="label"/>
           </td>
         </tr>
-        <tr v-for="(label, attr) in attrs" :key="`${attr}-row`">
-          <th scope="row">{{ label }}</th>
-          <td>
-            <ItemAttributeField :attr="attr" :label="label"/>
+        <tr>
+          <th scope="row">Suppressed?</th>
+          <td style="vertical-align: center;">
+            <input v-model="itemPatch.suppressed" type="checkbox">
           </td>
         </tr>
       </table>
@@ -100,35 +113,42 @@ function saveChanges () {
   overflow-y: scroll;
   width: 100%;
 
+  h3:not(.galc-item-title) {
+    border-bottom: 1px solid #ddd5c7;
+  }
+
   .galc-edit-item-form {
+    padding-top: 1rem;
     margin-bottom: 1rem;
+    border-bottom: 1px solid #ddd5c7;
 
     table {
-      width: 100%;
+      display: grid;
+      grid-template-columns: 14% 36% 14% 36%;
 
-      th {
-        text-align: right;
-        vertical-align: top;
-        padding-top: 0.5rem;
-        padding-right: 1rem;
-        width: 25%;
-      }
+      tr {
+        display: contents;
 
-      td {
-        width: 75%;
+        th {
+          display: block;
+          text-align: right;
+          vertical-align: top;
+          padding: 0.5rem;
+          //white-space: nowrap;
+        }
 
-        input[type=checkbox] {
-          height: 44px;
+        td {
+          display: block;
+
+          input[type=checkbox] {
+            height: 44px;
+          }
         }
       }
     }
   }
 
-  .galc-edit-item-preview {
-    border: 1px solid black;
-    padding: 1rem;
-    margin: 1rem;
-
+  .galc-edit-item-original, .galc-edit-item-preview {
     display: grid;
     grid-template-columns: min(180px, 45%) minmax(0, 1fr);
     grid-column-gap: 0.75rem;
