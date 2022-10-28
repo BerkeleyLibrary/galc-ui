@@ -5,6 +5,7 @@ import { setParams } from '../helpers/window-location-helper'
 
 import { useFacetStore } from './facets'
 import { useApiStore } from './api'
+import { useSessionStore } from './session'
 
 // ------------------------------------------------------------
 // Store definition
@@ -16,6 +17,8 @@ export const useSearchStore = defineStore('search', () => {
   const facets = useFacetStore()
   const { facetNames } = storeToRefs(facets)
   const { expandAll, collapseAll } = facets
+
+  const { isAdmin } = storeToRefs(useSessionStore())
 
   // --------------------------------------------------
   // State
@@ -46,6 +49,20 @@ export const useSearchStore = defineStore('search', () => {
         page: DEFAULT_PAGE
       }
       collapseAll()
+    }
+  })
+
+  const suppressed = computed({
+    get () {
+      return state.value.search.suppressed || [false]
+    },
+    set (v) {
+      const search = { ...state.value.search }
+      search.suppressed = v
+      state.value = {
+        search: search,
+        page: DEFAULT_PAGE
+      }
     }
   })
 
@@ -97,7 +114,7 @@ export const useSearchStore = defineStore('search', () => {
     return doSearch(state)
   }
 
-  const exported = { init, keywords, page, selectedTerms, refreshSearch, resetSearch, canResetSearch }
+  const exported = { init, keywords, suppressed, page, selectedTerms, refreshSearch, resetSearch, canResetSearch }
 
   // --------------------------------------------------
   // Internal functions and properties
@@ -147,6 +164,13 @@ export const useSearchStore = defineStore('search', () => {
       params.keywords = keywordsVal
     }
 
+    if (isAdmin.value) {
+      const suppressedVal = search.suppressed
+      if (Array.isArray(suppressedVal) && suppressedVal.length > 0) {
+        params.suppressed = suppressedVal.join(',')
+      }
+    }
+
     const { facetNames } = storeToRefs(useFacetStore())
     for (const facetName of facetNames.value) {
       const termValues = search[facetName]
@@ -179,6 +203,7 @@ export const useSearchStore = defineStore('search', () => {
 
 const DEFAULT_PAGE = 1
 const KEYWORDS_PARAM = 'keywords'
+const SUPPRESSED_PARAM = 'suppressed'
 const PAGE_PARAM = 'page'
 
 // ------------------------------------------------------------
@@ -191,6 +216,14 @@ function searchFrom (urlSearchParams) {
   const keywordsVal = urlSearchParams.get(KEYWORDS_PARAM)
   if (keywordsVal) {
     newSearch.keywords = keywordsVal
+  }
+
+  const { isAdmin } = storeToRefs(useSessionStore())
+  if (isAdmin.value) {
+    const suppressedVal = urlSearchParams.get(SUPPRESSED_PARAM)
+    if (suppressedVal) {
+      newSearch.suppressed = suppressedVal.split(',')
+    }
   }
 
   const { facetNames } = storeToRefs(useFacetStore())
