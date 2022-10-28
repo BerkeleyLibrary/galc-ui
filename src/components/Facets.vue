@@ -1,13 +1,16 @@
 <script setup>
 import { storeToRefs } from 'pinia'
 import { useFacetStore } from '../stores/facets'
+import { useSessionStore } from '../stores/session'
 
 import filter from '../assets/filter.svg'
 
+import Suppressed from './Suppressed.vue'
 import Facet from './Facet.vue'
 import TermDeselection from './TermDeselection.vue'
 
 const { facets } = storeToRefs(useFacetStore())
+const { isAdmin } = storeToRefs(useSessionStore())
 
 </script>
 
@@ -20,6 +23,7 @@ const { facets } = storeToRefs(useFacetStore())
       <img alt="Options" :src="filter" class="show-facets-icon">
     </label>
     <form class="galc-facet-form">
+      <Suppressed v-if="isAdmin"/>
       <Facet
         v-for="facet in facets"
         :id="`galc-facet-${facet.name}`"

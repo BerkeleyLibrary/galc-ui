@@ -66,6 +66,41 @@ div.galc-results {
     }
   }
 
+  .galc-suppressed-controls {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    margin-bottom: 1rem;
+
+    p {
+      margin: 0;
+      font-size: 1.125rem;
+    }
+
+    ul {
+      display: contents;
+      li {
+        list-style-type: none;
+        display: flex;
+
+        input, label {
+          display: block;
+          vertical-align: center;
+        }
+
+        input {
+          margin-left: 0.5rem;
+        }
+
+        label {
+          margin-left: 1rem;
+          font-size: 1.125rem;
+          font-weight: normal;
+        }
+      }
+    }
+  }
+
   .galc-results-block {
     @media only screen and (max-width: 700px) {
       // TODO: less hacky way to place this differently on desktop and mobile

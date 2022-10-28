@@ -66,7 +66,8 @@ const closureMessage = computed(() => {
 
 <template>
   <!-- TODO: clean this up -->
-  <button v-if="reservingThisItem" disabled>Reserving…</button>
+  <button v-if="item.suppressed" disabled>Suppressed</button>
+  <button v-else-if="reservingThisItem" disabled>Reserving…</button>
   <button v-else-if="closureMessage" disabled>{{ closureMessage }}</button>
   <button v-else-if="isReserved(item)" disabled>Reserved</button>
   <template v-else-if="available">
