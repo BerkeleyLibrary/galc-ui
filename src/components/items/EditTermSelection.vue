@@ -1,6 +1,8 @@
-<!-- TODO: share code w/EditTermSelection -->
+<!-- TODO: share code w/TermSelection -->
 <script setup>
-import { useSearchStore } from '../stores/search'
+import { useItemsStore } from '../../stores/items'
+import { computed } from 'vue'
+import { storeToRefs } from 'pinia'
 
 // ------------------------------------------------------------
 // Properties
@@ -13,10 +15,30 @@ const props = defineProps({
 // ------------------------------------------------------------
 // Stores
 
-const { selectedTerms } = useSearchStore()
+const items = useItemsStore()
+const { itemPatch } = storeToRefs(items)
 
-const selected = selectedTerms(props.facet.name)
+// ------------------------------------------------------------
+// Computed properties
 
+const selected = computed({
+  get () {
+    const facet = props.facet
+    const patch = itemPatch.value
+    const selectedTerms = patch.terms.filter((t) => t.facet.id === facet.id)
+    const selectedValues = selectedTerms.map((t) => t.value)
+    console.log('selected(%o) => %o', facet.name, selectedValues)
+    return selectedValues
+  },
+  set (v) {
+    const facet = props.facet
+    const patch = itemPatch.value
+    const otherTerms = patch.terms.filter((t) => t.facet.id !== facet.id)
+    const uniqueTerms = new Set(otherTerms.concat(...v))
+    patch.terms = [...uniqueTerms]
+    console.log(patch.terms)
+  }
+})
 </script>
 
 <template>
@@ -30,7 +52,7 @@ const selected = selectedTerms(props.facet.name)
     <label :for="`term-${term.id}`">{{ term.value }}</label>
     <fieldset v-if="term.children" class="galc-facet-subterms">
       <legend>{{ term.value }}</legend>
-      <TermSelection v-for="child in term.children" :key="child.id" :facet="props.facet" :term="child"/>
+      <EditTermSelection v-for="child in term.children" :key="child.id" :facet="props.facet" :term="child"/>
     </fieldset>
   </div>
 </template>
