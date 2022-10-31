@@ -4,6 +4,8 @@ import { useFacetStore } from '../../stores/facets'
 import { storeToRefs } from 'pinia'
 import { useItemsStore } from '../../stores/items'
 
+import EditTermSelection from './EditTermSelection.vue'
+
 const items = useItemsStore()
 const { itemPatch } = storeToRefs(items)
 
@@ -28,58 +30,14 @@ const attrValue = computed({
   }
 })
 
-const termSelection = computed({
-  get () {
-    const facet = facetForName(props.label)
-    if (!facet) {
-      return
-    }
-    const patch = itemPatch.value
-    const termsForFacet = patch.terms.filter((t) => {
-      return t.facet.id === facet.id
-    })
-    console.log('termSelection(%o) => %o', props.label, termsForFacet)
-    return termsForFacet
-  },
-  set (v) {
-    const facet = facetForName(props.label)
-    if (!facet) {
-      return
-    }
-
-    const patch = itemPatch.value
-    const otherTerms = patch.terms.filter((t) => {
-      return t.facet.id !== facet.id
-    })
-    const uniqueTerms = new Set(otherTerms.concat(...v))
-    patch.terms = [...uniqueTerms]
-    console.log(patch.terms)
-  }
-})
-
-const maxSelectLines = 4
-
-const selectHeightPx = computed(() => {
-  if (!facet.value) {
-    return 0
-  }
-  const terms = facet.value.terms
-  const termCount = terms.length
-  const lines = Math.min(termCount, maxSelectLines)
-
-  const remInPx = parseFloat(getComputedStyle(document.documentElement).fontSize)
-  const heightPx = (lines + 1) * remInPx
-
-  return heightPx
-})
-
 </script>
 
 <template>
   <div class="galc-item-attribute-field">
-    <select v-if="isFacet" v-model="termSelection" :style="`height: ${selectHeightPx}px;`" multiple>
-      <option v-for="term in facet.terms" :key="`term-option-${term.id}`" :value="term">{{ term.value }}</option>
-    </select>
+    <fieldset v-if="isFacet" :id="`galc-item-term-selection-${facet.name}`" class="galc-item-term-selection">
+      <legend>{{ facet.name }}</legend>
+      <EditTermSelection v-for="term in facet.terms" :key="`term-option-${term.id}`" :facet="facet" :term="term"/>
+    </fieldset>
     <input v-else v-model="attrValue" type="text">
   </div>
 </template>
@@ -94,6 +52,49 @@ const selectHeightPx = computed(() => {
 
   input, select {
     width: available;
+  }
+
+  fieldset.galc-item-term-selection {
+    legend {
+      position: absolute;
+      left: -9999px;
+      top: -9999px;
+    }
+
+    display: grid;
+    grid-template-columns: min-content max-content minmax(0, 1fr);
+    align-items: center;
+    justify-items: start;
+    border: 1px solid #ddd;
+    padding: 12px 16px;
+    max-height: 126px; // 3×42px height of input[type=text] (incl. padding & borders)
+    overflow-y: scroll;
+
+    // TODO: rationalize these measurements
+    column-gap: 0.5rem;
+    row-gap: 0;
+
+    margin: 0 0 20px;
+
+    input {
+      grid-column: 1;
+      height: auto !important;
+    }
+
+    label {
+      grid-column: 2 / 4;
+    }
+
+    fieldset {
+
+      input {
+        grid-column: 2;
+      }
+
+      label {
+        grid-column: 3 / 4;
+      }
+    }
   }
 }
 </style>
