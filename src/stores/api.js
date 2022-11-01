@@ -265,6 +265,7 @@ const models = {
   },
   facet: {
     name: '',
+    allow_multiple: false,
     terms: { jsonApi: 'hasMany', type: 'term' }
   },
   reservation: {
