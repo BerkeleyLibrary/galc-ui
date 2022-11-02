@@ -265,7 +265,7 @@ const models = {
   },
   facet: {
     name: '',
-    allow_multiple: false,
+    allowMultiple: false,
     terms: { jsonApi: 'hasMany', type: 'term' }
   },
   reservation: {
@@ -327,7 +327,6 @@ const decamelizeMiddleware = {
 }
 
 function decamelizeKeys (data) {
-  console.log('decamelizing %o', data)
   if (Array.isArray(data)) {
     return data.map(d => decamelizeKeys(d))
   }
@@ -337,7 +336,6 @@ function decamelizeKeys (data) {
   return mapObject(data, (k, v) => {
     const key = decamelize(k)
     const value = decamelizeKeys(v)
-    console.log('%o: %o => %o: %o', k, v, key, value)
     return [key, value]
   })
 }

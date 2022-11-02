@@ -48,7 +48,6 @@ export const useItemsStore = defineStore('items', () => {
 
   function editItem (item) {
     itemPatch.value = newPatch(item)
-    console.log('itemPatch.value = %o', itemPatch.value)
   }
 
   function applyEdit (item) {
