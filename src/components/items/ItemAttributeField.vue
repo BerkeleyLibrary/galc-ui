@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, onUpdated } from 'vue'
 import { useFacetStore } from '../../stores/facets'
 import { storeToRefs } from 'pinia'
 import { useItemsStore } from '../../stores/items'
@@ -30,13 +30,45 @@ const attrValue = computed({
   }
 })
 
+// ------------------------------------------------------------
+// Hooks
+
+onUpdated(() => {
+  console.log('onUpdated')
+  scrollFirstSelectedTermIntoView()
+})
+
+onMounted(() => {
+  console.log('onMounted')
+  scrollFirstSelectedTermIntoView()
+})
+
+function scrollFirstSelectedTermIntoView () {
+  const currentFacet = facet.value
+  if (!currentFacet) {
+    return
+  }
+  const patchTermIds = itemPatch.value.terms.map((t2) => t2.id)
+  const firstSelectedTerm = currentFacet.terms.find((t) => patchTermIds.includes(t.id))
+  if (!firstSelectedTerm) {
+    return
+  }
+  const input = document.getElementById(`term-${firstSelectedTerm.id}`)
+  if (!input) {
+    return
+  }
+  input.scrollIntoView({ block: 'center', inline: 'nearest' })
+}
+
+const rootTerms = computed(() => facet.value && facet.value.terms.filter(t => !t.parent))
+
 </script>
 
 <template>
   <div class="galc-item-attribute-field">
     <fieldset v-if="isFacet" :id="`galc-item-term-selection-${facet.name}`" class="galc-item-term-selection">
       <legend>{{ facet.name }}</legend>
-      <EditTermSelection v-for="term in facet.terms" :key="`term-option-${term.id}`" :facet="facet" :term="term"/>
+      <EditTermSelection v-for="term in rootTerms" :key="`term-option-${term.id}`" :facet="facet" :term="term"/>
     </fieldset>
     <input v-else v-model="attrValue" type="text">
   </div>

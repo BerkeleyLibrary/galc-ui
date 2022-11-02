@@ -28,7 +28,7 @@ const metadata = computed(() => {
     Size: facetValue('Size'),
     Dimensions: props.item.dimensions,
     Genre: facetValue('Genre'),
-    Colors: facetValue('Colors'),
+    Appearance: facetValue('Appearance'),
     Series: props.item.series
   }
 })
