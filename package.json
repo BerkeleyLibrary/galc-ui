@@ -15,12 +15,14 @@
     "decamelize": "^6.0.0",
     "devour-client": "^3.0.0",
     "eslint-plugin-n": "^15.2.0",
+    "filepond": "^4.30.4",
     "focus-trap": "^6.9.4",
     "focus-trap-vue": "^3.3.1",
     "lodash": "^4.17.21",
     "map-obj": "^5.0.2",
     "pinia": "^2.0.13",
-    "vue": "^3.2.25"
+    "vue": "^3.2.25",
+    "vue-filepond": "^7.0.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.3.0",

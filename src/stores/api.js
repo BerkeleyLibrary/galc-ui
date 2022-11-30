@@ -13,6 +13,7 @@ import { useSessionStore } from './session'
 import { useReservationStore } from './reservation'
 import { useClosuresStore } from './closures'
 import decamelize from 'decamelize'
+import axios from 'axios'
 
 // ------------------------------------------------------------
 // Store definition
@@ -24,6 +25,7 @@ export const useApiStore = defineStore('api', () => {
   // State
 
   const jsonApi = ref(null)
+  const imageApi = ref(null)
   const apiBaseUrl = ref('')
   const loadCount = ref(0)
 
@@ -134,6 +136,8 @@ export const useApiStore = defineStore('api', () => {
   }
 
   const exported = {
+    apiBaseUrl,
+    imageApi,
     init,
     loading,
     fetchItem,
@@ -159,6 +163,8 @@ export const useApiStore = defineStore('api', () => {
 
     if (authToken) {
       jsonApi.value = newJsonApi(apiUrl, authToken)
+
+      imageApi.value = newImageApi(apiUrl, authToken)
 
       await initSession()
     } else {
@@ -208,6 +214,30 @@ export const useApiStore = defineStore('api', () => {
     loadCount.value--
   }
 
+  function newImageApi (apiUrl, authToken) {
+    const imageApiEndpoint = `${apiUrl}/images`
+    return {
+      url: imageApiEndpoint,
+      timeout: 10000,
+      headers: {
+        Authorization: `Bearer ${authToken}`
+      },
+      withCredentials: true,
+      // FilePond's default revert()/DELETE passes the ID in the request body
+      // instead of using a RESTful URL, so we need a custom implementation here
+      revert: (id, load, error) => {
+        const imageUrl = `${imageApiEndpoint}/${id}`
+        axios.delete(imageUrl)
+          .then((_resp) => load())
+          .catch((err) => {
+            const msg = err.message
+            handleError(msg)
+            return error(msg)
+          })
+      }
+    }
+  }
+
   // --------------------------------------------------
   // Store definition
 
@@ -231,9 +261,9 @@ function newJsonApi (apiUrl, authToken = null) {
 
 const models = {
   item: {
-    image: '',
+    // TODO: just treat image as a relationship
+    imageId: null,
     imageUri: null,
-    thumbnail: '',
     thumbnailUri: null,
     title: '',
     artist: '',
