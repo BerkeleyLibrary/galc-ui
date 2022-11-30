@@ -1,11 +1,14 @@
 <script setup>
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
+import vueFilePond from 'vue-filepond'
+import 'filepond/dist/filepond.min.css'
 import { useItemsStore } from '../../stores/items'
 
 import ItemDetails from './ItemDetails.vue'
 import ItemImage from './ItemImage.vue'
 import ItemAttributeField from './ItemAttributeField.vue'
+import { useApiStore } from '../../stores/api'
 
 // ------------------------------------------------------------
 // Stores
@@ -13,6 +16,8 @@ import ItemAttributeField from './ItemAttributeField.vue'
 const items = useItemsStore()
 const { itemForId, applyEdit, cancelEdit } = items
 const { itemPatch } = storeToRefs(items)
+
+const { imageApi } = storeToRefs(useApiStore())
 
 // ------------------------------------------------------------
 // Constants
@@ -40,6 +45,11 @@ const attrs = {
   notes: 'Notes',
   image: 'Image Filename'
 }
+
+// ------------------------------------------------------------
+// Image uploads
+
+const FilePond = vueFilePond()
 
 // ------------------------------------------------------------
 // Local state
@@ -94,6 +104,15 @@ function saveChanges () {
         </tr>
       </table>
     </form>
+
+    <file-pond
+      ref="pond"
+      name="file"
+      label-idle="Drop new image here"
+      :allow-multiple="false"
+      accepted-file-types="image/jpeg"
+      :server="imageApi"
+    />
 
     <div class="galc-edit-item-actions">
       <button class="galc-edit-item-cancel" @click="cancelEdit">Cancel</button>

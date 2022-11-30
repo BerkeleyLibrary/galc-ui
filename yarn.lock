@@ -49,6 +49,7 @@ __metadata:
     eslint-plugin-node: ^11.1.0
     eslint-plugin-promise: ^6.0.0
     eslint-plugin-vue: ^9.0.1
+    filepond: ^4.30.4
     focus-trap: ^6.9.4
     focus-trap-vue: ^3.3.1
     lodash: ^4.17.21
@@ -57,6 +58,7 @@ __metadata:
     sass: ^1.50.1
     vite: ^2.9.13
     vue: ^3.2.25
+    vue-filepond: ^7.0.3
   languageName: unknown
   linkType: soft
 
@@ -1405,6 +1407,13 @@ __metadata:
   dependencies:
     flat-cache: ^3.0.4
   checksum: f49701feaa6314c8127c3c2f6173cfefff17612f5ed2daaafc6da13b5c91fd43e3b2a58fd0d63f9f94478a501b167615931e7200e31485e320f74a33885a9c74
+  languageName: node
+  linkType: hard
+
+"filepond@npm:^4.30.4":
+  version: 4.30.4
+  resolution: "filepond@npm:4.30.4"
+  checksum: ec1c06a11ceda231e5589f52307fa2f34b9c67c14b22c2be7adde227159f32e9ed1aa0e0a32fbca4e08a837b6714084e9f629c097a669fc1c3076be8c5f3c295
   languageName: node
   linkType: hard
 
@@ -3105,6 +3114,16 @@ __metadata:
   peerDependencies:
     eslint: ">=6.0.0"
   checksum: 0160bb4dc742f3fea410223074d813969eae87825afe536a4b7de7a9d3ca35169cdee2d821494805e1c5dd337aae3178e1485d945a26432a69a281180887fb4d
+  languageName: node
+  linkType: hard
+
+"vue-filepond@npm:^7.0.3":
+  version: 7.0.3
+  resolution: "vue-filepond@npm:7.0.3"
+  peerDependencies:
+    filepond: ">=4.7.4 < 5.x"
+    vue: ">=3 < 4"
+  checksum: 2fdc6d6eacbe26e87dfe45e3b00a202ee882802a9af777ed36d4a81abbae3391724634621f64befed0e1598c879a28719662ed4e9f044cd41635c3113799e8bf
   languageName: node
   linkType: hard
 
