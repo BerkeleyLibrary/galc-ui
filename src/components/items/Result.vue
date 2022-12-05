@@ -29,6 +29,11 @@ const props = defineProps({
 
 const available = computed(() => getAvailability(props.item))
 
+const image = computed(() => props.item?.image)
+
+// TODO: Cleaner way to encapsulate links
+const thumbnailUri = computed(() => image.value?.links.icon.href)
+
 // ------------------------------------------------------------
 // Actions
 
@@ -41,7 +46,7 @@ function showPreview (event) {
 <template>
   <section class="galc-result">
     <div class="galc-result-thumbnail">
-      <ItemImage :image-uri="item.thumbnailUri" :alt="`thumbnail of “${item.title}” by ${item.artist}`" @click="showPreview"/>
+      <ItemImage :image-uri="thumbnailUri" :alt="`thumbnail of “${item.title}” by ${item.artist}`" @click="showPreview"/>
     </div>
     <ItemDetails :item="item"/>
     <div class="galc-result-actions">

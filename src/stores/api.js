@@ -64,7 +64,7 @@ export const useApiStore = defineStore('api', () => {
     incrementLoadCount()
 
     return jsonApi.value
-      .findAll('items', { include: 'terms', ...params })
+      .findAll('items', { include: 'image,terms', ...params })
       .then(resultsFound)
       .catch(handleError('performSearch() failed'))
       .finally(decrementLoadCount)
@@ -261,9 +261,6 @@ function newJsonApi (apiUrl, authToken = null) {
 
 const models = {
   item: {
-    // TODO: just treat image as a relationship
-    imageId: null,
-    imageUri: null,
     thumbnailUri: null,
     title: '',
     artist: '',
@@ -284,7 +281,8 @@ const models = {
     createdAt: null,
     updatedAt: null,
     permalinkUri: null,
-    terms: { jsonApi: 'hasMany', type: 'term' }
+    terms: { jsonApi: 'hasMany', type: 'term' },
+    image: { jsonApi: 'hasOne', type: 'image' }
   },
   term: {
     value: '',
@@ -301,6 +299,10 @@ const models = {
   reservation: {
     user: { jsonApi: 'hasOne', type: 'user' },
     item: { jsonApi: 'hasOne', type: 'item' }
+  },
+  image: {
+    thumbnail: '',
+    basename: ''
   },
   user: {
     uid: '',
