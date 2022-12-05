@@ -3,16 +3,22 @@ import { storeToRefs } from 'pinia'
 import { usePreviewStore } from '../../stores/preview'
 
 import ItemImage from './ItemImage.vue'
+import { computed } from 'vue'
 
 const preview = usePreviewStore()
 const { currentPreview } = storeToRefs(preview)
 const { endPreview } = preview
 
+const image = computed(() => currentPreview.value?.image)
+
+// TODO: Cleaner way to encapsulate links
+const imageUri = computed(() => image.value?.links.alternate.href)
+
 </script>
 
 <template>
   <div class="galc-item-preview">
-    <ItemImage class="galc-item-preview-image" :image-uri="currentPreview.imageUri" :alt="`preview “${currentPreview.title}” by ${currentPreview.artist}`"/>
+    <ItemImage class="galc-item-preview-image" :image-uri="imageUri" :alt="`preview “${currentPreview.title}” by ${currentPreview.artist}`"/>
     <button @click="endPreview">Close</button>
   </div>
 </template>
