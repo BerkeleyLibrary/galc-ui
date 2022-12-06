@@ -216,18 +216,17 @@ export const useApiStore = defineStore('api', () => {
 
   function newImageApi (apiUrl, authToken) {
     const imageApiEndpoint = `${apiUrl}/images`
+    const headers = { Authorization: `Bearer ${authToken}` }
     return {
       url: imageApiEndpoint,
       timeout: 10000,
-      headers: {
-        Authorization: `Bearer ${authToken}`
-      },
+      headers: headers,
       withCredentials: true,
       // FilePond's default revert()/DELETE passes the ID in the request body
       // instead of using a RESTful URL, so we need a custom implementation here
       revert: (id, load, error) => {
         const imageUrl = `${imageApiEndpoint}/${id}`
-        axios.delete(imageUrl)
+        axios.delete(imageUrl, { headers: headers })
           .then((_resp) => load())
           .catch((err) => {
             const msg = err.message

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { deleteParam } from '../helpers/window-location-helper'
+import { readParam } from '../helpers/window-location-helper'
 
 export const LOGIN_PARAM = 'login'
 
@@ -15,7 +15,8 @@ export const useSessionStore = defineStore('session', () => {
   // Exported functions and properties
 
   async function init () {
-    const login = deleteParam(LOGIN_PARAM)
+    // TODO: don't clear this on login
+    const login = readParam(LOGIN_PARAM)
     loginSet.value = !!login
   }
 

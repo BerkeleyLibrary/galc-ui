@@ -23,21 +23,21 @@ function setParams (params, clearParams = []) {
 function deleteParam (paramName) {
   const { location } = storeToRefs(useWindowLocationStore())
 
-  // console.log('deleteParam(%o)', paramName)
   const url = new URL(window.location)
   const params = url.searchParams
   const value = params.get(paramName)
   if (value) {
-    // console.log('deleting %o = %o', paramName, value)
     params.delete(paramName)
 
     location.value = url
-    // console.log('location.value = %o', url)
   }
-  // console.log('deleteParam(%o) returning %o', paramName, value)
-  // console.log('location ref = %o', location.value.toString())
-  // console.log('window location = %o', window.location.toString())
   return value
+}
+
+function readParam(paramName) {
+  const url = new URL(window.location)
+  const params = url.searchParams
+  return params.get(paramName)
 }
 
 function computeRelativeUrl (oldLocation, params, clearParams = false) {
@@ -55,7 +55,7 @@ function computeRelativeUrl (oldLocation, params, clearParams = false) {
 }
 
 // TODO: export an object, so these method names are less confusing/generic?
-export { relativeUrl, setParams, deleteParam, computeRelativeUrl }
+export { relativeUrl, setParams, deleteParam, readParam, computeRelativeUrl }
 
 // --------------------------------------------------
 // Private implementation

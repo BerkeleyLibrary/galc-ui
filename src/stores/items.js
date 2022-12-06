@@ -86,9 +86,6 @@ export const useItemsStore = defineStore('items', () => {
     return {
       id: item.id,
       image: item.image,
-      imageUri: item.imageUri,
-      thumbnail: item.thumbnail,
-      thumbnailUri: item.thumbnailUri,
       title: item.title,
       artist: item.artist,
       artistUrl: item.artistUrl,
