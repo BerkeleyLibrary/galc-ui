@@ -1,8 +1,10 @@
 import JsonApi from 'devour-client'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+import decamelize from 'decamelize'
 import camelcaseKeys from 'camelcase-keys'
 import mapObject from 'map-obj'
+import axios from 'axios'
 
 import { deleteParam } from '../helpers/window-location-helper'
 
@@ -12,8 +14,6 @@ import { useSearchStore } from './search'
 import { useSessionStore } from './session'
 import { useReservationStore } from './reservation'
 import { useClosuresStore } from './closures'
-import decamelize from 'decamelize'
-import axios from 'axios'
 
 // ------------------------------------------------------------
 // Store definition
@@ -120,6 +120,12 @@ export const useApiStore = defineStore('api', () => {
     return jsonApi.value.destroy('closure', closure.id)
   }
 
+  function fetchImage (imageId) {
+    return jsonApi.value
+      .find('image', imageId)
+      .catch(handleError(`fetchImage(${imageId}) failed`))
+  }
+
   const loginUrl = computed(() => {
     const baseUrl = apiBaseUrl.value
     return baseUrl && new URL('/auth/calnet', baseUrl)
@@ -148,6 +154,7 @@ export const useApiStore = defineStore('api', () => {
     loadFacets,
     performSearch,
     reserveItem,
+    fetchImage,
     loginUrl,
     logoutUrl,
     logout
@@ -226,7 +233,7 @@ export const useApiStore = defineStore('api', () => {
       // instead of using a RESTful URL, so we need a custom implementation here
       revert: (id, load, error) => {
         const imageUrl = `${imageApiEndpoint}/${id}`
-        axios.delete(imageUrl, { headers: headers })
+        axios.delete(imageUrl, { headers })
           .then((_resp) => load())
           .catch((err) => {
             const msg = err.message

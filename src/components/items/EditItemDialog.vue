@@ -19,7 +19,9 @@ const items = useItemsStore()
 const { itemForId, applyEdit, cancelEdit } = items
 const { itemPatch } = storeToRefs(items)
 
-const { imageApi } = storeToRefs(useApiStore())
+const apiStore = useApiStore()
+const { imageApi } = storeToRefs(apiStore)
+const { fetchImage } = apiStore
 
 // ------------------------------------------------------------
 // Constants
@@ -58,6 +60,8 @@ const FilePond = vueFilePond(
 // Local state
 
 const originalItem = computed(() => itemForId(itemPatch.value.id))
+const originalImageId = computed(() => originalItem.value.image.id)
+
 const title = computed(() => {
   const item = originalItem.value
   return item ? `Editing ‘${item.title}’` : 'New Print'
@@ -77,6 +81,16 @@ function saveChanges () {
 
 const files = ref([])
 
+function setImageId (imageId) {
+  fetchImage(imageId).then(({ data }) => {
+    itemPatch.value.image = data
+  })
+}
+
+function resetImageId () {
+  setImageId(originalImageId.value)
+}
+
 function onProcessFile (err, img) {
   if (err) {
     console.log('Error processing file: %o', err)
@@ -87,8 +101,9 @@ function onProcessFile (err, img) {
     return
   }
   // TODO: Load this from the server as JSONAPI, and set it on itemPatch
-  const id = img.serverId
-  console.log('Processed file, id = %o', id)
+  const imageId = img.serverId
+  console.log('Processed file, id = %o', imageId)
+  setImageId(imageId)
 }
 
 const uploadImageLabel = 'Drag new image here or click to upload'
@@ -124,6 +139,7 @@ const uploadImageLabel = 'Drag new image here or click to upload'
               :server="imageApi"
               :files="files"
               @processfile="onProcessFile"
+              @processfilerevert="resetImageId"
             />
           </td>
         </tr>

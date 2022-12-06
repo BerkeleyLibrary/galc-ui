@@ -34,7 +34,7 @@ function deleteParam (paramName) {
   return value
 }
 
-function readParam(paramName) {
+function readParam (paramName) {
   const url = new URL(window.location)
   const params = url.searchParams
   return params.get(paramName)
