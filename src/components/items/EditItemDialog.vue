@@ -4,7 +4,6 @@ import { storeToRefs } from 'pinia'
 import vueFilePond from 'vue-filepond'
 import 'filepond/dist/filepond.min.css'
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
-import FilePondPluginImagePreview from 'filepond-plugin-image-preview'
 
 import { useItemsStore } from '../../stores/items'
 
@@ -45,16 +44,14 @@ const attrs = {
   location: 'Location',
   value: 'Value',
   appraisalDate: 'Appraisal Date',
-  notes: 'Notes',
-  image: 'Image Filename'
+  notes: 'Notes'
 }
 
 // ------------------------------------------------------------
 // Image uploads
 
 const FilePond = vueFilePond(
-  FilePondPluginFileValidateType,
-  FilePondPluginImagePreview // TODO: make this not suck
+  FilePondPluginFileValidateType
 )
 
 // ------------------------------------------------------------
@@ -94,18 +91,13 @@ function onProcessFile (err, img) {
   console.log('Processed file, id = %o', id)
 }
 
+const uploadImageLabel = 'Drag new image here or click to upload'
+
 </script>
 
 <template>
   <section class="galc-edit-item-dialog" role="alertdialog" aria-modal="true" aria-labelledby="galc-dialog-title" aria-describedby="galc-edit-item-message">
     <h2 id="galc-dialog-title">{{ title }}</h2>
-
-    <!--    <section v-if="originalItem" class="galc-edit-item-original">-->
-    <!--      <div class="galc-result-thumbnail">-->
-    <!--        <ItemImage :image-uri="originalItem.thumbnailUri" :alt="`thumbnail of “${originalItem.title}” by ${itemPatch.artist}`"/>-->
-    <!--      </div>-->
-    <!--      <ItemDetails :item="originalItem"/>-->
-    <!--    </section>-->
 
     <section class="galc-edit-item-preview">
       <h3>Preview</h3>
@@ -116,22 +108,25 @@ function onProcessFile (err, img) {
     </section>
 
     <form class="galc-edit-item-form">
-      <h3>Upload image</h3>
-
-      <!-- TODO: make this pretty -->
-      <file-pond
-        ref="pond"
-        name="file"
-        label-idle="Drop new image here"
-        accepted-file-types="image/jpeg, image/png, image/tiff"
-        :allow-multiple="false"
-        :server="imageApi"
-        :files="files"
-        @processfile="onProcessFile"
-      />
-
       <h3>Edit Attributes</h3>
       <table class="galc-edit-attributes-table">
+        <tr>
+          <th scope="row">Image</th>
+          <td class="galc-edit-image-upload">
+            <input type="text" :value="image.basename" disabled>
+            <file-pond
+              ref="pond"
+              class-name="galc-edit-image-uploader"
+              name="file"
+              :label-idle="uploadImageLabel"
+              accepted-file-types="image/jpeg, image/png, image/tiff"
+              :allow-multiple="false"
+              :server="imageApi"
+              :files="files"
+              @processfile="onProcessFile"
+            />
+          </td>
+        </tr>
         <tr v-for="(label, attr) in attrs" :key="`${attr}-row`">
           <th scope="row"><label for="`galc-${attr}-field`">{{ label }}</label></th>
           <td>
@@ -169,6 +164,22 @@ function onProcessFile (err, img) {
     border-bottom: 1px solid #ddd5c7;
   }
 
+  .galc-edit-item-preview {
+    display: grid;
+    grid-template-columns: min(180px, 45%) minmax(0, 1fr);
+    grid-column-gap: 0.75rem;
+
+    h3 {
+      grid-column: 1 / 3;
+    }
+
+    @media only screen and (min-width: 700px) {
+      .galc-item-details {
+        margin-right: auto;
+      }
+    }
+  }
+
   .galc-edit-item-form {
     padding-top: 1rem;
     margin-bottom: 1rem;
@@ -196,22 +207,6 @@ function onProcessFile (err, img) {
         input[type=checkbox] {
           height: 44px;
         }
-      }
-    }
-  }
-
-  .galc-edit-item-original, .galc-edit-item-preview {
-    display: grid;
-    grid-template-columns: min(180px, 45%) minmax(0, 1fr);
-    grid-column-gap: 0.75rem;
-
-    h3 {
-      grid-column: 1 / 3;
-    }
-
-    @media only screen and (min-width: 700px) {
-      .galc-item-details {
-        margin-right: auto;
       }
     }
   }
@@ -255,6 +250,56 @@ function onProcessFile (err, img) {
     }
 
   }
+
+  .galc-edit-image-upload {
+    padding-bottom: 0.5rem;
+
+    .galc-edit-image-uploader {
+      min-height: 5rem;
+      border-radius: 0.5em;
+
+      &:not(:hover) {
+        border: 2px solid transparent;
+      }
+
+      &:hover {
+        border: 2px solid #fdb515;
+
+        .filepond--drop-label {
+          label {
+            text-decoration-line: underline;
+            text-decoration-thickness: 3px;
+            text-decoration-color: #fdb515;
+          }
+        }
+      }
+    }
+
+    // --------------------------------------------------
+    // FilePond overrides
+
+    .filepond--root {
+      font-family: inherit;
+
+      .filepond--panel-root {
+        //border-radius: 0 !important;
+      }
+
+      .filepond--drop-label {
+        label {
+          font-weight: bold;
+        }
+      }
+
+      .filepond--credits {
+        display: none;
+      }
+
+    }
+  }
+
+  // --------------------------------------------------
+  // Desktop margins
 
   @media only screen and (min-width: 700px) {
     .galc-result {
