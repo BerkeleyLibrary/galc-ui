@@ -1,8 +1,11 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import vueFilePond from 'vue-filepond'
 import 'filepond/dist/filepond.min.css'
+import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
+import FilePondPluginImagePreview from 'filepond-plugin-image-preview'
+
 import { useItemsStore } from '../../stores/items'
 
 import ItemDetails from './ItemDetails.vue'
@@ -49,7 +52,10 @@ const attrs = {
 // ------------------------------------------------------------
 // Image uploads
 
-const FilePond = vueFilePond()
+const FilePond = vueFilePond(
+  FilePondPluginFileValidateType,
+  FilePondPluginImagePreview // TODO: make this not suck
+)
 
 // ------------------------------------------------------------
 // Local state
@@ -60,12 +66,34 @@ const title = computed(() => {
   return item ? `Editing ‘${item.title}’` : 'New Print'
 })
 
+const image = computed(() => itemPatch.value?.image)
+
+// TODO: Cleaner way to encapsulate links
+const thumbnailUri = computed(() => image.value?.links.icon.href)
+
 // TODO: track whether we've changed anything, disable save if not
 
 function saveChanges () {
   const patch = { ...itemPatch.value }
   applyEdit(patch)
 }
+
+const files = ref([])
+
+function onProcessFile (err, img) {
+  if (err) {
+    console.log('Error processing file: %o', err)
+    return
+  }
+  if (!img) {
+    console.log('No image returned')
+    return
+  }
+  // TODO: Load this from the server as JSONAPI, and set it on itemPatch
+  const id = img.serverId
+  console.log('Processed file, id = %o', id)
+}
+
 </script>
 
 <template>
@@ -82,14 +110,28 @@ function saveChanges () {
     <section class="galc-edit-item-preview">
       <h3>Preview</h3>
       <div class="galc-result-thumbnail">
-        <ItemImage :image-uri="itemPatch.thumbnailUri" :alt="`thumbnail of “${itemPatch.title}” by ${itemPatch.artist}`"/>
+        <ItemImage :image-uri="thumbnailUri" :alt="`thumbnail of “${itemPatch.title}” by ${itemPatch.artist}`"/>
       </div>
       <ItemDetails :item="itemPatch"/>
     </section>
 
     <form class="galc-edit-item-form">
+      <h3>Upload image</h3>
+
+      <!-- TODO: make this pretty -->
+      <file-pond
+        ref="pond"
+        name="file"
+        label-idle="Drop new image here"
+        accepted-file-types="image/jpeg, image/png, image/tiff"
+        :allow-multiple="false"
+        :server="imageApi"
+        :files="files"
+        @processfile="onProcessFile"
+      />
+
       <h3>Edit Attributes</h3>
-      <table>
+      <table class="galc-edit-attributes-table">
         <tr v-for="(label, attr) in attrs" :key="`${attr}-row`">
           <th scope="row"><label for="`galc-${attr}-field`">{{ label }}</label></th>
           <td>
@@ -104,15 +146,6 @@ function saveChanges () {
         </tr>
       </table>
     </form>
-
-    <file-pond
-      ref="pond"
-      name="file"
-      label-idle="Drop new image here"
-      :allow-multiple="false"
-      accepted-file-types="image/jpeg"
-      :server="imageApi"
-    />
 
     <div class="galc-edit-item-actions">
       <button class="galc-edit-item-cancel" @click="cancelEdit">Cancel</button>
@@ -140,28 +173,28 @@ function saveChanges () {
     padding-top: 1rem;
     margin-bottom: 1rem;
     border-bottom: 1px solid #ddd5c7;
+  }
 
-    table {
-      display: grid;
-      grid-template-columns: 14% 36% 14% 36%;
+  table.galc-edit-attributes-table {
+    display: grid;
+    grid-template-columns: 14% 36% 14% 36%;
 
-      tr {
-        display: contents;
+    tr {
+      display: contents;
 
-        th {
-          display: block;
-          text-align: right;
-          vertical-align: top;
-          padding: 0.5rem;
-          //white-space: nowrap;
-        }
+      th {
+        display: block;
+        text-align: right;
+        vertical-align: top;
+        padding: 0.5rem;
+        //white-space: nowrap;
+      }
 
-        td {
-          display: block;
+      td {
+        display: block;
 
-          input[type=checkbox] {
-            height: 44px;
-          }
+        input[type=checkbox] {
+          height: 44px;
         }
       }
     }
