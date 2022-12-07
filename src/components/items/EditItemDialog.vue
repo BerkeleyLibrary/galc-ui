@@ -157,6 +157,7 @@ function cancel () {
   <section class="galc-edit-item-dialog" role="alertdialog" aria-modal="true" aria-labelledby="galc-dialog-title" aria-describedby="galc-edit-item-message">
     <h2 id="galc-dialog-title">{{ title }}</h2>
 
+    <!-- TODO: add hidden fields toggle -->
     <section class="galc-edit-item-preview">
       <h3>Preview</h3>
       <div class="galc-result-thumbnail">

@@ -3,19 +3,20 @@ import { storeToRefs } from 'pinia'
 import { useFacetStore } from '../../stores/facets'
 import { computed } from 'vue'
 import { useSessionStore } from '../../stores/session'
+import { useAdminStore } from '../../stores/admin'
 
 // ------------------------------------------------------------
 // Store
 
 const { facets } = storeToRefs(useFacetStore())
 const { isAdmin } = storeToRefs(useSessionStore())
+const { showHiddenFields } = storeToRefs(useAdminStore())
 
 // ------------------------------------------------------------
 // Properties
 
 const props = defineProps({
-  item: { type: Object, default: null },
-  suppressAdmin: { type: Boolean, default: false }
+  item: { type: Object, default: null }
 })
 
 // ------------------------------------------------------------
@@ -34,7 +35,7 @@ const metadata = computed(() => {
 })
 
 const adminMetadata = computed(() => {
-  if (!isAdmin.value || props.suppressAdmin) {
+  if (!(isAdmin.value && showHiddenFields.value)) {
     return {}
   }
   return {
