@@ -14,7 +14,8 @@ const { facetForName } = facetStore
 
 const props = defineProps({
   attr: { type: String, default: null },
-  label: { type: String, default: null }
+  label: { type: String, default: null },
+  required: { type: Boolean, default: false }
 })
 
 const facet = computed(() => facetForName(props.label))
@@ -70,7 +71,7 @@ const rootTerms = computed(() => facet.value && facet.value.terms.filter(t => !t
       <legend>{{ facet.name }}</legend>
       <EditTermSelection v-for="term in rootTerms" :key="`term-option-${term.id}`" :facet="facet" :term="term"/>
     </fieldset>
-    <input v-else v-model="attrValue" type="text">
+    <input v-else v-model="attrValue" type="text" :required="required">
   </div>
 </template>
 

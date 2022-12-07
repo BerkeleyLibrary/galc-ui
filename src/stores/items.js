@@ -4,9 +4,14 @@ import { useApiStore } from './api'
 import { useSearchStore } from './search'
 import { useResultStore } from './results'
 
+export function newEmptyImage () {
+  return {
+    links: {}
+  }
+}
+
 export function newEmptyItem () {
   return {
-    image: '',
     imageUri: null,
     thumbnail: '',
     thumbnailUri: null,
@@ -29,7 +34,8 @@ export function newEmptyItem () {
     createdAt: null,
     updatedAt: null,
     permalinkUri: null,
-    terms: []
+    terms: [],
+    image: newEmptyImage()
   }
 }
 
@@ -110,5 +116,5 @@ export const useItemsStore = defineStore('items', () => {
   // --------------------------------------------------
   // Store definition
 
-  return { itemPatch, editItem, itemForId, applyEdit, revertEdit, cancelEdit }
+  return { itemPatch, newItem, editItem, itemForId, applyEdit, revertEdit, cancelEdit }
 })
