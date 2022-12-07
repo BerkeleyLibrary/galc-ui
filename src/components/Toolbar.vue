@@ -22,7 +22,7 @@ function doReset (event) {
 // Admin
 
 const adminStore = useAdminStore()
-const { showClosures, showItems } = adminStore
+const { showClosures, showItems, createItem } = adminStore
 
 </script>
 
@@ -34,6 +34,9 @@ const { showClosures, showItems } = adminStore
       </li>
       <li>
         <button @click="showClosures">Manage Closures</button>
+      </li>
+      <li>
+        <button @click="createItem">Add New Print</button>
       </li>
     </ul>
     <ul>

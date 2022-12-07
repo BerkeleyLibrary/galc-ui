@@ -5,7 +5,7 @@ import vueFilePond from 'vue-filepond'
 import 'filepond/dist/filepond.min.css'
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
 
-import { useItemsStore } from '../../stores/items'
+import { newEmptyImage, useItemsStore } from '../../stores/items'
 
 import ItemDetails from './ItemDetails.vue'
 import ItemImage from './ItemImage.vue'
@@ -21,7 +21,7 @@ const { itemPatch } = storeToRefs(items)
 
 const apiStore = useApiStore()
 const { imageApi } = storeToRefs(apiStore)
-const { fetchImage } = apiStore
+const { fetchImage, deleteImage } = apiStore
 
 // ------------------------------------------------------------
 // Constants
@@ -49,6 +49,13 @@ const attrs = {
   notes: 'Notes'
 }
 
+// TODO: something more elegant -- share w/validationErrors
+const requiredAttrs = ['mmsId', 'title']
+
+function isRequired (attr) {
+  return requiredAttrs.includes(attr)
+}
+
 // ------------------------------------------------------------
 // Image uploads
 
@@ -60,7 +67,7 @@ const FilePond = vueFilePond(
 // Local state
 
 const originalItem = computed(() => itemForId(itemPatch.value.id))
-const originalImageId = computed(() => originalItem.value.image.id)
+const originalImageId = computed(() => originalItem.value?.image?.id)
 
 const title = computed(() => {
   const item = originalItem.value
@@ -70,7 +77,7 @@ const title = computed(() => {
 const image = computed(() => itemPatch.value?.image)
 
 // TODO: Cleaner way to encapsulate links
-const thumbnailUri = computed(() => image.value?.links.icon.href)
+const thumbnailUri = computed(() => image.value?.links.icon?.href)
 
 // TODO: track whether we've changed anything, disable save if not
 
@@ -82,9 +89,13 @@ function saveChanges () {
 const files = ref([])
 
 function setImageId (imageId) {
-  fetchImage(imageId).then(({ data }) => {
-    itemPatch.value.image = data
-  })
+  if (imageId) {
+    fetchImage(imageId).then(({ data }) => {
+      itemPatch.value.image = data
+    })
+  } else {
+    itemPatch.value.image = newEmptyImage()
+  }
 }
 
 function resetImageId () {
@@ -108,6 +119,38 @@ function onProcessFile (err, img) {
 
 const uploadImageLabel = 'Drag new image here or click to upload'
 
+const validationErrors = computed(() => {
+  const errors = {}
+  const patch = itemPatch.value
+  if (!patch.title) {
+    errors.title = 'Print must have a title'
+  }
+  if (!patch.mmsId) {
+    errors.mmsId = 'Print must have an MMS ID'
+  }
+  if (!image.value.id) {
+    errors.image = 'Print must have an image'
+  }
+  console.log('validationErrors: %o', errors)
+  return errors
+})
+
+// TODO: share code w/closures
+const canSave = computed(() => {
+  return Object.keys(validationErrors.value).length === 0
+})
+
+function cancel () {
+  const patch = itemPatch.value
+  if (!patch.id) { // creating a new item
+    const image = patch.image
+    if (image.id) {
+      deleteImage(image)
+    }
+  }
+  cancelEdit()
+}
+
 </script>
 
 <template>
@@ -125,7 +168,7 @@ const uploadImageLabel = 'Drag new image here or click to upload'
     <form class="galc-edit-item-form">
       <h3>Edit Attributes</h3>
       <table class="galc-edit-attributes-table">
-        <tr>
+        <tr :class="{ 'galc-item-invalid': !!validationErrors['image'] }">
           <th scope="row">Image</th>
           <td class="galc-edit-image-upload">
             <input type="text" :value="image.basename" disabled>
@@ -143,10 +186,10 @@ const uploadImageLabel = 'Drag new image here or click to upload'
             />
           </td>
         </tr>
-        <tr v-for="(label, attr) in attrs" :key="`${attr}-row`">
+        <tr v-for="(label, attr) in attrs" :key="`${attr}-row`" :class="{ 'galc-item-invalid': !!validationErrors[attr] }">
           <th scope="row"><label for="`galc-${attr}-field`">{{ label }}</label></th>
           <td>
-            <ItemAttributeField :id="`galc-${attr}-field`" :attr="attr" :label="label"/>
+            <ItemAttributeField :id="`galc-${attr}-field`" :attr="attr" :label="label" :required="isRequired(attr)"/>
           </td>
         </tr>
         <tr>
@@ -158,9 +201,14 @@ const uploadImageLabel = 'Drag new image here or click to upload'
       </table>
     </form>
 
+    <p v-for="(validationError, attr) of validationErrors" :key="`validation-error-${attr}`" class="galc-validation-error">
+      {{ validationError }}
+    </p>
+
     <div class="galc-edit-item-actions">
-      <button class="galc-edit-item-cancel" @click="cancelEdit">Cancel</button>
-      <button class="galc-edit-item-confirm" @click="saveChanges">Save changes</button>
+      <button class="galc-edit-item-cancel" @click="cancel">Cancel</button>
+      <button v-if="canSave" class="galc-edit-item-confirm" @click="saveChanges">Save changes</button>
+      <button v-else disabled>Save Changes</button>
     </div>
   </section>
 </template>
@@ -224,6 +272,30 @@ const uploadImageLabel = 'Drag new image here or click to upload'
           height: 44px;
         }
       }
+
+      &.galc-item-invalid {
+        th {
+          color: #d00000;
+        }
+        input {
+          border: 3px solid red;
+        }
+      }
+    }
+  }
+
+  // TODO: share code w/closures
+  p.galc-validation-error {
+    margin-left: 1rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #d00000;
+
+    &::before {
+      content: '❌';
+      font-size: 0.75rem;
+      margin-right: 0.25rem;
+      vertical-align: top;
     }
   }
 
@@ -262,6 +334,11 @@ const uploadImageLabel = 'Drag new image here or click to upload'
           background-color: #000;
           color: #fff;
         }
+      }
+
+      &:disabled {
+        color: #46535e;
+        background-color: #eeeeee;
       }
     }
 

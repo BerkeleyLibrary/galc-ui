@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import { useItemsStore } from './items'
 
 export const MODE_ITEMS = 'items'
 export const MODE_CLOSURES = 'closures'
@@ -21,7 +22,14 @@ export const useAdminStore = defineStore('admin', () => {
     adminMode.value = MODE_ITEMS
   }
 
-  const exported = { adminMode, showClosures, showItems }
+  function createItem () {
+    const { newItem } = useItemsStore()
+    newItem()
+
+    adminMode.value = MODE_ITEMS
+  }
+
+  const exported = { adminMode, showClosures, showItems, createItem }
 
   // --------------------------------------------------
   // Store definition

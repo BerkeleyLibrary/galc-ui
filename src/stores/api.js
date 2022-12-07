@@ -126,6 +126,10 @@ export const useApiStore = defineStore('api', () => {
       .catch(handleError(`fetchImage(${imageId}) failed`))
   }
 
+  function deleteImage (image) {
+    return jsonApi.value.destroy('image', image.id)
+  }
+
   const loginUrl = computed(() => {
     const baseUrl = apiBaseUrl.value
     return baseUrl && new URL('/auth/calnet', baseUrl)
@@ -155,6 +159,7 @@ export const useApiStore = defineStore('api', () => {
     performSearch,
     reserveItem,
     fetchImage,
+    deleteImage,
     loginUrl,
     logoutUrl,
     logout
@@ -233,6 +238,7 @@ export const useApiStore = defineStore('api', () => {
       // instead of using a RESTful URL, so we need a custom implementation here
       revert: (id, load, error) => {
         const imageUrl = `${imageApiEndpoint}/${id}`
+        // TODO: just use deleteImage()?
         axios.delete(imageUrl, { headers })
           .then((_resp) => load())
           .catch((err) => {
