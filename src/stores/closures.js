@@ -35,14 +35,12 @@ export const useClosuresStore = defineStore('closures', () => {
     return reloadClosures()
   }
 
-  function createClosure () {
-    // TODO: prevent simultaneous edits?
+  function newClosure () {
     closurePatch.value = newEmptyClosure()
     console.log('closurePatch.value = %o', closurePatch.value)
   }
 
   function editClosure (closure) {
-    // TODO: prevent simultaneous edits?
     closurePatch.value = newPatch(closure)
     console.log('closurePatch.value = %o', closurePatch.value)
   }
@@ -70,7 +68,7 @@ export const useClosuresStore = defineStore('closures', () => {
     closed,
     reopenDate,
     closures,
-    createClosure,
+    newClosure,
     closurePatch,
     editClosure,
     deleteClosure,

@@ -22,7 +22,7 @@ function doReset (event) {
 // Admin
 
 const adminStore = useAdminStore()
-const { showClosures, showItems, createItem } = adminStore
+const { showClosures, createClosure, showItems, createItem } = adminStore
 
 </script>
 
@@ -30,13 +30,16 @@ const { showClosures, showItems, createItem } = adminStore
   <nav class="galc-toolbar">
     <ul v-if="isAdmin">
       <li>
+        <button @click="createItem">Add New Print</button>
+      </li>
+      <li>
         <button @click="showItems">Manage Prints</button>
       </li>
       <li>
-        <button @click="showClosures">Manage Closures</button>
+        <button @click="createClosure">Schedule Closure</button>
       </li>
       <li>
-        <button @click="createItem">Add New Print</button>
+        <button @click="showClosures">Manage Closures</button>
       </li>
     </ul>
     <ul>
