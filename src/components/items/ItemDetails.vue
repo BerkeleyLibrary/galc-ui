@@ -94,16 +94,17 @@ function getFacetName (term) {
     <div class="galc-item-body">
       <table class="galc-item-metadata">
         <template v-for="(v, k) in metadata" :key="k">
-          <tr v-if="v">
+          <tr v-if="v || isAdmin">
             <th scope="row">{{ k }}</th>
-            <td>{{ v }}</td>
+            <td v-if="v">{{ v }}</td>
+            <td v-else class="galc-empty-field">—none—</td>
           </tr>
         </template>
         <template v-for="(v, k) in adminMetadata" :key="k">
           <tr>
             <th scope="row">{{ k }}</th>
             <td v-if="v">{{ v }}</td>
-            <td v-else style="color: #ddd5c7;">—none—</td>
+            <td v-else class="galc-empty-field">—none—</td>
           </tr>
         </template>
       </table>
@@ -181,6 +182,10 @@ function getFacetName (term) {
         }
       }
     }
+  }
+
+  .galc-empty-field {
+    color: #888888;
   }
 }
 
