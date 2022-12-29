@@ -173,7 +173,7 @@ onMounted(() => {
     </section>
 
     <form class="galc-edit-item-form">
-      <h3>Edit Attributes</h3>
+      <h3>Metadata</h3>
       <table class="galc-edit-attributes-table">
         <tr :class="{ 'galc-item-invalid': !!validationErrors['image'] }" :title="validationErrors['image']">
           <th scope="row">Image</th>
