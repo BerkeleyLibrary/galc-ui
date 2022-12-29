@@ -117,7 +117,7 @@ function onProcessFile (err, img) {
   setImageId(imageId)
 }
 
-const uploadImageLabel = 'Drag new image here or click to upload'
+const uploadImageLabel = 'Drag new TIFF, JPEG, or PNG image here, or click to upload'
 
 const validationErrors = computed(() => {
   const errors = {}
