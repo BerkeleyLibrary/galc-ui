@@ -61,6 +61,7 @@ fieldset.galc-term-deselection {
     top: -9999px;
   }
 
+  // TODO: share w/other icon styles
   img.term-deselect-icon {
     height: 0.9rem;
     width: 0.9rem;

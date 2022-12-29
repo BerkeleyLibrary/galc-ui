@@ -1,9 +1,11 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import vueFilePond from 'vue-filepond'
 import 'filepond/dist/filepond.min.css'
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
+
+import timesCircle from '../../assets/times-circle.svg'
 
 import { newEmptyImage, useItemsStore } from '../../stores/items'
 
@@ -49,13 +51,6 @@ const attrs = {
   notes: 'Notes'
 }
 
-// TODO: something more elegant -- share w/validationErrors
-const requiredAttrs = ['mmsId', 'title']
-
-function isRequired (attr) {
-  return requiredAttrs.includes(attr)
-}
-
 // ------------------------------------------------------------
 // Image uploads
 
@@ -74,7 +69,7 @@ const title = computed(() => {
   return item ? `Editing ‘${item.title}’` : 'New Print'
 })
 
-const image = computed(() => itemPatch.value?.image)
+const image = computed(() => itemPatch.value?.image || newEmptyImage())
 
 // TODO: Cleaner way to encapsulate links
 const thumbnailUri = computed(() => image.value?.links.icon?.href)
@@ -102,6 +97,10 @@ function resetImageId () {
   setImageId(originalImageId.value)
 }
 
+function clearImageId () {
+  setImageId(null)
+}
+
 function onProcessFile (err, img) {
   if (err) {
     console.log('Error processing file: %o', err)
@@ -125,11 +124,13 @@ const validationErrors = computed(() => {
   if (!patch.title) {
     errors.title = 'Print must have a title'
   }
-  if (!patch.mmsId) {
-    errors.mmsId = 'Print must have an MMS ID'
-  }
-  if (!image.value.id) {
-    errors.image = 'Print must have an image'
+  if (!patch.suppressed) {
+    if (!patch.mmsId) {
+      errors.mmsId = 'Print must have an MMS ID, or be suppressed'
+    }
+    if (!patch.image.id) {
+      errors.image = 'Print must have an image, or be suppressed'
+    }
   }
   console.log('validationErrors: %o', errors)
   return errors
@@ -151,6 +152,11 @@ function cancel () {
   cancelEdit()
 }
 
+onMounted(() => {
+  const header = document.getElementById('galc-dialog-title')
+  header.scrollIntoView()
+})
+
 </script>
 
 <template>
@@ -169,9 +175,13 @@ function cancel () {
     <form class="galc-edit-item-form">
       <h3>Edit Attributes</h3>
       <table class="galc-edit-attributes-table">
-        <tr :class="{ 'galc-item-invalid': !!validationErrors['image'] }">
+        <tr :class="{ 'galc-item-invalid': !!validationErrors['image'] }" :title="validationErrors['image']">
           <th scope="row">Image</th>
           <td class="galc-edit-image-upload">
+            <button v-if="image.basename" class="galc-edit-image-remove" @click="clearImageId">
+              <img alt="Remove current image" :src="timesCircle" class="galc-edit-image-remove-icon">
+              <span class="galc-edit-image-remove-label">Remove</span>
+            </button>
             <input type="text" :value="image.basename" disabled>
             <file-pond
               ref="pond"
@@ -187,10 +197,10 @@ function cancel () {
             />
           </td>
         </tr>
-        <tr v-for="(label, attr) in attrs" :key="`${attr}-row`" :class="{ 'galc-item-invalid': !!validationErrors[attr] }">
+        <tr v-for="(label, attr) in attrs" :key="`${attr}-row`" :class="{ 'galc-item-invalid': !!validationErrors[attr] }" :title="validationErrors[attr]">
           <th scope="row"><label for="`galc-${attr}-field`">{{ label }}</label></th>
           <td>
-            <ItemAttributeField :id="`galc-${attr}-field`" :attr="attr" :label="label" :required="isRequired(attr)"/>
+            <ItemAttributeField :id="`galc-${attr}-field`" :attr="attr" :label="label"/>
           </td>
         </tr>
         <tr>
@@ -224,6 +234,10 @@ function cancel () {
   max-height: 100%;
   overflow-y: scroll;
   width: 100%;
+
+  h2 {
+    scroll-margin-top: 2em;
+  }
 
   h3:not(.galc-item-title) {
     border-bottom: 1px solid #ddd5c7;
@@ -288,6 +302,8 @@ function cancel () {
   // TODO: share code w/closures
   p.galc-validation-error {
     margin-left: 1rem;
+    margin-top: 0;
+    margin-bottom: 0;
     font-size: 1rem;
     font-weight: bold;
     color: #d00000;
@@ -304,6 +320,7 @@ function cancel () {
     display: flex;
     justify-content: center;
     gap: 1em;
+    margin-top: 1rem;
 
     // TODO: share button styles
     button {
@@ -347,10 +364,57 @@ function cancel () {
 
   .galc-edit-image-upload {
     padding-bottom: 0.5rem;
+    position: relative;
+
+    button.galc-edit-image-remove {
+      position: absolute;
+      right: 5px;
+      top: 5px;
+
+      display: flex;
+      align-items: center;
+
+      width: auto;
+      height: 32px;
+      border-radius: 0.5em;
+
+      // TODO: share w/other icon styles
+      img.galc-edit-image-remove-icon {
+        height: 0.9rem;
+        width: 0.9rem;
+        display: inline;
+        margin-bottom: -2px;
+        margin-right: 4px;
+        margin-left: 4px;
+      }
+
+      .galc-edit-image-remove-label {
+        font-weight: bold;
+        margin-right: 4px;
+      }
+    }
 
     .galc-edit-image-uploader {
       min-height: 5rem;
       border-radius: 0.5em;
+      cursor: pointer;
+
+      .filepond--drop-label {
+
+        label {
+          cursor: pointer;
+          margin-right: 1rem;
+        }
+
+        &:before {
+          content: url('../../assets/file-image.svg');
+          display: inline-block;
+          width: 2rem;
+          height: 2rem;
+          margin-left: 1rem;
+          filter: opacity(0.7);
+        }
+      }
 
       &:not(:hover) {
         border: 2px solid transparent;
@@ -361,9 +425,9 @@ function cancel () {
 
         .filepond--drop-label {
           label {
-            text-decoration-line: underline;
-            text-decoration-thickness: 3px;
-            text-decoration-color: #fdb515;
+            //text-decoration-line: underline;
+            //text-decoration-thickness: 3px;
+            //text-decoration-color: #fdb515;
           }
         }
       }
