@@ -20,10 +20,8 @@ export const useWindowLocationStore = defineStore('window-location', () => {
     get () { return currentLocation.value },
 
     set (v) {
-      // console.log('location.set(%o)', v)
       const oldLocation = window.location.toString()
       if (v !== oldLocation) {
-        // console.log('pushing location %o', v)
         window.history.pushState(`location.set(${v})`, '', v)
       }
       updateState()
@@ -40,7 +38,6 @@ export const useWindowLocationStore = defineStore('window-location', () => {
   function updateState (_event) {
     const oldLocation = currentLocation.value.toString()
     const newLocation = window.location.toString()
-    // console.log('oldLocation: %o, newLocation: %o', oldLocation, newLocation)
     if (oldLocation !== newLocation) {
       currentLocation.value = newLocation
     }

@@ -16,11 +16,9 @@ function onToggle (event) {
 
 const showHidden = computed({
   get () {
-    console.log('showHidden.get() => %o', showHiddenFields.value)
     return showHiddenFields.value
   },
   set (v) {
-    console.log('showHidden.set(%o)', v)
     showHiddenFields.value = v
   }
 })

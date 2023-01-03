@@ -12,12 +12,10 @@ function relativeUrl (params, clearParams = false) {
 }
 
 function setParams (params, clearParams = []) {
-  // console.log('setParams(%o)', params)
   const newLocation = relativeUrl(params, true).toString()
 
   const { location } = storeToRefs(useWindowLocationStore())
   location.value = newLocation
-  // console.log('location.value = %o', newLocation)
 }
 
 function deleteParam (paramName) {

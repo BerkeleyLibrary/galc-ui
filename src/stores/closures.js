@@ -37,12 +37,10 @@ export const useClosuresStore = defineStore('closures', () => {
 
   function newClosure () {
     closurePatch.value = newEmptyClosure()
-    console.log('closurePatch.value = %o', closurePatch.value)
   }
 
   function editClosure (closure) {
     closurePatch.value = newPatch(closure)
-    console.log('closurePatch.value = %o', closurePatch.value)
   }
 
   // TODO: confirmation
@@ -53,7 +51,6 @@ export const useClosuresStore = defineStore('closures', () => {
   }
 
   function cancelEdit () {
-    console.log('setting closurePatch.value to null')
     closurePatch.value = null
   }
 

@@ -40,7 +40,6 @@ export const useSessionStore = defineStore('session', () => {
   })
 
   function updateUser ({ data }) {
-    // console.log('Initializing session with { %o }', data)
     user.value = data
   }
 

@@ -71,8 +71,6 @@ export const useApiStore = defineStore('api', () => {
   }
 
   function reserveItem (itemId) {
-    // console.log('reserveItem(%o)', itemId)
-
     loadCount.value++
 
     const { itemReserved } = useReservationStore()

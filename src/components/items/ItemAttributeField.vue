@@ -35,12 +35,10 @@ const attrValue = computed({
 // Hooks
 
 onUpdated(() => {
-  console.log('onUpdated')
   scrollFirstSelectedTermIntoView()
 })
 
 onMounted(() => {
-  console.log('onMounted')
   scrollFirstSelectedTermIntoView()
 })
 

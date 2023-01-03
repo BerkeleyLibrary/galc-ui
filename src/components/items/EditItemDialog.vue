@@ -132,7 +132,6 @@ const validationErrors = computed(() => {
       errors.image = 'Print must have an image, or be suppressed'
     }
   }
-  // console.log('validationErrors: %o', errors)
   return errors
 })
 
