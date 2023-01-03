@@ -22,18 +22,21 @@ export const useReservationStore = defineStore('reservation', () => {
 
   function doReserve (reserveItemId) {
     const { isAuthenticated } = useSessionStore()
-    if (isAuthenticated) {
-      const { closed } = storeToRefs(useClosuresStore())
-      if (closed.value) {
-      } else {
-        const { fetchItem } = useApiStore()
-        return fetchItem(reserveItemId).then(({ data }) => {
-          const item = data
-          startReservation(item)
-        })
-      }
-    } else {
+    if (!isAuthenticated) {
+      return
     }
+
+    const { closed } = storeToRefs(useClosuresStore())
+    if (closed.value) {
+      return
+    }
+
+    const { fetchItem } = useApiStore()
+    return fetchItem(reserveItemId)
+      .then(({ data }) => {
+        const item = data
+        startReservation(item)
+      })
   }
 
   // --------------------------------------------------
