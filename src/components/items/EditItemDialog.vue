@@ -18,7 +18,7 @@ import { useApiStore } from '../../stores/api'
 // Stores
 
 const items = useItemsStore()
-const { itemForId, applyEdit, cancelEdit } = items
+const { itemForId, applyEdit, revertEdit, cancelEdit } = items
 const { itemPatch } = storeToRefs(items)
 
 const apiStore = useApiStore()
@@ -132,7 +132,7 @@ const validationErrors = computed(() => {
       errors.image = 'Print must have an image, or be suppressed'
     }
   }
-  console.log('validationErrors: %o', errors)
+  // console.log('validationErrors: %o', errors)
   return errors
 })
 
@@ -150,6 +150,19 @@ function cancel () {
     }
   }
   cancelEdit()
+}
+
+const pond = ref(null)
+
+function revert () {
+  revertEdit()
+
+  const filepond = pond.value
+  const uploadedFile = filepond.getFile()
+  if (uploadedFile) {
+    filepond.removeFile()
+    deleteImage({ id: uploadedFile.serverId })
+  }
 }
 
 onMounted(() => {
@@ -218,6 +231,7 @@ onMounted(() => {
 
     <div class="galc-edit-item-actions">
       <button class="galc-edit-item-cancel" @click="cancel">Cancel</button>
+      <button class="galc-edit-item-cancel" @click="revert">Revert</button>
       <button v-if="canSave" class="galc-edit-item-confirm" @click="saveChanges">Save changes</button>
       <button v-else disabled>Save Changes</button>
     </div>
@@ -292,6 +306,7 @@ onMounted(() => {
         th {
           color: #d00000;
         }
+
         input {
           border: 3px solid red;
         }
