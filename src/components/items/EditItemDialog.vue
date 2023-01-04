@@ -184,6 +184,10 @@ onMounted(() => {
       <ItemDetails :item="itemPatch"/>
     </section>
 
+    <p v-for="(validationError, attr) of validationErrors" :key="`validation-error-${attr}`" class="galc-validation-error">
+      {{ validationError }}
+    </p>
+
     <form class="galc-edit-item-form">
       <h3>Metadata</h3>
       <table class="galc-edit-attributes-table">
@@ -223,10 +227,6 @@ onMounted(() => {
         </tr>
       </table>
     </form>
-
-    <p v-for="(validationError, attr) of validationErrors" :key="`validation-error-${attr}`" class="galc-validation-error">
-      {{ validationError }}
-    </p>
 
     <div class="galc-edit-item-actions">
       <button class="galc-edit-item-cancel" @click="cancel">Cancel</button>
