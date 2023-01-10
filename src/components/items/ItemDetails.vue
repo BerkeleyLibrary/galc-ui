@@ -185,7 +185,7 @@ function getFacetName (term) {
   }
 
   .galc-empty-field {
-    color: #888888;
+    color: #6c3302;
   }
 }
 
