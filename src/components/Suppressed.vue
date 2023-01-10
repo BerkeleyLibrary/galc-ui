@@ -32,8 +32,8 @@ function onToggle (event) {
           <label for="galc-show-suppressed-false">unsuppressed only</label>
         </div>
         <div class="galc-term-selection">
-          <input id="galc-show-suppressed-true" v-model="suppressed" :value="[true,false]" type="radio">
-          <label for="galc-show-suppressed-true">both</label>
+          <input id="galc-show-suppressed-both" v-model="suppressed" :value="[true,false]" type="radio">
+          <label for="galc-show-suppressed-both">both</label>
         </div>
       </template>
     </details>
