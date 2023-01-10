@@ -75,6 +75,7 @@ function showPreview (event) {
   }
 
   @media only screen and (min-width: 700px) {
+
     .galc-result-thumbnail {
       grid-column: 1;
       grid-row: 1 / 3;
@@ -87,6 +88,16 @@ function showPreview (event) {
     .galc-result-actions {
       width: 160px;
       justify-self: end;
+      align-self: end;
+    }
+  }
+
+  @media only screen and (min-width: 960px) {
+    grid-template-columns: min(180px, 45%) minmax(0, 1fr) 180px;
+
+    .galc-result-actions {
+      grid-column: 3;
+      grid-row: 1 / 3;
     }
   }
 

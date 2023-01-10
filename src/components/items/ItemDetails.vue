@@ -34,8 +34,10 @@ const metadata = computed(() => {
   }
 })
 
+const showAdminMetadata = computed(() => isAdmin.value && showHiddenFields.value)
+
 const adminMetadata = computed(() => {
-  if (!(isAdmin.value && showHiddenFields.value)) {
+  if (!showAdminMetadata.value) {
     return {}
   }
   return {
@@ -93,20 +95,27 @@ function getFacetName (term) {
     </div>
     <div class="galc-item-body">
       <table class="galc-item-metadata">
-        <template v-for="(v, k) in metadata" :key="k">
-          <tr v-if="v || isAdmin">
-            <th scope="row">{{ k }}</th>
-            <td v-if="v">{{ v }}</td>
-            <td v-else class="galc-empty-field">—none—</td>
-          </tr>
-        </template>
-        <template v-for="(v, k) in adminMetadata" :key="k">
+        <tbody>
+          <template v-for="(v, k) in metadata" :key="k">
+            <tr v-if="v || isAdmin">
+              <th scope="row">{{ k }}</th>
+              <td v-if="v">{{ v }}</td>
+              <td v-else class="galc-empty-field">—none—</td>
+            </tr>
+          </template>
+        </tbody>
+        <tbody v-if="showAdminMetadata" class="galc-admin-metadata">
           <tr>
-            <th scope="row">{{ k }}</th>
-            <td v-if="v">{{ v }}</td>
-            <td v-else class="galc-empty-field">—none—</td>
+            <th scope="rowgroup">Hidden fields</th>
           </tr>
-        </template>
+          <template v-for="(v, k) in adminMetadata" :key="k">
+            <tr>
+              <th scope="row">{{ k }}</th>
+              <td v-if="v">{{ v }}</td>
+              <td v-else class="galc-empty-field">—none—</td>
+            </tr>
+          </template>
+        </tbody>
       </table>
     </div>
   </div>
@@ -143,7 +152,7 @@ function getFacetName (term) {
   }
 
   p.galc-item-medium {
-    font-size: 0.75em;
+    font-size: 1rem;
     line-height: 1em;
     text-transform: uppercase;
     margin: 0;
@@ -154,6 +163,22 @@ function getFacetName (term) {
     line-height: 1.25rem;
     margin-top: 1rem;
     margin-bottom: 1rem;
+
+    tbody {
+      display: contents;
+
+      &.galc-admin-metadata {
+        th[scope="rowgroup"] {
+          grid-column: 1 / 5;
+          margin-top: 1rem;
+          font-weight: normal;
+          font-size: 1rem;
+          line-height: 1.15em;
+          border-bottom: 1px solid #ddd5c7;
+          margin-bottom: 0.25em;
+        }
+      }
+    }
 
     th {
       text-align: left;
