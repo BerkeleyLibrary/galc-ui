@@ -55,7 +55,7 @@ const enableFocusTrap = computed({
     const modal = activeModal.value
     return !!modal && modal !== Spinner // can't trap focus in non-focusable spinner
   },
-  set (v) {
+  set (_v) {
     // necessary, but ignored
   }
 })

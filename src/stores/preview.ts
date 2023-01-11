@@ -1,16 +1,17 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import {Ref, ref} from 'vue'
+import {Item} from "../types/Item";
 
 export const usePreviewStore = defineStore('preview', () => {
   // --------------------------------------------------
   // State
 
-  const currentPreview = ref(null)
+  const currentPreview: Ref<Item|null> = ref(null)
 
   // --------------------------------------------------
   // Exported functions and properties
 
-  function startPreview (item) {
+  function startPreview (item: Item) {
     currentPreview.value = item
   }
 

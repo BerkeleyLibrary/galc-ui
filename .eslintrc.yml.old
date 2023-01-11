@@ -4,8 +4,10 @@ env:
   jquery: true
   node: true
 extends:
-  - standard
+  - 'eslint:recommended'
   - 'plugin:vue/vue3-recommended'
+  - '@vue/eslint-config-typescript'
+parser: '@typescript-eslint/parser'
 parserOptions:
   sourceType: module
 rules:
