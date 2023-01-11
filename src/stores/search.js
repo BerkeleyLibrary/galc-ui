@@ -142,7 +142,7 @@ export const useSearchStore = defineStore('search', () => {
     }
   }
 
-  function doSearch (state) {
+  function doSearch (_state) {
     const { performSearch } = useApiStore()
 
     const searchParams = currentSearchParams()

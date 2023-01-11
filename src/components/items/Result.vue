@@ -37,7 +37,7 @@ const thumbnailUri = computed(() => image.value?.links.icon.href)
 // ------------------------------------------------------------
 // Actions
 
-function showPreview (event) {
+function showPreview (_event) {
   startPreview(props.item)
 }
 
