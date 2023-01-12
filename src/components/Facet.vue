@@ -1,15 +1,14 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import { useFacetStore } from '../stores/facets'
 
+import { Facet } from '../types/Facet'
 import TermSelection from './TermSelection.vue'
 
 // ------------------------------------------------------------
 // Properties
 
-const props = defineProps({
-  facet: { type: Object, default: null }
-})
+const props = defineProps<{ facet: Facet }>()
 
 // ------------------------------------------------------------
 // Local state
@@ -23,8 +22,8 @@ const rootTerms = computed(() => props.facet.terms.filter(t => !t.parent))
 const facets = useFacetStore()
 const expanded = facets.expanded(facetName.value)
 
-function onToggle (event) {
-  const open = event.target.open
+function onToggle (event: Event) {
+  const open = (event.target as HTMLDetailsElement).open
   if (expanded.value !== open) {
     expanded.value = open
   }

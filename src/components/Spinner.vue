@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import spinnerUrl from '../assets/circle-notch.svg'
 </script>
 

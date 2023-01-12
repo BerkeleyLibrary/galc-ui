@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useClosuresStore } from '../../stores/closures'
 import { dateToDateInput, ensureDate } from '../../helpers/date-helper'

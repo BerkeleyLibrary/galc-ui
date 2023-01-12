@@ -1,5 +1,5 @@
-<script setup>
-import { computed, ref, watch } from 'vue'
+<script setup lang="ts">
+import { computed, Ref, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useApiStore } from '../stores/api'
 import { useWindowLocationStore } from '../stores/window-location'
@@ -9,7 +9,7 @@ const { loginUrl } = storeToRefs(useApiStore())
 const { location } = storeToRefs(useWindowLocationStore())
 const { doLogin } = storeToRefs(useSessionStore())
 
-const loginFormRef = ref(null)
+const loginFormRef: Ref<HTMLFormElement | null> = ref(null)
 
 const triggerSubmit = computed(() => {
   return doLogin.value && !!loginFormRef.value

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { storeToRefs } from 'pinia/dist/pinia'
 import { useApiStore } from '../stores/api'
 import { useReservationStore } from '../stores/reservation'
