@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, Ref, ref } from 'vue'
 import { readParam } from '../helpers/window-location-helper'
+import { User } from "../User"
+import { Result } from "../types/GalcApi"
 
 export const LOGIN_PARAM = 'login'
 
@@ -8,8 +10,8 @@ export const useSessionStore = defineStore('session', () => {
   // --------------------------------------------------
   // State
 
-  const user = ref(null)
-  const loginSet = ref(false)
+  const user: Ref<User|null> = ref(null)
+  const loginSet: Ref<boolean> = ref(false)
 
   // --------------------------------------------------
   // Exported functions and properties
@@ -39,8 +41,10 @@ export const useSessionStore = defineStore('session', () => {
     return userObj && userObj.email
   })
 
-  function updateUser ({ data }) {
-    user.value = data
+  function updateUser ({ data }: Result<User>) {
+    if (data) {
+      user.value = data
+    }
   }
 
   const exported = { init, doLogin, user, email, isAuthenticated, isAdmin, updateUser }

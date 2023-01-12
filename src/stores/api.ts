@@ -1,6 +1,7 @@
+// @ts-ignore
 import JsonApi from 'devour-client'
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, Ref, ref } from 'vue'
 import decamelize from 'decamelize'
 import camelcaseKeys from 'camelcase-keys'
 import mapObject from 'map-obj'
@@ -14,6 +15,14 @@ import { useSearchStore } from './search'
 import { useSessionStore } from './session'
 import { useReservationStore } from './reservation'
 import { useClosuresStore } from './closures'
+import { Params } from "../types/Params"
+import { Item } from "../types/Item"
+import { Closure } from "../types/Closure"
+import { Image } from "../types/Image"
+import { ImageApi } from "../types/ImageApi"
+import { ItemResults } from "../types/ItemResults"
+import { GalcApi, Result } from "../types/GalcApi"
+import { Facet } from "../types/Facet"
 
 // ------------------------------------------------------------
 // Store definition
@@ -24,8 +33,8 @@ export const useApiStore = defineStore('api', () => {
   // --------------------------------------------------
   // State
 
-  const jsonApi = ref(null)
-  const imageApi = ref(null)
+  const jsonApi: Ref<GalcApi | null> = ref(null)
+  const imageApi: Ref<ImageApi | null> = ref(null)
   const apiBaseUrl = ref('')
   const loadCount = ref(0)
 
@@ -41,7 +50,7 @@ export const useApiStore = defineStore('api', () => {
     return loadCount.value > 0
   })
 
-  async function init (apiUrl) {
+  async function init(apiUrl: string) {
     await initApi(apiUrl)
     await loadFacets() // TODO: move this to facet store initializer?
     await initStores()
@@ -49,55 +58,53 @@ export const useApiStore = defineStore('api', () => {
     initialized.value = true
   }
 
-  function loadFacets () {
+  function loadFacets() {
     incrementLoadCount()
 
-    const api = jsonApi.value
-    return api
+    return galcApi()
       .findAll('facets', { include: 'terms' })
       .then(facetsLoaded)
       .catch(handleError('loadFacets() failed'))
       .finally(decrementLoadCount)
   }
 
-  function performSearch (params) {
+  function performSearch(params: Params) {
     incrementLoadCount()
 
-    return jsonApi.value
+    return galcApi()
       .findAll('items', { include: 'image,terms', ...params })
       .then(resultsFound)
       .catch(handleError('performSearch() failed'))
       .finally(decrementLoadCount)
   }
 
-  function reserveItem (itemId) {
+  function reserveItem(itemId: string) {
     loadCount.value++
 
     const { itemReserved } = useReservationStore()
 
-    return jsonApi.value
+    return galcApi()
       .create('reservation', { item: { id: itemId } })
       .then(itemReserved)
       .catch(handleError(`reserveItem(${itemId}) failed`))
       .finally(decrementLoadCount)
   }
 
-  function loadClosures (params = {}) {
+  function loadClosures(params = {}) {
     incrementLoadCount()
-
-    return jsonApi.value
+    return galcApi()
       .findAll('closures', params)
       .finally(decrementLoadCount)
   }
 
-  function fetchItem (itemId) {
-    return jsonApi.value
+  function fetchItem(itemId: string): Promise<Result<Item>> {
+    return galcApi()
       .find('item', itemId, { include: 'terms' })
       .catch(handleError(`fetchItem(${itemId}) failed`))
   }
 
-  function saveItem (item) {
-    const api = jsonApi.value
+  function saveItem(item: Item) {
+    const api = galcApi()
     if (item.id) {
       return api.one('item', item.id).patch(item)
     } else {
@@ -105,8 +112,8 @@ export const useApiStore = defineStore('api', () => {
     }
   }
 
-  function saveClosure (closure) {
-    const api = jsonApi.value
+  function saveClosure(closure: Closure) {
+    const api = galcApi()
     if (closure.id) {
       return api.one('closure', closure.id).patch(closure)
     } else {
@@ -114,18 +121,24 @@ export const useApiStore = defineStore('api', () => {
     }
   }
 
-  function deleteClosure (closure) {
-    return jsonApi.value.destroy('closure', closure.id)
+  function deleteClosure(closure: Closure): Promise<void> {
+    if (closure.id) {
+      return galcApi().destroy('closure', closure.id)
+    } else {
+      return Promise.resolve()
+    }
   }
 
-  function fetchImage (imageId) {
-    return jsonApi.value
+  function fetchImage(imageId: string) {
+    return galcApi()
       .find('image', imageId)
       .catch(handleError(`fetchImage(${imageId}) failed`))
   }
 
-  function deleteImage (image) {
-    return jsonApi.value.destroy('image', image.id)
+  function deleteImage(image: Image) {
+    if (image.id) {
+      return galcApi().destroy('image', image.id)
+    }
   }
 
   const loginUrl = computed(() => {
@@ -135,12 +148,13 @@ export const useApiStore = defineStore('api', () => {
 
   const logoutUrl = computed(() => {
     const baseUrl = apiBaseUrl.value
-    return baseUrl && new URL('/logout', baseUrl)
+    return new URL('/logout', baseUrl)
   })
 
-  function logout () {
+  function logout() {
     const url = logoutUrl.value
-    window.location = url
+    // @ts-ignore // see https://github.com/microsoft/TypeScript/issues/48949
+    window.location = url.toString()
   }
 
   const exported = {
@@ -166,7 +180,11 @@ export const useApiStore = defineStore('api', () => {
   // --------------------------------------------------
   // Internal functions and properties
 
-  async function initApi (apiUrl) {
+  function galcApi() {
+    return <GalcApi>jsonApi.value
+  }
+
+  async function initApi(apiUrl: string) {
     apiBaseUrl.value = apiUrl
 
     const authToken = deleteParam(AUTH_TOKEN_PARAM)
@@ -183,17 +201,16 @@ export const useApiStore = defineStore('api', () => {
   }
 
   // This will succeed if we already have an auth token, fail otherwise
-  async function initSession () {
-    const api = jsonApi.value
+  async function initSession() {
     const { updateUser } = useSessionStore()
 
-    await api.one('user', 'current')
+    await galcApi().one('user', 'current')
       .get()
       .then(updateUser)
       .catch(handleError('initSession() failed'))
   }
 
-  async function initStores () {
+  async function initStores() {
     const stores = [
       useSessionStore(),
       useClosuresStore(),
@@ -206,25 +223,27 @@ export const useApiStore = defineStore('api', () => {
     }
   }
 
-  function resultsFound (payload) {
+  function resultsFound(payload: ItemResults) {
     const { updateResults } = useResultStore()
     updateResults(payload)
   }
 
-  function facetsLoaded ({ data }) {
-    const facets = useFacetStore()
-    facets.facets = data
+  function facetsLoaded({ data }: Result<Array<Facet>>) {
+    if (data) {
+      const facets = useFacetStore()
+      facets.facets = data
+    }
   }
 
-  function incrementLoadCount () {
+  function incrementLoadCount() {
     loadCount.value++
   }
 
-  function decrementLoadCount () {
+  function decrementLoadCount() {
     loadCount.value--
   }
 
-  function newImageApi (apiUrl, authToken) {
+  function newImageApi(apiUrl: string, authToken: string): ImageApi {
     const imageApiEndpoint = `${apiUrl}/images`
     const headers = { Authorization: `Bearer ${authToken}` }
     return {
@@ -257,7 +276,7 @@ export const useApiStore = defineStore('api', () => {
 // ------------------------------------------------------------
 // Private implementation
 
-function newJsonApi (apiUrl, authToken = null) {
+function newJsonApi(apiUrl: string, authToken?: string | null) {
   const options = authToken ? { apiUrl: apiUrl, bearer: authToken } : { apiUrl }
   const jsonApi = new JsonApi(options)
   jsonApi.axios.defaults.withCredentials = true
@@ -334,21 +353,29 @@ const models = {
 }
 
 // TODO: display errors
-function handleError (msg) {
+function handleError<T>(msg: string): (error: any) => Promise<T> {
   // TODO: transition to error state
-  return (error) => {
+  return (error: any) => {
     console.log(`${msg}: %o`, error)
-    return Promise.resolve({})
+    return Promise.resolve(<T> {})
   }
 }
 
 // ------------------------------------------------------------
 // Camelization/Decamelization
 
+type ResponsePayload<T> = {
+  res: Result<T>
+}
+
+type RequestPayload<T> = {
+  req: Result<T>
+}
+
 // TODO: do this on server side with JSONAPI::Serializer.set_key_transform
 const camelcaseMiddleware = {
   name: 'camelcase-middleware',
-  res: (payload) => {
+  res: (payload: ResponsePayload<any>) => {
     const axiosData = payload.res.data
     if (typeof axiosData === 'object') {
       axiosData.data = camelcaseKeys(axiosData.data, { deep: true })
@@ -359,7 +386,7 @@ const camelcaseMiddleware = {
 
 const decamelizeMiddleware = {
   name: 'decamelize-middleware',
-  req: (payload) => {
+  req: (payload: RequestPayload<any>) => {
     const axiosData = payload.req.data
     if (axiosData) {
       axiosData.data = decamelizeKeys(axiosData.data)
@@ -368,7 +395,7 @@ const decamelizeMiddleware = {
   }
 }
 
-function decamelizeKeys (data) {
+function decamelizeKeys(data: any): any {
   if (Array.isArray(data)) {
     return data.map(d => decamelizeKeys(d))
   }
@@ -376,13 +403,13 @@ function decamelizeKeys (data) {
     return data
   }
   return mapObject(data, (k, v) => {
-    const key = decamelize(k)
+    const key = decamelize(<string> k)
     const value = decamelizeKeys(v)
     return [key, value]
   })
 }
 
-function isObject (value) {
+function isObject(value: any): boolean {
   return typeof value === 'object' &&
     value !== null &&
     !(value instanceof RegExp) &&

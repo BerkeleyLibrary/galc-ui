@@ -1,20 +1,19 @@
 import { defineStore, storeToRefs } from 'pinia'
-import { ref } from 'vue'
+import { Ref, ref } from 'vue'
 import { useApiStore } from './api'
 import { useSearchStore } from './search'
 import { useResultStore } from './results'
+import { Item } from "../types/Item"
+import { Image } from "../types/Image"
 
-export function newEmptyImage () {
+export function newEmptyImage(): Image {
   return {
     links: {}
   }
 }
 
-export function newEmptyItem () {
+export function newEmptyItem(): Item {
   return {
-    imageUri: null,
-    thumbnail: '',
-    thumbnailUri: null,
     title: '',
     artist: '',
     artistUrl: '',
@@ -29,11 +28,7 @@ export function newEmptyItem () {
     value: '',
     appraisalDate: '',
     notes: '',
-    reserveDate: null,
     suppressed: false,
-    createdAt: null,
-    updatedAt: null,
-    permalinkUri: null,
     terms: [],
     image: newEmptyImage()
   }
@@ -43,29 +38,27 @@ export const useItemsStore = defineStore('items', () => {
   // --------------------------------------------------
   // State
 
-  const itemPatch = ref(null)
+  const itemPatch: Ref<Item | null> = ref(null)
 
   // --------------------------------------------------
   // Exported functions
 
-  function newItem () {
+  function newItem() {
     itemPatch.value = newEmptyItem()
   }
 
-  function editItem (item) {
+  function editItem(item: Item) {
     itemPatch.value = newPatch(item)
   }
 
-  function applyEdit (item) {
-    if (item) {
-      const { saveItem } = useApiStore()
-      const { refreshSearch } = useSearchStore()
-      saveItem(item).then(refreshSearch).finally(cancelEdit)
-    }
+  function applyEdit(item: Item) {
+    const { saveItem } = useApiStore()
+    const { refreshSearch } = useSearchStore()
+    saveItem(item).then(refreshSearch).finally(cancelEdit)
   }
 
-  function revertEdit () {
-    const item = itemForId(itemPatch.value.id)
+  function revertEdit() {
+    const item = itemForId(itemPatch.value?.id)
     if (item) {
       editItem(item)
     } else {
@@ -73,11 +66,11 @@ export const useItemsStore = defineStore('items', () => {
     }
   }
 
-  function cancelEdit () {
+  function cancelEdit() {
     itemPatch.value = null
   }
 
-  function itemForId (itemId) {
+  function itemForId(itemId: string | undefined) {
     if (itemId) {
       const { items } = storeToRefs(useResultStore())
       const item = items.value.find((it) => it.id === itemId)
@@ -88,7 +81,7 @@ export const useItemsStore = defineStore('items', () => {
   // --------------------------------------------------
   // Internal functions
 
-  function newPatch (item) {
+  function newPatch(item: Item) {
     return {
       id: item.id,
       image: item.image,

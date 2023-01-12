@@ -1,12 +1,23 @@
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, Ref, ref } from 'vue'
+import { Item } from "../types/Item"
+import { Availability } from "../types/Availability"
+import { Pagination } from "../types/Pagination"
+import { ItemResults } from "../types/ItemResults"
+
+type ResultState = {
+  items: Array<Item>,
+  availability: Availability,
+  pagination: Pagination,
+  searchPerformed: boolean
+}
 
 export const useResultStore = defineStore('results', () => {
   // --------------------------------------------------
   // State
 
   // NOTE: We encapsulate the result state in one ref() so we can update it atomically (TODO: is that necessary?)
-  const state = ref({
+  const state: Ref<ResultState> = ref({
     items: [],
     availability: {},
     pagination: {},
@@ -27,11 +38,14 @@ export const useResultStore = defineStore('results', () => {
     return Array.isArray(items) && items.length > 0
   })
 
-  function getAvailability (item) {
-    return state.value.availability[item.mmsId]
+  function getAvailability (item: Item): boolean | undefined {
+    const mmsId = item.mmsId
+    if (mmsId) {
+      return state.value.availability[mmsId]
+    }
   }
 
-  function updateResults ({ data, meta }) {
+  function updateResults ({ data, meta }: ItemResults) {
     state.value = {
       items: data,
       availability: meta.availability,

@@ -1,9 +1,9 @@
-<script setup>
-import { storeToRefs } from 'pinia'
-import { usePreviewStore } from '../../stores/preview'
+<script setup lang="ts">
+import {storeToRefs} from 'pinia'
+import {computed} from 'vue'
+import {usePreviewStore} from '../../stores/preview'
 
 import ItemImage from './ItemImage.vue'
-import { computed } from 'vue'
 
 const preview = usePreviewStore()
 const { currentPreview } = storeToRefs(preview)

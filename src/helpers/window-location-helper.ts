@@ -3,25 +3,26 @@ import { useWindowLocationStore } from '../stores/window-location'
 import { RESERVE_ITEM_PARAM } from '../stores/reservation'
 import { AUTH_TOKEN_PARAM } from '../stores/api'
 import { LOGIN_PARAM } from '../stores/session'
+import { Params } from "../types/Params";
 
 // TODO: merge this back into stores/window-location.js?
 
-function relativeUrl (params, clearParams = false) {
-  const oldLocation = window.location.toString()
+function relativeUrl(params: Params, clearParams = false): URL {
+  const oldLocation = new URL(window.location.href)
   return computeRelativeUrl(oldLocation, params, clearParams)
 }
 
-function setParams (params) {
-  const newLocation = relativeUrl(params, true).toString()
+function setParams(params: Params) {
+  const newLocation = relativeUrl(params, true)
 
   const { location } = storeToRefs(useWindowLocationStore())
   location.value = newLocation
 }
 
-function deleteParam (paramName) {
+function deleteParam(paramName: string): string | null {
   const { location } = storeToRefs(useWindowLocationStore())
 
-  const url = new URL(window.location)
+  const url = new URL(window.location.href)
   const params = url.searchParams
   const value = params.get(paramName)
   if (value) {
@@ -32,13 +33,13 @@ function deleteParam (paramName) {
   return value
 }
 
-function readParam (paramName) {
-  const url = new URL(window.location)
+function readParam(paramName: string) {
+  const url = new URL(window.location.href)
   const params = url.searchParams
   return params.get(paramName)
 }
 
-function computeRelativeUrl (oldLocation, params, clearParams = false) {
+function computeRelativeUrl(oldLocation: URL, params: Params, clearParams = false): URL {
   const url = new URL(oldLocation)
 
   const sp = baseSearchParams(clearParams, url)
@@ -60,7 +61,7 @@ export { relativeUrl, setParams, deleteParam, readParam, computeRelativeUrl }
 
 // TODO: Something less hacky
 
-function baseSearchParams (clearParams, url) {
+function baseSearchParams(clearParams: boolean, url: URL) {
   const currentParams = url.searchParams
   if (!clearParams) {
     return currentParams

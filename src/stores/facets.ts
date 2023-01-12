@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, Ref, ref, WritableComputedRef } from 'vue'
+import { Facet } from "../types/Facet"
 
 // ------------------------------------------------------------
 // Store definition
@@ -8,24 +9,24 @@ export const useFacetStore = defineStore('facets', () => {
   // ------------------------------
   // State
 
-  const facets = ref([])
-  const facetExpanded = ref({})
-  const computedExpansionState = {}
+  const facets: Ref<Array<Facet>> = ref([])
+  const facetExpanded: Ref<{ [key: string]: boolean }> = ref({})
+  const computedExpansionState: {[key: string]: WritableComputedRef<boolean> } = {}
 
   // ------------------------------
   // Computed properties
 
   const facetNames = computed(() => { return facets.value.map(f => f.name) })
 
-  function expanded (facetName) {
+  function expanded (facetName: string) {
     let expansionState = computedExpansionState[facetName]
     if (!expansionState) {
       expansionState = computed({
-        get () {
-          return !!facetExpanded.value[facetName]
+        get(): boolean {
+          return facetExpanded.value[facetName]
         },
-        set (v) {
-          facetExpanded.value[facetName] = !!v
+        set(v: boolean) {
+          facetExpanded.value[facetName] = v
         }
       })
       computedExpansionState[facetName] = expansionState
@@ -48,7 +49,7 @@ export const useFacetStore = defineStore('facets', () => {
     facetExpanded.value = {}
   }
 
-  function facetForName (name) {
+  function facetForName (name: string) {
     return facets.value.find((f) => f.name === name)
   }
 
