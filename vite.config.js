@@ -10,10 +10,10 @@ function stripDevCSS () {
     resolveId (source) {
       return source === 'virtual-module' ? source : null
     },
-    renderStart (outputOptions, inputOptions) {
+    renderStart (outputOptions, _inputOptions) {
       const outDir = outputOptions.dir
       const cssDir = path.resolve(outDir, 'css')
-      fs.rmdir(cssDir, { recursive: true }, () => console.log(`Deleted ${cssDir}`))
+      fs.rm(cssDir, { recursive: true }, () => console.log(`Deleted ${cssDir}`))
     }
   }
 }

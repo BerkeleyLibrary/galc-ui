@@ -30,7 +30,8 @@ jobs:
       - name: Build
         run: yarn build
 
-      # TODO: tests
+      - name: Test
+        run: yarn test
 
       - name: Upload distribution
         if: ${{ always() }}
