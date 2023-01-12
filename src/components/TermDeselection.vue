@@ -1,8 +1,9 @@
-<script setup>
+<script setup lang="ts">
 import { useSearchStore } from '../stores/search'
 import { storeToRefs } from 'pinia/dist/pinia'
 import { useFacetStore } from '../stores/facets'
 import timesCircle from '../assets/times-circle.svg'
+import { Term } from "../types/Term"
 
 const { facets } = storeToRefs(useFacetStore())
 const { selectedTerms } = useSearchStore()
@@ -14,7 +15,7 @@ const props = defineProps({
   }
 })
 
-function inputIdFor (term) {
+function inputIdFor (term: Term) {
   const baseId = `ds-term-${term.id}`
   const prefix = props.idPrefix
   if (!prefix) {

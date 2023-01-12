@@ -1,5 +1,5 @@
 <!-- TODO: share code w/TermSelection -->
-<script setup>
+<script setup lang="ts">
 import { useItemsStore } from '../../stores/items'
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'

@@ -1,19 +1,19 @@
-<script setup>
+<script setup lang="ts">
 import { useSearchStore } from '../stores/search'
-import { ref, watchEffect } from 'vue'
+import { Ref, ref, watchEffect } from 'vue'
 
 // NOTE: We deliberately don't bind to the stored keyword value,
 //       as we only want to update it on an explicit submit
 const search = useSearchStore()
-const keywords = ref('')
+const keywords: Ref<string | undefined> = ref('')
 watchEffect(() => {
   keywords.value = search.keywords
 })
 
 // TODO: make this work when somebody doesn't hit "search"
 //       (e.g. type keywords, then click facets)
-function apply (event) {
-  event.target.blur()
+function apply (event: Event) {
+  (event.target as HTMLInputElement).blur()
   search.keywords = keywords.value
 }
 </script>

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed, onMounted, onUpdated } from 'vue'
 import { useFacetStore } from '../../stores/facets'
 import { storeToRefs } from 'pinia'

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSearchStore } from '../stores/search'
@@ -7,8 +7,8 @@ const { suppressed } = storeToRefs(useSearchStore())
 
 const expanded = ref(true)
 
-function onToggle (event) {
-  const open = event.target.open
+function onToggle (event: Event) {
+  const open = (event.target as HTMLDetailsElement).open
   if (expanded.value !== open) {
     expanded.value = open
   }

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAdminStore } from '../stores/admin'
@@ -7,8 +7,8 @@ const { showHiddenFields } = storeToRefs(useAdminStore())
 
 const expanded = ref(true)
 
-function onToggle (event) {
-  const open = event.target.open
+function onToggle (event: Event) {
+  const open = (event.target as HTMLDetailsElement).open
   if (expanded.value !== open) {
     expanded.value = open
   }

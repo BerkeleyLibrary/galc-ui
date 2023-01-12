@@ -1,5 +1,5 @@
 <!-- TODO: share code w/EditTermSelection -->
-<script setup>
+<script setup lang="ts">
 import { useSearchStore } from '../stores/search'
 
 // ------------------------------------------------------------

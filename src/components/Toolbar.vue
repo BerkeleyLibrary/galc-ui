@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { storeToRefs } from 'pinia/dist/pinia'
 import { useSessionStore } from '../stores/session'
 import { useApiStore } from '../stores/api'
@@ -14,8 +14,8 @@ const { logout } = useApiStore()
 
 const { resetSearch } = useSearchStore()
 
-function doReset (event) {
-  event.target.blur()
+function doReset (event: Event) {
+  (event.target as HTMLButtonElement).blur()
   resetSearch()
 }
 

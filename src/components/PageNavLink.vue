@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 
@@ -7,14 +7,14 @@ import { computeRelativeUrl } from '../helpers/window-location-helper'
 import { useSearchStore } from '../stores/search'
 import { useWindowLocationStore } from '../stores/window-location'
 
-const props = defineProps({
-  id: { type: String, default: null },
-  active: { type: Boolean, default: false },
-  rel: { type: String, default: null },
-  title: { type: String, default: null },
-  text: { type: String, default: null },
-  page: { type: Number, default: 1 }
-})
+const props = defineProps<{
+  id: string,
+  active: boolean,
+  rel: string,
+  title: string,
+  text: string,
+  page: number
+}>()
 
 const { location } = storeToRefs(useWindowLocationStore())
 
@@ -22,14 +22,16 @@ const linkUrl = computed(() => {
   return computeRelativeUrl(location.value, { page: props.page })
 })
 
-function navigateTo (newPage) {
+function navigateTo (newPage: number) {
   const { page } = storeToRefs(useSearchStore())
   page.value = newPage
 
   const appElement = document.getElementById('galc-app')
-  const boundingClientRect = appElement.getBoundingClientRect()
-  if (boundingClientRect.top < 0) {
-    appElement.scrollIntoView()
+  if (appElement) {
+    const boundingClientRect = appElement.getBoundingClientRect()
+    if (boundingClientRect.top < 0) {
+      appElement.scrollIntoView()
+    }
   }
 }
 
