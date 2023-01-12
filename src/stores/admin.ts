@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { Ref, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useItemsStore } from './items'
 import { useClosuresStore } from './closures'
@@ -10,8 +10,8 @@ export const useAdminStore = defineStore('admin', () => {
   // --------------------------------------------------
   // State
 
-  const adminMode = ref(MODE_ITEMS)
-  const showHiddenFields = ref(true)
+  const adminMode: Ref<string> = ref(MODE_ITEMS)
+  const showHiddenFields: Ref<boolean> = ref(true)
 
   // --------------------------------------------------
   // Exported functions and properties

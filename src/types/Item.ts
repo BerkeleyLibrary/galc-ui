@@ -1,6 +1,13 @@
+import {Image} from "./Image";
+import { Term } from "./Term"
+
 type Item = {
-    thumbnailUri?: string,
+    // Required
+    id?: string,
     title: string,
+    suppressed: boolean,
+
+    // Optional
     artist?: string,
     artistUrl?: string,
     date?: string,
@@ -15,10 +22,13 @@ type Item = {
     appraisalDate?: string,
     notes?: string,
     reserveDate?: string,
-    suppressed: false,
     createdAt?: string,
     updatedAt?: string,
     permalinkUri?: string
+
+    // Relationships
+    image?: Image
+    terms: Array<Term>
 }
 
 export type { Item }

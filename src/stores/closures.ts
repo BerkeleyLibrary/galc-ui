@@ -1,17 +1,19 @@
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, Ref, ref } from 'vue'
 import { useApiStore } from './api'
+import { Closure } from "../types/Closure"
+import { ClosureResults } from "../types/ClosureResults"
 
-export function newEmptyClosure () {
-  return { id: null, startDate: null, endDate: null, note: '' }
+export function newEmptyClosure(): Closure {
+  return { startDate: '', note: '' }
 }
 
 export const useClosuresStore = defineStore('closures', () => {
   // --------------------------------------------------
   // State
 
-  const closures = ref([])
-  const closurePatch = ref(null)
+  const closures: Ref<Array<Closure>> = ref([])
+  const closurePatch: Ref<Closure | null> = ref(null)
 
   // --------------------------------------------------
   // Exported computed properties
@@ -31,34 +33,32 @@ export const useClosuresStore = defineStore('closures', () => {
   // --------------------------------------------------
   // Exported functions
 
-  async function init () {
+  async function init() {
     return reloadClosures()
   }
 
-  function newClosure () {
+  function newClosure() {
     closurePatch.value = newEmptyClosure()
   }
 
-  function editClosure (closure) {
+  function editClosure(closure: Closure) {
     closurePatch.value = newPatch(closure)
   }
 
   // TODO: confirmation
-  function deleteClosure (closure) {
+  function deleteClosure(closure: Closure) {
     const { deleteClosure } = useApiStore()
     return deleteClosure(closure)
       .then(reloadClosures)
   }
 
-  function cancelEdit () {
+  function cancelEdit() {
     closurePatch.value = null
   }
 
-  function applyEdit (cls) {
-    if (cls) {
-      const { saveClosure } = useApiStore()
-      saveClosure(cls).then(reloadClosures).finally(cancelEdit)
-    }
+  function applyEdit(cls: Closure) {
+    const { saveClosure } = useApiStore()
+    saveClosure(cls).then(reloadClosures).finally(cancelEdit)
   }
 
   const exported = {
@@ -86,12 +86,14 @@ export const useClosuresStore = defineStore('closures', () => {
   // --------------------------------------------------
   // Internal functions
 
-  function reloadClosures () {
+  function reloadClosures() {
     const { loadClosures } = useApiStore()
-    return loadClosures().then(({ data }) => { closures.value = data })
+    return loadClosures().then(({ data }: ClosureResults) => {
+      closures.value = data
+    })
   }
 
-  function newPatch (cls) {
+  function newPatch(cls: Closure) {
     return {
       id: cls.id,
       note: cls.note,
