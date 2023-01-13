@@ -9,7 +9,6 @@ import { MODE_CLOSURES, MODE_ITEMS, useAdminStore } from "../../src/stores/admin
 // Mock items store
 
 const newItem = vi.fn()
-
 const itemsStore = { newItem }
 
 vi.mock('@/stores/items', () => {
@@ -22,7 +21,6 @@ vi.mock('@/stores/items', () => {
 // Mock closures store
 
 const newClosure = vi.fn()
-
 const closuresStore = { newClosure }
 
 vi.mock('@/stores/closures', () => {

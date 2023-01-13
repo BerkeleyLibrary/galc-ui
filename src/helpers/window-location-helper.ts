@@ -45,7 +45,7 @@ function computeRelativeUrl(oldLocation: URL, params: Params, clearParams = fals
   const sp = baseSearchParams(clearParams, url)
   if (params) {
     for (const [name, value] of Object.entries(params)) {
-      sp.set(name, value)
+      sp.set(name, value.toString())
     }
   }
   url.search = sp.toString()
