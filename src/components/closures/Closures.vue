@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { computed, ref } from 'vue'
-import { startCase } from 'lodash/string'
+import { computed, ComputedRef, Ref, ref } from 'vue'
+import { startCase } from "lodash"
 import { formatPlainDate } from '../../helpers/date-helper'
 import { useClosuresStore } from '../../stores/closures'
 
-import angleDown from '../../assets/angle-down.svg'
-import angleUp from '../../assets/angle-up.svg'
+import { Closure } from "../../types/Closure"
+
 import editIcon from '../../assets/edit.svg'
 import deleteIcon from '../../assets/trash-alt.svg'
+import angleDown from '../../assets/angle-down.svg'
+import angleUp from '../../assets/angle-up.svg'
 
 // --------------------------------------------------
 // Stores
@@ -25,11 +27,17 @@ const attrs = ['startDate', 'endDate', 'note']
 // --------------------------------------------------
 // Local state
 
-const showFlags = ref({
+type Period = 'future' | 'current' | 'past'
+type ShowFlags = { [K in Period]: boolean }
+type FlagEntry = [Period, boolean]
+type ClosuresByPeriod = { [K in Period]?: Array<Closure> }
+
+const showFlags: Ref<ShowFlags> = ref({
   future: true,
   current: true,
   past: true
 })
+
 
 const sortAttrRef = ref('startDate')
 const sortDirRef = ref(1)
@@ -44,10 +52,11 @@ const sortIndicatorAlt = computed(() => {
   return `sorted ${sortDirRef.value === -1 ? 'descending' : 'ascending'}`
 })
 
-const closuresToShow = computed(() => {
+const closuresToShow: ComputedRef<ClosuresByPeriod> = computed(() => {
   const allClosures = closures.value
-  const groupedClosures = {}
-  for (const [period, flag] of Object.entries(showFlags.value)) {
+  const groupedClosures: ClosuresByPeriod = {}
+  const flagEntries = Object.entries(showFlags.value) as Array<FlagEntry>
+  for (const [period, flag] of flagEntries) {
     if (flag) {
       const cls = allClosures.filter(c => c[period])
       const sortAttr = sortAttrRef.value
@@ -65,7 +74,7 @@ const closuresToShow = computed(() => {
 // --------------------------------------------------
 // Event handlers
 
-function setSortAttr (sortAttr, event) {
+function setSortAttr(sortAttr, event) {
   event.target.blur()
   if (sortAttr === sortAttrRef.value) {
     const sortDir = sortDirRef.value
@@ -75,14 +84,14 @@ function setSortAttr (sortAttr, event) {
   }
 }
 
-function editHandler (closure, event) {
+function editHandler(closure, event) {
   event.target.blur()
   editClosure(closure)
 }
 
 // TODO: get delete working
 // TODO: confirmation
-function deleteHandler (closure, event) {
+function deleteHandler(closure, event) {
   event.target.blur()
   deleteClosure(closure)
 }
@@ -90,7 +99,7 @@ function deleteHandler (closure, event) {
 // --------------------------------------------------
 // Helper functions
 
-function comparatorFor (attr) {
+function comparatorFor(attr: String) {
   return (a, b) => {
     const aVal = a ? a[attr] : null
     const bVal = b ? b[attr] : null
@@ -98,7 +107,7 @@ function comparatorFor (attr) {
   }
 }
 
-function compare (a, b) {
+function compare(a, b) {
   if (a === b) {
     return 0
   }
@@ -108,7 +117,7 @@ function compare (a, b) {
   return a ? -1 : 1
 }
 
-function formatVal (val) {
+function formatVal(val: Date | string) {
   return val instanceof Date ? formatPlainDate(val) : val
 }
 

@@ -21,10 +21,11 @@
     ]
   },
   "include": [
-    "src/**/*.ts",
     "src/**/*.d.ts",
+    "src/**/*.svg",
+    "src/**/*.ts",
     "src/**/*.tsx",
-    "src/**/*.vue"
+    "src/**/*.vue",
   ],
   "references": [
     {

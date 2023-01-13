@@ -9,6 +9,7 @@
     "test": "yarn vitest run"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.191",
     "axios": "^0.26.1",
     "camelcase-keys": "^7.0.2",
     "date-fns": "^2.28.0",

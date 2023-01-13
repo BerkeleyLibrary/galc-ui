@@ -1,5 +1,5 @@
 import { createPinia, setActivePinia, storeToRefs } from 'pinia'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { useResultStore } from "../../src/stores/results"
 import { availability as availMeta, items as itemData, pagination as pageMeta } from "../data/items"
 
@@ -9,10 +9,6 @@ import { availability as availMeta, items as itemData, pagination as pageMeta } 
 describe('results', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
-  })
-
-  afterEach(() => {
-    vi.restoreAllMocks()
   })
 
   describe('items', () => {
