@@ -17,7 +17,7 @@ export const useSessionStore = defineStore('session', () => {
   // Exported functions and properties
 
   async function init () {
-    // TODO: don't clear this on login
+    // TODO: can we just watch window.location?
     const login = readParam(LOGIN_PARAM)
     loginSet.value = !!login
   }
@@ -33,12 +33,12 @@ export const useSessionStore = defineStore('session', () => {
 
   const isAdmin = computed(() => {
     const userObj = user.value
-    return userObj && userObj.galcAdmin
+    return userObj ? userObj.galcAdmin : false
   })
 
   const email = computed(() => {
     const userObj = user.value
-    return userObj && userObj.email
+    return userObj ? userObj.email : undefined
   })
 
   function updateUser ({ data }: Result<User>) {
@@ -47,7 +47,7 @@ export const useSessionStore = defineStore('session', () => {
     }
   }
 
-  const exported = { init, doLogin, user, email, isAuthenticated, isAdmin, updateUser }
+  const exported = { init, doLogin, email, isAuthenticated, isAdmin, updateUser }
 
   // --------------------------------------------------
   // Store definition
