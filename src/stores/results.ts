@@ -38,6 +38,7 @@ export const useResultStore = defineStore('results', () => {
     return Array.isArray(items) && items.length > 0
   })
 
+  // TODO: always return a boolean
   function getAvailability (item: Item): boolean | undefined {
     const mmsId = item.mmsId
     if (mmsId) {
