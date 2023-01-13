@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, Ref, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import vueFilePond from 'vue-filepond'
-import 'filepond/dist/filepond.min.css'
+import { FilePond as FilePondInstance, FilePondErrorDescription, FilePondFile } from 'filepond'
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
+import 'filepond/dist/filepond.min.css'
 
 import timesCircle from '../../assets/times-circle.svg'
 
@@ -13,6 +14,8 @@ import ItemDetails from './ItemDetails.vue'
 import ItemImage from './ItemImage.vue'
 import ItemAttributeField from './ItemAttributeField.vue'
 import { useApiStore } from '../../stores/api'
+import { Image } from "../../types/Image"
+import { Result } from "../../types/GalcApi"
 
 // ------------------------------------------------------------
 // Stores
@@ -61,7 +64,7 @@ const FilePond = vueFilePond(
 // ------------------------------------------------------------
 // Local state
 
-const originalItem = computed(() => itemForId(itemPatch.value.id))
+const originalItem = computed(() => itemForId(itemPatch.value?.id))
 const originalImageId = computed(() => originalItem.value?.image?.id)
 
 const title = computed(() => {
@@ -76,32 +79,40 @@ const thumbnailUri = computed(() => image.value?.links.icon?.href)
 
 // TODO: track whether we've changed anything, disable save if not
 
-function saveChanges () {
-  const patch = { ...itemPatch.value }
-  applyEdit(patch)
+function saveChanges() {
+  const patch = itemPatch.value
+  if (patch) {
+    applyEdit({ ...patch })
+  }
 }
 
 const files = ref([])
 
-function setImageId (imageId) {
+function setImageId(imageId: string | undefined) {
   if (imageId) {
-    fetchImage(imageId).then(({ data }) => {
-      itemPatch.value.image = data
+    fetchImage(imageId).then(({ data }: Result<Image>) => {
+      const patch = itemPatch.value
+      if (patch) {
+        patch.image = data
+      }
     })
   } else {
-    itemPatch.value.image = newEmptyImage()
+    const patch = itemPatch.value
+    if (patch) {
+      patch.image = newEmptyImage()
+    }
   }
 }
 
-function resetImageId () {
+function resetImageId() {
   setImageId(originalImageId.value)
 }
 
-function clearImageId () {
-  setImageId(null)
+function clearImageId() {
+  setImageId(undefined)
 }
 
-function onProcessFile (err, img) {
+function onProcessFile(err: FilePondErrorDescription | null, img: FilePondFile) {
   if (err) {
     console.log('Error processing file: %o', err)
     return
@@ -119,17 +130,19 @@ function onProcessFile (err, img) {
 const uploadImageLabel = 'Drag new TIFF, JPEG, or PNG image here, or click to upload'
 
 const validationErrors = computed(() => {
-  const errors = {}
+  const errors: { [key: string]: string } = {}
   const patch = itemPatch.value
-  if (!patch.title) {
-    errors.title = 'Print must have a title'
-  }
-  if (!patch.suppressed) {
-    if (!patch.mmsId) {
-      errors.mmsId = 'Print must have an MMS ID, or be suppressed'
+  if (patch) {
+    if (!patch.title) {
+      errors.title = 'Print must have a title'
     }
-    if (!patch.image.id) {
-      errors.image = 'Print must have an image, or be suppressed'
+    if (!patch.suppressed) {
+      if (!patch.mmsId) {
+        errors.mmsId = 'Print must have an MMS ID, or be suppressed'
+      }
+      if (!patch.image?.id) {
+        errors.image = 'Print must have an image, or be suppressed'
+      }
     }
   }
   return errors
@@ -140,33 +153,40 @@ const canSave = computed(() => {
   return Object.keys(validationErrors.value).length === 0
 })
 
-function cancel () {
+function cancel() {
   const patch = itemPatch.value
-  if (!patch.id) { // creating a new item
-    const image = patch.image
-    if (image.id) {
-      deleteImage(image)
+  if (patch) {
+    if (!patch.id) { // creating a new item
+      const image = patch.image
+      const imageId = image?.id
+      if (imageId) {
+        deleteImage({ id: imageId })
+      }
     }
   }
   cancelEdit()
 }
 
-const pond = ref(null)
+const pond: Ref<FilePondInstance | null> = ref(null)
 
-function revert () {
+function revert() {
   revertEdit()
 
   const filepond = pond.value
-  const uploadedFile = filepond.getFile()
-  if (uploadedFile) {
-    filepond.removeFile()
-    deleteImage({ id: uploadedFile.serverId })
+  if (filepond) {
+    const uploadedFile = filepond.getFile()
+    if (uploadedFile) {
+      filepond.removeFile()
+      deleteImage({ id: uploadedFile.serverId })
+    }
   }
 }
 
 onMounted(() => {
   const header = document.getElementById('galc-dialog-title')
-  header.scrollIntoView()
+  if (header) {
+    header.scrollIntoView()
+  }
 })
 
 </script>

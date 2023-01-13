@@ -129,16 +129,14 @@ export const useApiStore = defineStore('api', () => {
     }
   }
 
-  function fetchImage(imageId: string) {
+  function fetchImage(imageId: string): Promise<Result<Image>> {
     return galcApi()
       .find('image', imageId)
       .catch(handleError(`fetchImage(${imageId}) failed`))
   }
 
-  function deleteImage(image: Image) {
-    if (image.id) {
-      return galcApi().destroy('image', image.id)
-    }
+  function deleteImage(image: { id: string }) {
+    return galcApi().destroy('image', image.id)
   }
 
   const loginUrl = computed(() => {
@@ -357,7 +355,7 @@ function handleError<T>(msg: string): (error: any) => Promise<T> {
   // TODO: transition to error state
   return (error: any) => {
     console.log(`${msg}: %o`, error)
-    return Promise.resolve(<T> {})
+    return Promise.resolve(<T>{})
   }
 }
 
@@ -403,7 +401,7 @@ function decamelizeKeys(data: any): any {
     return data
   }
   return mapObject(data, (k, v) => {
-    const key = decamelize(<string> k)
+    const key = decamelize(<string>k)
     const value = decamelizeKeys(v)
     return [key, value]
   })
