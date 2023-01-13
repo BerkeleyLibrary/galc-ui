@@ -18,8 +18,6 @@ export const useClosuresStore = defineStore('closures', () => {
   // --------------------------------------------------
   // Exported computed properties
 
-  const currentClosures = computed(() => closures.value.filter(c => c.current))
-
   const closed = computed(() => {
     const cc = currentClosures.value
     return Array.isArray(cc) && cc.length > 0
@@ -76,6 +74,8 @@ export const useClosuresStore = defineStore('closures', () => {
 
   // --------------------------------------------------
   // Internal computed properties
+
+  const currentClosures = computed(() => closures.value.filter(c => c.current))
 
   const activeClosure = computed(() => {
     const cc = currentClosures.value
