@@ -12,7 +12,7 @@ export function newEmptyImage(): Image {
   }
 }
 
-export function newEmptyItem(): Item {
+function newEmptyItem(): Item {
   return {
     title: '',
     artist: '',
