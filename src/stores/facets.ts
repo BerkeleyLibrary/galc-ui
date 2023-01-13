@@ -10,7 +10,7 @@ export const useFacetStore = defineStore('facets', () => {
   // State
 
   const facets: Ref<Array<Facet>> = ref([])
-  const facetExpanded: Ref<{ [key: string]: boolean }> = ref({})
+  const facetExpanded: Ref<{ [key: string]: boolean | undefined }> = ref({})
   const computedExpansionState: {[key: string]: WritableComputedRef<boolean> } = {}
 
   // ------------------------------
@@ -23,7 +23,7 @@ export const useFacetStore = defineStore('facets', () => {
     if (!expansionState) {
       expansionState = computed({
         get(): boolean {
-          return facetExpanded.value[facetName]
+          return !!facetExpanded.value[facetName]
         },
         set(v: boolean) {
           facetExpanded.value[facetName] = v
@@ -49,7 +49,7 @@ export const useFacetStore = defineStore('facets', () => {
     facetExpanded.value = {}
   }
 
-  function facetForName (name: string) {
+  function facetForName (name: string): Facet | undefined {
     return facets.value.find((f) => f.name === name)
   }
 
