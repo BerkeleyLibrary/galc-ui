@@ -167,7 +167,7 @@ function cancel() {
   cancelEdit()
 }
 
-const pond: Ref<FilePondInstance | null> = ref(null)
+const pond: Ref<FilePondInstance | undefined> = ref()
 
 function revert() {
   revertEdit()

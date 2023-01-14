@@ -33,8 +33,8 @@ export const useApiStore = defineStore('api', () => {
   // --------------------------------------------------
   // State
 
-  const jsonApi: Ref<GalcApi | null> = ref(null)
-  const imageApi: Ref<ImageApi | null> = ref(null)
+  const jsonApi: Ref<GalcApi | undefined> = ref()
+  const imageApi: Ref<ImageApi | undefined> = ref()
   const apiBaseUrl = ref('')
   const loadCount = ref(0)
 

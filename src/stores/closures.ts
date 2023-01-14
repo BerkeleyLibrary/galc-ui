@@ -13,7 +13,7 @@ export const useClosuresStore = defineStore('closures', () => {
   // State
 
   const closures: Ref<Array<Closure>> = ref([])
-  const closurePatch: Ref<Closure | null> = ref(null)
+  const closurePatch: Ref<Closure | undefined> = ref()
 
   // --------------------------------------------------
   // Exported computed properties
@@ -44,19 +44,20 @@ export const useClosuresStore = defineStore('closures', () => {
   }
 
   // TODO: confirmation
-  function deleteClosure(closure: Closure) {
+  function deleteClosure(closure: Closure): Promise<void> {
     const { deleteClosure } = useApiStore()
     return deleteClosure(closure)
       .then(reloadClosures)
   }
 
   function cancelEdit() {
-    closurePatch.value = null
+    closurePatch.value = undefined
   }
 
-  function applyEdit(cls: Closure) {
+  // TODO: should this take an argument, or just submit the current patch?
+  function applyEdit(cls: Closure): Promise<void> {
     const { saveClosure } = useApiStore()
-    saveClosure(cls).then(reloadClosures).finally(cancelEdit)
+    return saveClosure(cls).then(reloadClosures).finally(cancelEdit)
   }
 
   const exported = {
@@ -86,7 +87,7 @@ export const useClosuresStore = defineStore('closures', () => {
   // --------------------------------------------------
   // Internal functions
 
-  function reloadClosures() {
+  function reloadClosures(): Promise<void> {
     const { loadClosures } = useApiStore()
     return loadClosures().then(({ data }: ClosureResults) => {
       closures.value = data

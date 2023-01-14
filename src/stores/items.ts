@@ -38,7 +38,7 @@ export const useItemsStore = defineStore('items', () => {
   // --------------------------------------------------
   // State
 
-  const itemPatch: Ref<Item | null> = ref(null)
+  const itemPatch: Ref<Item | undefined> = ref()
 
   // --------------------------------------------------
   // Exported functions
