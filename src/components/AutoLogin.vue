@@ -9,7 +9,7 @@ const { loginUrl } = storeToRefs(useApiStore())
 const { location } = storeToRefs(useWindowLocationStore())
 const { doLogin } = storeToRefs(useSessionStore())
 
-const loginFormRef: Ref<HTMLFormElement | null> = ref(null)
+const loginFormRef: Ref<HTMLFormElement | undefined> = ref()
 
 const triggerSubmit = computed(() => {
   return doLogin.value && !!loginFormRef.value
