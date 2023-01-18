@@ -5,7 +5,7 @@ type Facet = {
   name: string
   ord?: number,
   allowMultiple: boolean
-  terms: Array<Term>
+  terms: Term[]
 }
 
 export type { Facet }

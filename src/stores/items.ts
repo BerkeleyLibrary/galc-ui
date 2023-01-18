@@ -7,12 +7,14 @@ import { Item } from "../types/Item"
 import { Image } from "../types/Image"
 
 export function newEmptyImage(): Image {
+  // TODO: separate ImagePatch (incomplete, w/o Links) from Image
   return {
     links: {}
   }
 }
 
 function newEmptyItem(): Item {
+  // TODO: should these really be empty strings, or should they be undefined?
   return {
     title: '',
     artist: '',
@@ -67,7 +69,7 @@ export const useItemsStore = defineStore('items', () => {
   }
 
   function cancelEdit() {
-    itemPatch.value = null
+    itemPatch.value = undefined
   }
 
   function itemForId(itemId: string | undefined) {
@@ -81,7 +83,7 @@ export const useItemsStore = defineStore('items', () => {
   // --------------------------------------------------
   // Internal functions
 
-  function newPatch(item: Item) {
+  function newPatch(item: Item): Item {
     return {
       id: item.id,
       image: item.image,

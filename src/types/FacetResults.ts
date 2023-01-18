@@ -1,7 +1,7 @@
 import { Facet } from "./Facet"
 
 type FacetResults = {
-  data: Array<Facet>
+  data: Facet[]
 }
 
 export type { FacetResults }

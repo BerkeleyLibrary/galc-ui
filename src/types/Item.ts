@@ -29,7 +29,9 @@ type Item = {
 
     // Relationships
     image?: Image
-    terms: Array<Term>
+    terms: Term[]
 }
 
 export type { Item }
+
+export type ItemEntry = [keyof Item, string | boolean | Image | Term[]]

@@ -6,7 +6,7 @@ type Term = {
   ord?: number,
   facet: Facet
   parent?: Term
-  children?: Array<Term>
+  children?: Term[]
 }
 
 export type { Term }

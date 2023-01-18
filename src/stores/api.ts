@@ -226,7 +226,7 @@ export const useApiStore = defineStore('api', () => {
     updateResults(payload)
   }
 
-  function facetsLoaded({ data }: Result<Array<Facet>>) {
+  function facetsLoaded({ data }: Result<Facet[]>) {
     if (data) {
       const facets = useFacetStore()
       facets.facets = data

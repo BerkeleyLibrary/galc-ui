@@ -1,7 +1,7 @@
 import { Closure } from "./Closure"
 
 type ClosureResults = {
-  data: Array<Closure>
+  data: Closure[]
 }
 
 export type { ClosureResults }
