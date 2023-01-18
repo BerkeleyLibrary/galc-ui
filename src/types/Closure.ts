@@ -1,3 +1,4 @@
+// TODO: separate ClosurePatch (w/ID optional) from Closure
 type Closure = {
   id?: string
   startDate?: string,

@@ -28,10 +28,10 @@ that uses the dummy [`index.html`](index.html) page in the project root director
    - `brew install corepack`
    - `corepack enable`
 
-3. Ensure that the [galc-api](https://github.com/BerkeleyLibrary/galc-api) back end is
+2. Ensure that the [galc-api](https://github.com/BerkeleyLibrary/galc-api) back end is
    available and running on port 3000.
 
-4. In the project root directory:
+3In the project root directory:
  
    1. install the dependencies:
 

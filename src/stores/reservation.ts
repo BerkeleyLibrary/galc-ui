@@ -88,7 +88,7 @@ export const useReservationStore = defineStore('reservation', () => {
       rsvn.confirmed = true
 
       const itemId = <string> rsvn.item.id
-      reserveItem(itemId)
+      return reserveItem(itemId)
     }
   }
 

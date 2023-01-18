@@ -1,5 +1,5 @@
 type Availability = {
-  [key: string]: boolean
+  [key: string]: boolean | undefined
 }
 
 export type { Availability }

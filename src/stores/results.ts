@@ -27,26 +27,26 @@ export const useResultStore = defineStore('results', () => {
   // --------------------------------------------------
   // Exported functions and properties
 
-  const items = computed(() => {
-    return state.value.items
-  })
-  const pagination = computed(() => { return state.value.pagination })
-  const searchPerformed = computed(() => { return state.value.searchPerformed })
+  const items = computed(() => state.value.items)
+
+  const pagination = computed(() => state.value.pagination)
+
+  const searchPerformed = computed(() => state.value.searchPerformed)
 
   const hasResults = computed(() => {
     const items = state.value.items
     return Array.isArray(items) && items.length > 0
   })
 
-  // TODO: always return a boolean
-  function getAvailability (item: Item): boolean | undefined {
+  // TODO: return a computed property?
+  function getAvailability(item: { mmsId?: string }): boolean {
+    const availability = state.value.availability
     const mmsId = item.mmsId
-    if (mmsId) {
-      return state.value.availability[mmsId]
-    }
+    const available = mmsId ? availability[mmsId] : false
+    return !!available
   }
 
-  function updateResults ({ data, meta }: ItemResults) {
+  function updateResults({ data, meta }: ItemResults) {
     state.value = {
       items: data,
       availability: meta.availability,
