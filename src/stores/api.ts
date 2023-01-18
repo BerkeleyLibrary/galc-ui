@@ -23,6 +23,7 @@ import { ImageApi } from "../types/ImageApi"
 import { ItemResults } from "../types/ItemResults"
 import { GalcApi, Result } from "../types/GalcApi"
 import { Facet } from "../types/Facet"
+import { ClosureResults } from "../types/ClosureResults"
 
 // ------------------------------------------------------------
 // Store definition
@@ -58,7 +59,7 @@ export const useApiStore = defineStore('api', () => {
     initialized.value = true
   }
 
-  function loadFacets() {
+  function loadFacets(): Promise<void> {
     incrementLoadCount()
 
     return galcApi()
@@ -68,7 +69,7 @@ export const useApiStore = defineStore('api', () => {
       .finally(decrementLoadCount)
   }
 
-  function performSearch(params: Params) {
+  function performSearch(params: Params): Promise<void> {
     incrementLoadCount()
 
     return galcApi()
@@ -78,9 +79,8 @@ export const useApiStore = defineStore('api', () => {
       .finally(decrementLoadCount)
   }
 
-  function reserveItem(itemId: string) {
-    loadCount.value++
-
+  function reserveItem(itemId: string): Promise<void> {
+    incrementLoadCount()
     const { itemReserved } = useReservationStore()
 
     return galcApi()
@@ -90,10 +90,11 @@ export const useApiStore = defineStore('api', () => {
       .finally(decrementLoadCount)
   }
 
-  function loadClosures(params = {}) {
+  function loadClosures(params = {}): Promise<ClosureResults> {
     incrementLoadCount()
     return galcApi()
       .findAll('closures', params)
+      .catch(handleError<ClosureResults>(`loadClosures(${params}) failed`))
       .finally(decrementLoadCount)
   }
 
@@ -103,7 +104,7 @@ export const useApiStore = defineStore('api', () => {
       .catch(handleError(`fetchItem(${itemId}) failed`))
   }
 
-  function saveItem(item: Item) {
+  function saveItem(item: Item): Promise<Result<Item>> {
     const api = galcApi()
     if (item.id) {
       return api.one('item', item.id).patch(item)
@@ -112,7 +113,7 @@ export const useApiStore = defineStore('api', () => {
     }
   }
 
-  function saveClosure(closure: Closure) {
+  function saveClosure(closure: Closure): Promise<Result<Closure>> {
     const api = galcApi()
     if (closure.id) {
       return api.one('closure', closure.id).patch(closure)
@@ -351,7 +352,7 @@ const models = {
 }
 
 // TODO: display errors
-function handleError<T>(msg: string): (error: any) => Promise<T> {
+function handleError<T = void>(msg: string): (error: any) => Promise<T> {
   // TODO: transition to error state
   return (error: any) => {
     console.log(`${msg}: %o`, error)

@@ -17,10 +17,11 @@ type One<T> = {
   patch(v: T): Promise<Result<T>>
 }
 
+// TODO: check whether we're really returning Promise<T> or Promise<Result<T>>
 type GalcApi = {
   one(endpoint: 'item', id: string): One<Item>
   find(endpoint: 'item', id: string, params: Params): Promise<Result<Item>>
-  create(endpoint: 'item', item: Item): Promise<Item>
+  create(endpoint: 'item', item: Item):  Promise<Result<Item>>
   findAll(endpoint: 'items', params: Params): Promise<ItemResults>
 
   create(endpoint: 'reservation', args: RsvnArgs): Promise<Result<Reservation>>

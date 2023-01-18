@@ -75,7 +75,7 @@ const title = computed(() => {
 const image = computed(() => itemPatch.value?.image || newEmptyImage())
 
 // TODO: Cleaner way to encapsulate links
-const thumbnailUri = computed(() => image.value?.links.icon?.href)
+const thumbnailUri = computed(() => image.value?.links?.icon?.href)
 
 // TODO: track whether we've changed anything, disable save if not
 

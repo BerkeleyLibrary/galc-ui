@@ -5,6 +5,6 @@ type Image = {
     id?: string,
     thumbnail?: string,
     basename?: string
-    links: Links
+    links?: Links
 }
 export type {Image};
