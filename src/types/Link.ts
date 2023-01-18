@@ -1,5 +1,5 @@
 type Links = {
-    [key: string]: Link
+    [key: string]: Link | undefined
 }
 type Link = {
     href: string

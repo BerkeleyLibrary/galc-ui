@@ -1,7 +1,7 @@
 import { createPinia, setActivePinia, storeToRefs } from 'pinia'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { useResultStore } from "../../src/stores/results"
-import { availability as availMeta, items as itemData, pagination as pageMeta } from "../data/items"
+import { items as itemData, availability as availData, pagination as pageData, results as resultsData } from "../data/items"
 
 // ------------------------------------------------------------
 // Tests
@@ -47,20 +47,34 @@ describe('results', () => {
   describe('updateResults', () => {
     it('updates the results', () => {
       const { updateResults } = useResultStore()
-      const results = {
-        data: itemData,
-        meta: {
-          availability: availMeta,
-          pagination: pageMeta
-        }
-      }
-      updateResults(results)
+      updateResults(resultsData)
 
       const { items, pagination, searchPerformed, hasResults } = storeToRefs(useResultStore())
       expect(items.value).toEqual(itemData)
-      expect(pagination.value).toEqual(pageMeta)
+      expect(pagination.value).toEqual(pageData)
       expect(searchPerformed.value).toEqual(true)
       expect(hasResults.value).toEqual(true)
+    })
+  })
+
+  describe('getAvailability', () => {
+    it('defaults to false(y)', () => {
+      const { getAvailability } = useResultStore()
+      const mmsId = Object.keys(availData)[0]
+      const available = getAvailability({ mmsId })
+      expect(available).toBeFalsy()
+    })
+
+    it('returns the availablity', () => {
+      const { getAvailability, updateResults } = useResultStore()
+      updateResults(resultsData)
+
+      const mmsIds = itemData.map((it) => it.mmsId)
+      for (const mmsId of mmsIds) {
+        const expected: boolean = mmsId ? !!availData[mmsId] : false
+        const actual = getAvailability({ mmsId })
+        expect(actual).toEqual(expected)
+      }
     })
   })
 })

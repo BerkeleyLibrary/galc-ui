@@ -71,9 +71,12 @@ function dateInputModel (dateAttr) {
 
 function isDateRangeValid () {
   const patch = closurePatch.value
-  const startDate = ensureDate(patch.startDate)
-  const endDate = ensureDate(patch.endDate)
-  return startDate < endDate
+  if (patch) {
+    const startDate = ensureDate(patch.startDate)
+    const endDate = ensureDate(patch.endDate)
+    return startDate < endDate
+  }
+  return false
 }
 
 function isValidDate (date) {

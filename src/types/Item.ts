@@ -1,6 +1,7 @@
 import {Image} from "./Image";
 import { Term } from "./Term"
 
+// TODO: separate ItemPatch (w/ID optional) from Item
 type Item = {
     // Required
     id?: string,

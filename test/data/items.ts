@@ -1,6 +1,26 @@
 import { Item } from '../../src/types/Item'
 import { Availability } from '../../src/types/Availability'
-import { abstract, after1999, blackAndWhite, cityscape, collage, color, d1910s, d1950s, d1970s, d1990s, etching, figurative, popArt, serigraph, silkscreen, szLarge, szMedium, szSmall, woodcut } from './facets'
+import {
+  abstract,
+  after1999,
+  blackAndWhite,
+  cityscape,
+  collage,
+  color,
+  d1910s,
+  d1950s,
+  d1970s,
+  d1990s,
+  etching,
+  figurative,
+  popArt,
+  serigraph,
+  silkscreen,
+  szLarge,
+  szMedium,
+  szSmall,
+  woodcut
+} from './facets'
 
 // --------------------------------------------------
 // Alicia, Juana - "Auto Vision, No. 15"
@@ -20,7 +40,7 @@ export const aliciaVision: Item = {
   value: "500",
   reserveDate: "2019-09-02",
   permalinkUri: "https://search.library.berkeley.edu/permalink/01UCS_BER/iqob43/alma991078647729706532",
-  terms: [ color, figurative, silkscreen, d1990s, szLarge ],
+  terms: [color, figurative, silkscreen, d1990s, szLarge],
   image: {
     id: '13',
     thumbnail: 'Alicia(Auto15)_360px.jpg',
@@ -51,7 +71,7 @@ export const johnstonCoast: Item = {
   appraisalDate: "2006",
   reserveDate: "2019-08-30",
   permalinkUri: "https://search.library.berkeley.edu/permalink/01UCS_BER/iqob43/alma991051282579706532",
-  terms: [ color, cityscape, etching, d1950s, szMedium ],
+  terms: [color, cityscape, etching, d1950s, szMedium],
   image: {
     id: '440',
     thumbnail: 'Johnston(IvoryCoast)_360px.jpg',
@@ -82,7 +102,7 @@ export const jonesHeart: Item = {
   appraisalDate: "2006",
   reserveDate: "2018-08-25",
   permalinkUri: "https://search.library.berkeley.edu/permalink/01UCS_BER/iqob43/alma991051082609706532",
-  terms: [ color, popArt, collage, etching, d1970s, szMedium ],
+  terms: [color, popArt, collage, etching, d1970s, szMedium],
   image: {
     id: '442',
     thumbnail: 'Jones (Candy Heart)_360px.jpg',
@@ -112,7 +132,7 @@ export const kollwitzMother: Item = {
   notes: "b18372399",
   reserveDate: "",
   permalinkUri: "false",
-  terms: [ blackAndWhite, figurative, etching, szSmall, d1910s ],
+  terms: [blackAndWhite, figurative, etching, szSmall, d1910s],
   image: {
     id: '501',
     thumbnail: 'Kollwitz (Mother)_360px.jpg',
@@ -140,7 +160,7 @@ export const nakayamaAquifer: Item = {
   notes: "Gift of Frances and Ben Burr",
   reserveDate: "2019-08-28",
   permalinkUri: "https://search.library.berkeley.edu/permalink/01UCS_BER/iqob43/alma991047232109706532",
-  terms: [ color, abstract, woodcut, szSmall, d1970s ],
+  terms: [color, abstract, woodcut, szSmall, d1970s],
   image: {
     id: '648',
     thumbnail: 'Nakayama(Untitled)_360px.jpg',
@@ -169,7 +189,7 @@ export const oparahUntitled: Item = {
   barcode: "C104987948",
   reserveDate: "",
   permalinkUri: "https://search.library.berkeley.edu/permalink/01UCS_BER/iqob43/alma991056573609706532",
-  terms: [ blackAndWhite, abstract, serigraph, szSmall, after1999 ],
+  terms: [blackAndWhite, abstract, serigraph, szSmall, after1999],
   image: {
     id: '674',
     thumbnail: 'Oparah(Unititled)_360px.jpg',
@@ -181,7 +201,7 @@ export const oparahUntitled: Item = {
   }
 }
 
-export const items = [ aliciaVision, johnstonCoast, jonesHeart, kollwitzMother, nakayamaAquifer, oparahUntitled ]
+export const items = [aliciaVision, johnstonCoast, jonesHeart, kollwitzMother, nakayamaAquifer, oparahUntitled]
 
 export const availability: Availability = {
   "991078647729706532": true,
@@ -192,3 +212,8 @@ export const availability: Availability = {
 }
 
 export const pagination = { current: 1, records: items.length, offset: 0, limit: 30 }
+
+export const results = {
+  data: items,
+  meta: { availability, pagination }
+}
