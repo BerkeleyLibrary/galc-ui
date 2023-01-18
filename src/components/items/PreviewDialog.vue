@@ -12,7 +12,7 @@ const { endPreview } = preview
 const image = computed(() => currentPreview.value?.image)
 
 // TODO: Cleaner way to encapsulate links
-const imageUri = computed(() => image.value?.links.alternate.href)
+const imageUri = computed(() => image.value?.links?.alternate?.href)
 
 </script>
 

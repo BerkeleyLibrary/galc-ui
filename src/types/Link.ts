@@ -1,5 +1,6 @@
 type Links = {
-    [key: string]: Link | undefined
+    icon?: Link
+    alternate?: Link
 }
 type Link = {
     href: string

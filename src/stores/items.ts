@@ -8,9 +8,11 @@ import { Image } from "../types/Image"
 
 export function newEmptyImage(): Image {
   // TODO: separate ImagePatch (incomplete, w/o Links) from Image
-  return {
-    links: {}
-  }
+  return {}
+}
+
+export function newPatch(item: Item): Item {
+  return { ...item, terms: item.terms.slice() }
 }
 
 function newEmptyItem(): Item {
@@ -53,13 +55,15 @@ export const useItemsStore = defineStore('items', () => {
     itemPatch.value = newPatch(item)
   }
 
+  // TODO: should this take an argument, or just submit the current patch?
   function applyEdit(item: Item) {
     const { saveItem } = useApiStore()
     const { refreshSearch } = useSearchStore()
-    saveItem(item).then(refreshSearch).finally(cancelEdit)
+    return saveItem(item).then(refreshSearch).finally(cancelEdit)
   }
 
   function revertEdit() {
+    // TODO: explicitly save the original? or go to server?
     const item = itemForId(itemPatch.value?.id)
     if (item) {
       editItem(item)
@@ -72,39 +76,11 @@ export const useItemsStore = defineStore('items', () => {
     itemPatch.value = undefined
   }
 
-  function itemForId(itemId: string | undefined) {
+  function itemForId(itemId: string | undefined): Item | undefined {
     if (itemId) {
       const { items } = storeToRefs(useResultStore())
       const item = items.value.find((it) => it.id === itemId)
       return item
-    }
-  }
-
-  // --------------------------------------------------
-  // Internal functions
-
-  function newPatch(item: Item): Item {
-    return {
-      id: item.id,
-      image: item.image,
-      title: item.title,
-      artist: item.artist,
-      artistUrl: item.artistUrl,
-      date: item.date,
-      description: item.description,
-      dimensions: item.dimensions,
-      series: item.series,
-      mmsId: item.mmsId,
-      barcode: item.barcode,
-      circulation: item.circulation,
-      location: item.location,
-      value: item.value,
-      appraisalDate: item.appraisalDate,
-      notes: item.notes,
-      reserveDate: item.reserveDate,
-      suppressed: item.suppressed,
-      permalinkUri: item.permalinkUri,
-      terms: item.terms.slice()
     }
   }
 
