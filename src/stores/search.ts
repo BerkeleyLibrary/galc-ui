@@ -13,9 +13,9 @@ import { Params } from "../types/Params"
 
 type Search = {
   keywords?: string;
-  suppressed?: Array<boolean> | Array<string>; // TODO: pick one
+  suppressed?: boolean[] | string[]; // TODO: pick one
   // TODO: separate keywords, suppressed, facet names
-  [key: string]: Array<string> | Array<boolean> | string | undefined;
+  [key: string]: string[] | boolean[] | string | undefined;
 }
 
 type SearchState = {
@@ -40,7 +40,7 @@ export const useSearchStore = defineStore('search', () => {
   // TODO: Is that really necessary?
   const state: Ref<SearchState> = ref(emptyState())
 
-  const computedTermSelections: { [key: string]: WritableComputedRef<Array<string>> } = {}
+  const computedTermSelections: { [key: string]: WritableComputedRef<string[]> } = {}
 
   // --------------------------------------------------
   // Exported functions and properties
@@ -93,14 +93,14 @@ export const useSearchStore = defineStore('search', () => {
   })
 
   function selectedTerms(facetName: string) {
-    let termSelection: WritableComputedRef<Array<string>> = computedTermSelections[facetName]
+    let termSelection: WritableComputedRef<string[]> = computedTermSelections[facetName]
     if (!termSelection) {
       termSelection = computed({
         get() {
-          const terms = <Array<string>>state.value.search[facetName] || []
+          const terms = <string[]>state.value.search[facetName] || []
           return terms
         },
-        set(v: Array<string>) {
+        set(v: string[]) {
           const search: Search = { ...state.value.search }
           search[facetName] = v
           state.value = {
@@ -187,7 +187,7 @@ export const useSearchStore = defineStore('search', () => {
 
     const { facetNames } = storeToRefs(useFacetStore())
     for (const facetName of facetNames.value) {
-      const termValues = <Array<string>> search[facetName]
+      const termValues = <string[]> search[facetName]
       if (termValues && termValues.length > 0) {
         params[facetName] = termValues.join(',')
       }

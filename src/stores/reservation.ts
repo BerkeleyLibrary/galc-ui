@@ -18,7 +18,7 @@ export const useReservationStore = defineStore('reservation', () => {
 
   const currentReservation: Ref<Reservation|null> = ref(null)
   const completedReservation: Ref<Reservation|null> = ref(null)
-  const reservedItemIds: Ref<Array<String>> = ref([])
+  const reservedItemIds: Ref<String[]> = ref([])
 
   // --------------------------------------------------
   // Internal functions and properties

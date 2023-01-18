@@ -12,7 +12,7 @@ export const useClosuresStore = defineStore('closures', () => {
   // --------------------------------------------------
   // State
 
-  const closures: Ref<Array<Closure>> = ref([])
+  const closures: Ref<Closure[]> = ref([])
   const closurePatch: Ref<Closure | undefined> = ref()
 
   // --------------------------------------------------

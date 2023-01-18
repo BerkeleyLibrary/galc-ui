@@ -6,7 +6,7 @@ import { Pagination } from "../types/Pagination"
 import { ItemResults } from "../types/ItemResults"
 
 type ResultState = {
-  items: Array<Item>,
+  items: Item[],
   availability: Availability,
   pagination: Pagination,
   searchPerformed: boolean

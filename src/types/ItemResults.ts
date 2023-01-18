@@ -3,7 +3,7 @@ import { Availability } from "./Availability"
 import { Pagination } from "./Pagination"
 
 type ItemResults = {
-  data: Array<Item>,
+  data: Item[],
   meta: {
     availability: Availability,
     pagination: Pagination

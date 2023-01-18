@@ -9,7 +9,7 @@ export const useFacetStore = defineStore('facets', () => {
   // ------------------------------
   // State
 
-  const facets: Ref<Array<Facet>> = ref([])
+  const facets: Ref<Facet[]> = ref([])
   const facetExpanded: Ref<{ [key: string]: boolean | undefined }> = ref({})
   const computedExpansionState: {[key: string]: WritableComputedRef<boolean> } = {}
 
