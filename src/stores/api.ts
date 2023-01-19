@@ -81,11 +81,11 @@ export const useApiStore = defineStore('api', () => {
 
   function reserveItem(itemId: string): Promise<void> {
     incrementLoadCount()
-    const { itemReserved } = useReservationStore()
+    const { reservationSuccessful } = useReservationStore()
 
     return galcApi()
       .create('reservation', { item: { id: itemId } })
-      .then(itemReserved)
+      .then(reservationSuccessful)
       .catch(handleError(`reserveItem(${itemId}) failed`))
       .finally(decrementLoadCount)
   }
@@ -325,6 +325,7 @@ const models = {
     terms: { jsonApi: 'hasMany', type: 'term' }
   },
   reservation: {
+    confirmed: true,
     user: { jsonApi: 'hasOne', type: 'user' },
     item: { jsonApi: 'hasOne', type: 'item' }
   },

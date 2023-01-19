@@ -1,8 +1,9 @@
-import { Item } from "./Item"
-
 type Reservation = {
-  item: Item,
-  confirmed: boolean
+  id?: string,
+  // TODO: separate ItemPatch (w/ID optional) from Item
+  item: { id?: string },
+  user?: { id: string },
+  confirmed?: boolean
 }
 
 export type { Reservation }

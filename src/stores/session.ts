@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, Ref, ref } from 'vue'
 import { readParam } from '../helpers/window-location-helper'
-import { User } from "../User"
+import { User } from "../types/User"
 import { Result } from "../types/GalcApi"
 
 export const LOGIN_PARAM = 'login'
