@@ -9,7 +9,6 @@ import { useWindowLocationStore } from '../stores/window-location'
 
 const props = defineProps<{
   id: string,
-  active: boolean,
   rel: string,
   title: string,
   text: string,
@@ -22,7 +21,7 @@ const linkUrl = computed(() => {
   return computeRelativeUrl(location.value, { page: props.page })
 })
 
-function navigateTo (newPage: number) {
+function navigateTo(newPage: number) {
   const { page } = storeToRefs(useSearchStore())
   page.value = newPage
 
@@ -39,8 +38,10 @@ function navigateTo (newPage: number) {
 
 <template>
   <li :key="id" class="page-nav-link">
-    <a v-if="page && active" :href="linkUrl" :rel="rel" :title="title" @click.prevent="navigateTo(page)">
-      <div class="galc-nav-icon">{{ text }}</div>
+    <a :href="linkUrl" :rel="rel" :title="title" @click.prevent="navigateTo(page)">
+      <div class="galc-nav-icon">
+        {{ text }}
+      </div>
     </a>
   </li>
 </template>
