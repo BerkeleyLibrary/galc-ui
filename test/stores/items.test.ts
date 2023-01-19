@@ -91,7 +91,7 @@ describe('items', () => {
   })
 
   describe('itemPatch', () => {
-    it('defaults to undefined', () => {
+    it('defaults to empty', () => {
       const { itemPatch } = storeToRefs(useItemsStore())
       const patch = itemPatch.value
       expect(!!patch).toEqual(false)

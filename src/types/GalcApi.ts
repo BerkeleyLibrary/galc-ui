@@ -4,11 +4,12 @@ import { FacetResults } from "./FacetResults"
 import { ClosureResults } from "./ClosureResults"
 import { Item } from "./Item"
 import { Reservation } from "./Reservation"
-import { User } from "../User"
+import { User } from "./User"
 import { Image } from "./Image"
 import { Closure } from "./Closure"
 
 type Result<T> = {
+  // TODO: does this have to be optional?
   data?: T
 }
 

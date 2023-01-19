@@ -1,6 +1,6 @@
 import { createPinia, setActivePinia, storeToRefs } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { User } from "../../src/User"
+import { User } from "../../src/types/User"
 
 // ------------------------------------------------------------
 // Fixture
@@ -116,7 +116,7 @@ describe('session', () => {
   })
 
   describe('email', () => {
-    it('defaults to undefined', () => {
+    it('defaults to empty', () => {
       const { email } = storeToRefs(useSessionStore())
       expect(!!email.value).toEqual(false)
     })

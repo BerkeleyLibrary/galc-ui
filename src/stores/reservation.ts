@@ -16,14 +16,14 @@ export const useReservationStore = defineStore('reservation', () => {
   // --------------------------------------------------
   // State
 
-  const currentReservation: Ref<Reservation|null> = ref(null)
-  const completedReservation: Ref<Reservation|null> = ref(null)
+  const currentReservation: Ref<Reservation | undefined> = ref(undefined)
+  const completedReservation: Ref<Reservation | undefined> = ref(undefined)
   const reservedItemIds: Ref<String[]> = ref([])
 
   // --------------------------------------------------
   // Internal functions and properties
 
-  function doReserve (reserveItemId: string) {
+  function doReserve(reserveItemId: string) {
     const { isAuthenticated } = useSessionStore()
     if (!isAuthenticated) {
       return
@@ -44,34 +44,22 @@ export const useReservationStore = defineStore('reservation', () => {
       })
   }
 
+  function clearCurrentRsvn() {
+    currentReservation.value = undefined
+  }
+
   // --------------------------------------------------
   // Exported functions and properties
 
-  async function init () {
+  async function init() {
     const reserveItemId = deleteParam(RESERVE_ITEM_PARAM)
     if (reserveItemId) {
       return doReserve(reserveItemId)
     }
   }
 
-  function itemReserved ({ data }: Result<Reservation>) {
-    if (!data) {
-      return
-    }
-    const item = data.item
-    const itemId = <string> item.id
-    reservedItemIds.value.push(itemId)
-
-    const rsvn = currentReservation.value
-    const rsvnItemId = rsvn && rsvn.item.id
-    if (rsvnItemId === item.id) {
-      currentReservation.value = null
-      completedReservation.value = rsvn
-    }
-  }
-
   // TODO: Handle/prevent multiple simultaneous attempted reservations
-  function startReservation (item: Item) {
+  function startReservation(item: Item) {
     const rsvn = {
       item: item,
       confirmed: false
@@ -79,28 +67,44 @@ export const useReservationStore = defineStore('reservation', () => {
     currentReservation.value = rsvn
   }
 
-  function confirmReservation () {
-    const api = useApiStore()
-    const { reserveItem } = api
+  function confirmReservation(): Promise<void> {
+    const rsvn = currentReservation.value
+    if (!rsvn) {
+      return Promise.resolve()
+    }
+
+    const itemId = <string>rsvn.item.id
+    rsvn.confirmed = true
+
+    const { reserveItem } = useApiStore()
+    return reserveItem(itemId)
+  }
+
+  function cancelReservation() {
+    clearCurrentRsvn()
+  }
+
+  function acknowledgeComplete() {
+    completedReservation.value = undefined
+  }
+
+  function reservationSuccessful({ data }: Result<Reservation>) {
+    if (!data) {
+      return
+    }
+    const item = data.item
+    const itemId = <string>item.id
+    reservedItemIds.value.push(itemId)
 
     const rsvn = currentReservation.value
-    if (rsvn) {
-      rsvn.confirmed = true
-
-      const itemId = <string> rsvn.item.id
-      return reserveItem(itemId)
+    const rsvnItemId = rsvn && rsvn.item.id
+    if (rsvnItemId === item.id) {
+      clearCurrentRsvn()
+      completedReservation.value = rsvn
     }
   }
 
-  function cancelReservation () {
-    currentReservation.value = null
-  }
-
-  function acknowledgeComplete () {
-    completedReservation.value = null
-  }
-
-  function isReserved (item: Item) {
+  function isReserved(item: Item): boolean {
     if (!item.id) {
       return false
     }
@@ -108,7 +112,7 @@ export const useReservationStore = defineStore('reservation', () => {
     return reservedIds.includes(item.id)
   }
 
-  function reserveItemRedirectUrl (item: Item) {
+  function reserveItemRedirectUrl(item: Item): URL | undefined {
     if (item.id) {
       return relativeUrl({ [RESERVE_ITEM_PARAM]: item.id })
     }
@@ -123,7 +127,7 @@ export const useReservationStore = defineStore('reservation', () => {
     currentReservation,
     completedReservation,
     acknowledgeComplete,
-    itemReserved,
+    reservationSuccessful,
     isReserved
   }
 

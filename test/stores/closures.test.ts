@@ -40,7 +40,7 @@ describe('closures', () => {
   })
 
   describe('closurePatch', () => {
-    it('defaults to undefined', () => {
+    it('defaults to empty', () => {
       const { closurePatch } = storeToRefs(useClosuresStore())
       expect(!!closurePatch.value).toEqual(false)
     })
@@ -73,7 +73,7 @@ describe('closures', () => {
   })
 
   describe('reopenDate', () => {
-    it('defaults to undefined', () => {
+    it('defaults to empty', () => {
       const { reopenDate } = storeToRefs(useClosuresStore())
       expect(!!reopenDate.value).toEqual(false)
     })
