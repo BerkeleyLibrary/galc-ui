@@ -4,6 +4,7 @@ import { Item } from "../types/Item"
 import { Availability } from "../types/Availability"
 import { Pagination } from "../types/Pagination"
 import { ItemResults } from "../types/ItemResults"
+import { P8N_EMPTY } from "./pagination"
 
 type ResultState = {
   items: Item[],
@@ -20,7 +21,8 @@ export const useResultStore = defineStore('results', () => {
   const state: Ref<ResultState> = ref({
     items: [],
     availability: {},
-    pagination: {},
+    // TODO: can we move this to stores/pagination.ts?
+    pagination: P8N_EMPTY,
     searchPerformed: false
   })
 

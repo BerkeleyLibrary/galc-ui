@@ -1,28 +1,16 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useResultStore } from '../stores/results'
 
 import PageNavLink from './PageNavLink.vue'
+import { usePaginationStore } from "../stores/pagination"
 
-defineProps({
-  name: { type: String, default: '' }
-})
+defineProps<{ name: string }>()
 
 // ------------------------------------------------------------
 // Store
 
-const results = useResultStore()
-const { items, pagination } = storeToRefs(results)
+const { fromItem, toItem, totalItems, current, prev, next, last } = storeToRefs(usePaginationStore())
 
-const fromItem = computed(() => {
-  const paging = pagination.value
-  const currentPage = paging.current || 0
-  const itemsPerPage = paging.limit || 0
-  return ((currentPage - 1) * itemsPerPage) + 1
-})
-const toItem = computed(() => fromItem.value + items.value.length - 1)
-const totalItems = computed(() => pagination.value.records || 0)
 
 </script>
 
@@ -30,11 +18,11 @@ const totalItems = computed(() => pagination.value.records || 0)
   <nav v-if="totalItems > 0" class="page-nav" :aria-label="`${name} page navigation`">
     <p class="page-nav-items"><span class="page-nav-items-total">{{ totalItems }}</span> records found</p>
     <ul class="page-nav-links">
-      <PageNavLink :id="`page-nav-${name}-first`" text="«" :active="pagination.current > 1" rel="first" title="First page" :page="1"/>
-      <PageNavLink :id="`page-nav-${name}-prev`" text="‹" :active="pagination.current > 1" rel="prev" title="Previous page" :page="pagination.prev"/>
+      <PageNavLink v-if="current > 1" :id="`page-nav-${name}-first`" text="«" rel="first" title="First page" :page="1"/>
+      <PageNavLink v-if="prev" :id="`page-nav-${name}-prev`" text="‹" rel="prev" title="Previous page" :page="prev"/>
       <li>{{ fromItem }}–{{ toItem }}</li>
-      <PageNavLink :id="`page-nav-${name}-next`" text="›" :active="pagination.current < pagination.last" rel="next" title="Next page" :page="pagination.next"/>
-      <PageNavLink :id="`page-nav-${name}-last`" text="»" :active="pagination.current < pagination.last" rel="last" title="Last page" :page="pagination.last"/>
+      <PageNavLink v-if="next" :id="`page-nav-${name}-next`" text="›" rel="next" title="Next page" :page="next"/>
+      <PageNavLink v-if="last" :id="`page-nav-${name}-last`" text="»" rel="last" title="Last page" :page="last"/>
     </ul>
   </nav>
 </template>
@@ -64,7 +52,7 @@ nav.page-nav {
     ul.page-nav-links {
       display: flex;
       gap: 0.25em;
-      padding: 0;
+      padding: 0 0 0 0.25em;
 
       li {
         display: inline-block;
