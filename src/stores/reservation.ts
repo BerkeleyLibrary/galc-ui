@@ -1,14 +1,13 @@
 import { defineStore, storeToRefs } from 'pinia'
 import { Ref, ref } from 'vue'
 
-import { deleteParam, relativeUrl } from '../helpers/window-location-helper'
-
 import { useSessionStore } from './session'
 import { useApiStore } from './api'
 import { useClosuresStore } from './closures'
 import { Reservation } from "../types/Reservation"
 import { Item } from "../types/Item"
 import { Result } from "../types/GalcApi"
+import { useWindowLocationStore } from "./window-location"
 
 export const RESERVE_ITEM_PARAM = 'reserve'
 
@@ -24,8 +23,8 @@ export const useReservationStore = defineStore('reservation', () => {
   // Internal functions and properties
 
   function doReserve(reserveItemId: string) {
-    const { isAuthenticated } = useSessionStore()
-    if (!isAuthenticated) {
+    const { isAuthenticated } = storeToRefs(useSessionStore())
+    if (!isAuthenticated.value) {
       return
     }
 
@@ -52,6 +51,7 @@ export const useReservationStore = defineStore('reservation', () => {
   // Exported functions and properties
 
   async function init() {
+    const { deleteParam } = useWindowLocationStore()
     const reserveItemId = deleteParam(RESERVE_ITEM_PARAM)
     if (reserveItemId) {
       return doReserve(reserveItemId)
@@ -114,6 +114,7 @@ export const useReservationStore = defineStore('reservation', () => {
 
   function reserveItemRedirectUrl(item: Item): URL | undefined {
     if (item.id) {
+      const { relativeUrl } = useWindowLocationStore()
       return relativeUrl({ [RESERVE_ITEM_PARAM]: item.id })
     }
   }

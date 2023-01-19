@@ -2,8 +2,6 @@
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 
-import { computeRelativeUrl } from '../helpers/window-location-helper'
-
 import { useSearchStore } from '../stores/search'
 import { useWindowLocationStore } from '../stores/window-location'
 
@@ -15,7 +13,9 @@ const props = defineProps<{
   page: number
 }>()
 
-const { location } = storeToRefs(useWindowLocationStore())
+const windowLocationStore = useWindowLocationStore()
+const { location } = storeToRefs(windowLocationStore)
+const { computeRelativeUrl } = windowLocationStore
 
 const linkUrl = computed(() => {
   return computeRelativeUrl(location.value, { page: props.page })

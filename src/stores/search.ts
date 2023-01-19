@@ -1,12 +1,11 @@
 import { defineStore, storeToRefs } from 'pinia'
 import { computed, Ref, ref, watch, WritableComputedRef } from 'vue'
 
-import { setParams } from '../helpers/window-location-helper'
-
-import { useFacetStore } from './facets'
 import { useApiStore } from './api'
+import { useFacetStore } from './facets'
 import { useSessionStore } from './session'
 import { Params } from "../types/Params"
+import { useWindowLocationStore } from "./window-location"
 
 // ------------------------------------------------------------
 // Store definition
@@ -158,12 +157,12 @@ export const useSearchStore = defineStore('search', () => {
   }
 
   function doSearch(_state: SearchState) {
-    const { performSearch } = useApiStore()
-
     const searchParams = currentSearchParams()
-    const filterParams = jsonizeParams(searchParams)
-
+    const { setParams } = useWindowLocationStore()
     setParams(searchParams)
+
+    const filterParams = jsonizeParams(searchParams)
+    const { performSearch } = useApiStore()
     return performSearch(filterParams)
   }
 
