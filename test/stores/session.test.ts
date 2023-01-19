@@ -1,18 +1,21 @@
 import { createPinia, setActivePinia, storeToRefs } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { User } from "../../src/types/User"
+import { LOGIN_PARAM, useSessionStore } from "../../src/stores/session"
 
 // ------------------------------------------------------------
 // Fixture
 
-// TODO: figure out why we need doMock() here but mock() works in admin.test.ts
-const readParam = vi.fn()
-vi.doMock('@/helpers/window-location-helper', () => {
-  return { readParam }
-})
+// ------------------------------
+// Mock window location store
 
-// useSessionStore import has to come after doMock()
-import { LOGIN_PARAM, useSessionStore } from "../../src/stores/session"
+const readParam = vi.fn()
+const windowLocationStore = { readParam }
+vi.mock('@/stores/window-location', () => {
+  return {
+    useWindowLocationStore: () => windowLocationStore
+  }
+})
 
 // ------------------------------------------------------------
 // Tests

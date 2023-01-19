@@ -7,14 +7,13 @@ import camelcaseKeys from 'camelcase-keys'
 import mapObject from 'map-obj'
 import axios from 'axios'
 
-import { deleteParam } from '../helpers/window-location-helper'
-
 import { useFacetStore } from './facets'
 import { useResultStore } from './results'
 import { useSearchStore } from './search'
 import { useSessionStore } from './session'
 import { useReservationStore } from './reservation'
 import { useClosuresStore } from './closures'
+import { useWindowLocationStore } from "./window-location"
 import { Params } from "../types/Params"
 import { Item } from "../types/Item"
 import { Closure } from "../types/Closure"
@@ -184,13 +183,13 @@ export const useApiStore = defineStore('api', () => {
   }
 
   async function initApi(apiUrl: string) {
-    apiBaseUrl.value = apiUrl
-
+    const { deleteParam } = useWindowLocationStore()
     const authToken = deleteParam(AUTH_TOKEN_PARAM)
+
+    apiBaseUrl.value = apiUrl
 
     if (authToken) {
       jsonApi.value = newJsonApi(apiUrl, authToken)
-
       imageApi.value = newImageApi(apiUrl, authToken)
 
       await initSession()

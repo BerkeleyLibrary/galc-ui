@@ -1,18 +1,35 @@
 import { createPinia, setActivePinia, storeToRefs } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { items as itemData } from "../data/items"
-import { RESERVE_ITEM_PARAM, useReservationStore } from "../../src/stores/reservation"
+import { ref } from "vue"
+import { Item } from "../../src/types/Item"
 import { Reservation } from "../../src/types/Reservation"
+import { Result } from "../../src/types/GalcApi"
 import { newPatch } from "../../src/stores/items"
+import { RESERVE_ITEM_PARAM, useReservationStore } from "../../src/stores/reservation"
+import { items as itemData } from "../data/items"
+import { Params } from "../../src/types/Params"
 
 // ------------------------------------------------------------
 // Fixture
 
 // ------------------------------
+// Mock window location store
+
+const relativeUrl: Mock<[Params], URL> = vi.fn()
+const deleteParam : Mock<[string], string> = vi.fn()
+const windowLocationStore = { relativeUrl, deleteParam }
+vi.mock('@/stores/window-location', () => {
+  return {
+    useWindowLocationStore: () => windowLocationStore
+  }
+})
+
+// ------------------------------
 // Mock api store
 
+const fetchItem: Mock<[String], Promise<Result<Item>>> = vi.fn()
 const reserveItem: Mock<[String], Promise<void>> = vi.fn()
-const apiStore = { reserveItem }
+const apiStore = { fetchItem, reserveItem }
 
 vi.mock('@/stores/api', () => {
   return {
@@ -23,7 +40,8 @@ vi.mock('@/stores/api', () => {
 // ------------------------------
 // Mock session store
 
-const sessionStore = {}
+const isAuthenticated = ref(true)
+const sessionStore = { isAuthenticated }
 
 vi.mock('@/stores/session', () => {
   return {
@@ -34,7 +52,8 @@ vi.mock('@/stores/session', () => {
 // ------------------------------
 // Mock closures store
 
-const closuresStore = {}
+const closed = ref(false)
+const closuresStore = { closed }
 
 vi.mock('@/stores/closures', () => {
   return {
@@ -52,6 +71,37 @@ describe('reservation', () => {
 
   afterEach(() => {
     vi.restoreAllMocks()
+  })
+
+  describe('init', () => {
+    it('reserves the item specified in the URL', async () => {
+      const item = itemData[0]
+      const itemId = <string> item.id
+
+      deleteParam.mockImplementationOnce((param) => {
+        expect(param).toEqual(RESERVE_ITEM_PARAM)
+        return itemId
+      })
+
+      const resultItem = newPatch(item)
+      fetchItem.mockImplementationOnce((id) => {
+        expect(id).toEqual(itemId)
+        const result = { data: resultItem}
+        return Promise.resolve(result)
+      })
+
+      const rsvnStore = useReservationStore()
+      const { init } = rsvnStore
+      await init()
+
+      expect(deleteParam).toHaveBeenCalledOnce()
+      expect(fetchItem).toHaveBeenCalledOnce()
+
+      const { currentReservation } = storeToRefs(rsvnStore)
+      const rsvn = <Reservation> currentReservation.value
+      expect(rsvn.item).toEqual(resultItem)
+      expect(rsvn.confirmed).toEqual(false)
+    })
   })
 
   describe('currentReservation', () => {
@@ -172,6 +222,11 @@ describe('reservation', () => {
     it('returns the redirect URL to reserve an item after login', () => {
       const item = itemData[0]
       const expectedUrl = new URL(`?${RESERVE_ITEM_PARAM}=${item.id}`, window.location.href)
+
+      relativeUrl.mockImplementationOnce((params: Params) => {
+        expect(params[RESERVE_ITEM_PARAM]).toEqual(item.id)
+        return expectedUrl
+      })
 
       const { reserveItemRedirectUrl } = useReservationStore()
       const redirectUrl = <URL> reserveItemRedirectUrl(item)

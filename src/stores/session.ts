@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
 import { computed, Ref, ref } from 'vue'
-import { readParam } from '../helpers/window-location-helper'
 import { User } from "../types/User"
 import { Result } from "../types/GalcApi"
+import { useWindowLocationStore } from "./window-location"
 
 export const LOGIN_PARAM = 'login'
 
@@ -17,6 +17,8 @@ export const useSessionStore = defineStore('session', () => {
   // Exported functions and properties
 
   async function init () {
+    const { readParam } = useWindowLocationStore()
+
     // TODO: can we just watch window.location?
     const login = readParam(LOGIN_PARAM)
     loginSet.value = !!login
