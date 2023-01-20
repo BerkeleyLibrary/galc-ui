@@ -24,9 +24,9 @@ describe('results', () => {
       const { pagination: storePagination } = storeToRefs(useResultStore())
       const pagination = storePagination.value
 
-      expect(!!pagination.current).toEqual(false)
-      expect(!!pagination.limit).toEqual(false)
-      expect(!!pagination.records).toEqual(false)
+      expect(pagination.current).toBeFalsy()
+      expect(pagination.limit).toBeFalsy()
+      expect(pagination.records).toBeFalsy()
     })
   })
 

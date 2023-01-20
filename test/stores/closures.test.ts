@@ -42,7 +42,7 @@ describe('closures', () => {
   describe('closurePatch', () => {
     it('defaults to empty', () => {
       const { closurePatch } = storeToRefs(useClosuresStore())
-      expect(!!closurePatch.value).toEqual(false)
+      expect(closurePatch.value).toBeFalsy()
     })
   })
 
@@ -75,7 +75,7 @@ describe('closures', () => {
   describe('reopenDate', () => {
     it('defaults to empty', () => {
       const { reopenDate } = storeToRefs(useClosuresStore())
-      expect(!!reopenDate.value).toEqual(false)
+      expect(reopenDate.value).toBeFalsy()
     })
 
     it('is undefined if no closures are current', () => {
@@ -84,7 +84,7 @@ describe('closures', () => {
         { id: '1', startDate: '01-02-2003' },
         { id: '2', startDate: '02-03-2004' }
       ]
-      expect(!!reopenDate.value).toEqual(false)
+      expect(reopenDate.value).toBeFalsy()
     })
 
     it('is undefined if the first current closure has no end date', () => {
@@ -94,7 +94,7 @@ describe('closures', () => {
         { id: '2', startDate: '02-03-2004', current: true },
         { id: '3', startDate: '03-04-2004', endDate: '04-05-2004', current: true}
       ]
-      expect(!!reopenDate.value).toEqual(false)
+      expect(reopenDate.value).toBeFalsy()
     })
 
     it('holds the date of the first current closure', () => {
@@ -131,7 +131,7 @@ describe('closures', () => {
       const { closurePatch } = storeToRefs(useClosuresStore())
       newClosure()
       const patch = <Closure> closurePatch.value
-      expect(!!patch.id).toEqual(false)
+      expect(patch.id).toBeFalsy()
       expect(patch.startDate).toEqual('')
     })
   })
@@ -177,7 +177,7 @@ describe('closures', () => {
       const orig = { id: '1', startDate: '01-02-2003', endDate: '02-03-2004', note: 'test' }
       editClosure(orig)
       cancelEdit()
-      expect(!!closurePatch.value).toEqual(false)
+      expect(closurePatch.value).toBeFalsy()
     })
   })
 
@@ -201,7 +201,7 @@ describe('closures', () => {
       expect(saveClosure).toHaveBeenCalledOnce()
 
       const { closurePatch, closures } = storeToRefs(useClosuresStore())
-      expect(!!closurePatch.value).toEqual(false)
+      expect(closurePatch.value).toBeFalsy()
 
       expect(loadClosures).toHaveBeenCalledOnce()
       expect(closures.value).toEqual(expectedClosures)
