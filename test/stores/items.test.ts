@@ -94,7 +94,7 @@ describe('items', () => {
     it('defaults to empty', () => {
       const { itemPatch } = storeToRefs(useItemsStore())
       const patch = itemPatch.value
-      expect(!!patch).toEqual(false)
+      expect(patch).toBeFalsy()
     })
   })
 
@@ -107,13 +107,13 @@ describe('items', () => {
 
       const { itemPatch } = storeToRefs(itemsStore)
       const patch = <Item>itemPatch.value
-      expect(!!patch.id).toEqual(false)
+      expect(patch.id).toBeFalsy()
 
       const terms = patch.terms
       expect(terms).toHaveLength(0)
 
       const image = <Image>patch.image
-      expect(!!image.id).toEqual(false)
+      expect(image.id).toBeFalsy()
     })
   })
 
@@ -212,7 +212,7 @@ describe('items', () => {
 
       const { itemPatch } = storeToRefs(itemsStore)
       const patch = itemPatch.value
-      expect(!!patch).toEqual(false)
+      expect(patch).toBeFalsy()
     })
   })
 

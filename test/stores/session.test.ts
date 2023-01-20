@@ -122,7 +122,7 @@ describe('session', () => {
   describe('email', () => {
     it('defaults to empty', () => {
       const { email } = storeToRefs(useSessionStore())
-      expect(!!email.value).toEqual(false)
+      expect(email.value).toBeFalsy()
     })
     it("returns the user's email", () => {
       const sessionStore = useSessionStore()

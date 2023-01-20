@@ -109,7 +109,7 @@ describe('reservation', () => {
     it('defaults to empty', () => {
       const rsvnStore = useReservationStore()
       const { currentReservation } = storeToRefs(rsvnStore)
-      expect(!!currentReservation.value).toEqual(false)
+      expect(currentReservation.value).toBeFalsy()
     })
   })
 
@@ -162,7 +162,7 @@ describe('reservation', () => {
 
       cancelReservation()
       const { currentReservation } = storeToRefs(rsvnStore)
-      expect(!!currentReservation.value).toEqual(false)
+      expect(currentReservation.value).toBeFalsy()
     })
   })
 
@@ -176,7 +176,7 @@ describe('reservation', () => {
 
       acknowledgeComplete()
       const { completedReservation } = storeToRefs(rsvnStore)
-      expect(!!completedReservation.value).toEqual(false)
+      expect(completedReservation.value).toBeFalsy()
     })
   })
 
@@ -197,7 +197,7 @@ describe('reservation', () => {
 
       expect(isReserved(item)).toEqual(true)
 
-      expect(!!currentReservation.value).toEqual(false)
+      expect(currentReservation.value).toBeFalsy()
       expect(completedReservation.value).toEqual(rsvn)
     })
   })

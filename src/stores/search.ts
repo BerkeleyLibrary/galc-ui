@@ -1,5 +1,5 @@
 import { defineStore, storeToRefs } from 'pinia'
-import { computed, Ref, ref, watch, WritableComputedRef } from 'vue'
+import { computed, Ref, ref, WritableComputedRef } from 'vue'
 
 import { useApiStore } from './api'
 import { useFacetStore } from './facets'
@@ -13,7 +13,7 @@ import { Params } from "../types/Params"
 
 type Search = {
   keywords?: string;
-  suppressed?: boolean[] | string[]; // TODO: pick one
+  suppressed?: boolean[];
   // TODO: separate keywords, suppressed, facet names
   [key: string]: string[] | boolean[] | string | undefined;
 }
@@ -37,7 +37,7 @@ export const useSearchStore = defineStore('search', () => {
   // State
 
   // NOTE: We encapsulate the search state in one ref() so we can update it atomically
-  // TODO: Is that really necessary?
+  // TODO: Now that we're triggering searches explicitly in setters, do we still need that?
   const state: Ref<SearchState> = ref(emptyState())
 
   const computedTermSelections: { [key: string]: WritableComputedRef<string[]> } = {}
@@ -48,7 +48,7 @@ export const useSearchStore = defineStore('search', () => {
   async function init() {
     state.value = readWindowLocation()
     expandAll(activeFacetNames.value)
-    watch(state, doSearch, { deep: true, immediate: true, flush: 'post' })
+    return refreshSearch()
   }
 
   const keywords: WritableComputedRef<string | undefined> = computed({
@@ -56,25 +56,28 @@ export const useSearchStore = defineStore('search', () => {
       return state.value.search.keywords
     },
     set(v) {
-      state.value = {
+      collapseAll()
+      setState({
         search: { keywords: v },
         page: DEFAULT_PAGE
-      }
-      collapseAll()
+      })
     }
   })
 
-  const suppressed = computed({
+  const suppressed: WritableComputedRef<boolean[]> = computed({
     get() {
       return state.value.search.suppressed || [false]
     },
     set(v) {
+      if (!isAdmin.value) {
+        return
+      }
       const search = { ...state.value.search }
       search.suppressed = v
-      state.value = {
+      setState({
         search: search,
         page: DEFAULT_PAGE
-      }
+      })
     }
   })
 
@@ -83,12 +86,10 @@ export const useSearchStore = defineStore('search', () => {
       return state.value.page || DEFAULT_PAGE
     },
     set(v) {
+      const newState = { ...state.value }
       // @ts-ignore
-      const newPage = parseInt(v) || DEFAULT_PAGE
-      state.value.page = newPage
-      // if (newPage !== DEFAULT_PAGE) {
-      //   setParams({ page: newPage })
-      // }
+      newState.page = parseInt(v) || DEFAULT_PAGE
+      setState(newState)
     }
   })
 
@@ -103,10 +104,10 @@ export const useSearchStore = defineStore('search', () => {
         set(v: string[]) {
           const search: Search = { ...state.value.search }
           search[facetName] = v
-          state.value = {
+          setState({
             search: search,
             page: DEFAULT_PAGE
-          }
+          })
         }
       })
       computedTermSelections[facetName] = termSelection
@@ -120,7 +121,7 @@ export const useSearchStore = defineStore('search', () => {
   }
 
   function resetSearch() {
-    state.value = emptyState()
+    return setState(emptyState())
   }
 
   function refreshSearch() {
@@ -138,6 +139,12 @@ export const useSearchStore = defineStore('search', () => {
       search: {},
       page: DEFAULT_PAGE
     }
+  }
+
+  // TODO: something less messy
+  function setState(newState: SearchState) {
+    state.value = newState
+    return refreshSearch()
   }
 
   const activeFacetNames = computed(() => {
@@ -205,7 +212,8 @@ export const useSearchStore = defineStore('search', () => {
   // Event handling
 
   window.addEventListener('popstate', () => {
-    state.value = readWindowLocation()
+    const newState = readWindowLocation()
+    setState(newState)
   })
 
   // --------------------------------------------------
@@ -238,7 +246,8 @@ function searchFrom(urlSearchParams: URLSearchParams): Search {
   if (isAdmin.value) {
     const suppressedVal = urlSearchParams.get(SUPPRESSED_PARAM)
     if (suppressedVal) {
-      newSearch.suppressed = suppressedVal.split(',')
+      const suppressed = toBooleans(suppressedVal)
+      newSearch.suppressed = suppressed.length != 0 ? suppressed : [false]
     }
   }
 
@@ -251,6 +260,17 @@ function searchFrom(urlSearchParams: URLSearchParams): Search {
   }
 
   return newSearch
+}
+
+function toBooleans(strList: string): boolean[] {
+  const strVals = strList.split(',')
+  const booleans: boolean[] = []
+  for (const b of [true, false]) {
+    if (strVals.includes(b.toString())) {
+      booleans.push(b)
+    }
+  }
+  return booleans
 }
 
 function pageFrom(urlSearchParams: URLSearchParams): number {

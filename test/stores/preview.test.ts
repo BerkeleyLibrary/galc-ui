@@ -12,7 +12,7 @@ describe('preview', () => {
     it('is initially unset', () => {
       const { currentPreview } = storeToRefs(usePreviewStore())
       const preview = currentPreview.value
-      expect(!!preview).toEqual(false)
+      expect(preview).toBeFalsy()
     })
   })
 
@@ -41,7 +41,7 @@ describe('preview', () => {
 
       endPreview()
       const preview = currentPreview.value
-      expect(!!preview).toEqual(false)
+      expect(preview).toBeFalsy()
     })
   })
 })
