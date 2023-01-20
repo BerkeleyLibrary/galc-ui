@@ -8,8 +8,7 @@ import { Reservation } from "../types/Reservation"
 import { Item } from "../types/Item"
 import { Result } from "../types/GalcApi"
 import { useWindowLocationStore } from "./window-location"
-
-export const RESERVE_ITEM_PARAM = 'reserve'
+import { RESERVE_ITEM_PARAM } from "../helpers/params"
 
 export const useReservationStore = defineStore('reservation', () => {
   // --------------------------------------------------

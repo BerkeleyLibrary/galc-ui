@@ -5,9 +5,10 @@ import { Item } from "../../src/types/Item"
 import { Reservation } from "../../src/types/Reservation"
 import { Result } from "../../src/types/GalcApi"
 import { newPatch } from "../../src/stores/items"
-import { RESERVE_ITEM_PARAM, useReservationStore } from "../../src/stores/reservation"
+import { useReservationStore } from "../../src/stores/reservation"
 import { items as itemData } from "../data/items"
 import { Params } from "../../src/types/Params"
+import { RESERVE_ITEM_PARAM } from "../../src/helpers/params"
 
 // ------------------------------------------------------------
 // Fixture
