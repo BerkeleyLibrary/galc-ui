@@ -4,8 +4,9 @@ import { computed, Ref, ref, watch, WritableComputedRef } from 'vue'
 import { useApiStore } from './api'
 import { useFacetStore } from './facets'
 import { useSessionStore } from './session'
-import { Params } from "../types/Params"
 import { useWindowLocationStore } from "./window-location"
+
+import { Params } from "../types/Params"
 
 // ------------------------------------------------------------
 // Store definition
@@ -50,7 +51,7 @@ export const useSearchStore = defineStore('search', () => {
     watch(state, doSearch, { deep: true, immediate: true, flush: 'post' })
   }
 
-  const keywords = computed({
+  const keywords: WritableComputedRef<string | undefined> = computed({
     get() {
       return state.value.search.keywords
     },

@@ -123,3 +123,5 @@ appearance.terms = [color, blackAndWhite]
 // Exports
 
 export const facets = [size, decade, genre, medium, appearance]
+
+export const facetNames = facets.map((f) => f.name)

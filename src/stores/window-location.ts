@@ -1,9 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, Ref, ref, WritableComputedRef } from 'vue'
-import { LOGIN_PARAM } from "./session"
-import { AUTH_TOKEN_PARAM } from "./api"
-import { RESERVE_ITEM_PARAM } from "./reservation"
 import { Params } from "../types/Params"
+import { AUTH_TOKEN_PARAM, LOGIN_PARAM, RESERVE_ITEM_PARAM } from "../helpers/params"
 
 // ------------------------------------------------------------
 // Store definition

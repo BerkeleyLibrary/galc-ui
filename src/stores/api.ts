@@ -23,11 +23,10 @@ import { ItemResults } from "../types/ItemResults"
 import { GalcApi, Result } from "../types/GalcApi"
 import { Facet } from "../types/Facet"
 import { ClosureResults } from "../types/ClosureResults"
+import { AUTH_TOKEN_PARAM } from "../helpers/params"
 
 // ------------------------------------------------------------
 // Store definition
-
-export const AUTH_TOKEN_PARAM = 'token'
 
 export const useApiStore = defineStore('api', () => {
   // --------------------------------------------------

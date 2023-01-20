@@ -3,8 +3,7 @@ import { computed, Ref, ref } from 'vue'
 import { User } from "../types/User"
 import { Result } from "../types/GalcApi"
 import { useWindowLocationStore } from "./window-location"
-
-export const LOGIN_PARAM = 'login'
+import { LOGIN_PARAM } from "../helpers/params"
 
 export const useSessionStore = defineStore('session', () => {
   // --------------------------------------------------

@@ -1,7 +1,8 @@
 import { createPinia, setActivePinia, storeToRefs } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { User } from "../../src/types/User"
-import { LOGIN_PARAM, useSessionStore } from "../../src/stores/session"
+import { useSessionStore } from "../../src/stores/session"
+import { LOGIN_PARAM } from "../../src/helpers/params"
 
 // ------------------------------------------------------------
 // Fixture
