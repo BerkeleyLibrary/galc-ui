@@ -117,7 +117,6 @@ describe('search', () => {
       })
 
       describe('set()', () => {
-        // TODO: test that we reset facets
         it('triggers a search', () => {
           const expectedKeywords = 'blue medium'
 
@@ -130,6 +129,29 @@ describe('search', () => {
           keywords.value = expectedKeywords
 
           expect(collapseAll).toHaveBeenCalledOnce()
+          expect(performSearch).toHaveBeenCalledOnce()
+        })
+
+        it('resets facets and page number', () => {
+          const searchStore = useSearchStore()
+          const { keywords, page } = storeToRefs(searchStore)
+          page.value = 2
+
+          const { selectedTerms } = searchStore
+          selectedTerms('Genre').value = ['Abstract', 'Still Life']
+          selectedTerms('Medium').value = ['Etching', 'Collage']
+
+          performSearch.mockReset()
+          performSearch.mockImplementationOnce((params) => {
+            expect(params['page[number]']).toBeUndefined()
+            expect(params['filter[Genre]']).toBeUndefined()
+            expect(params['filter[Medium]']).toBeUndefined()
+
+            expect(params['filter[keywords]']).toEqual('blue medium')
+            return Promise.resolve()
+          })
+
+          keywords.value = 'blue medium'
           expect(performSearch).toHaveBeenCalledOnce()
         })
       })
@@ -155,19 +177,44 @@ describe('search', () => {
           expect(performSearch).not.toHaveBeenCalled()
         })
 
-        // TODO: test that we don't clobber keywords and facets
         it('triggers a search if user is admin', () => {
           isAdmin.value = true
 
-          const suppressedVal = [true, false]
           performSearch.mockImplementationOnce((params) => {
             expect(params['filter[suppressed]']).toEqual('true,false')
             return Promise.resolve()
           })
 
           const { suppressed } = storeToRefs(useSearchStore())
-          suppressed.value = suppressedVal
+          suppressed.value = [true, false]
 
+          expect(performSearch).toHaveBeenCalledOnce()
+        })
+
+        it('resets the page number, but does not alter keywords or facet values', () => {
+          isAdmin.value = true
+
+          const searchStore = useSearchStore()
+          const { keywords, page, suppressed } = storeToRefs(searchStore)
+          keywords.value = 'blue medium'
+          page.value = 2
+
+          const { selectedTerms } = searchStore
+          selectedTerms('Medium').value = ['Etching', 'Collage']
+          selectedTerms('Genre').value = ['Abstract', 'Still Life']
+
+          performSearch.mockReset()
+          performSearch.mockImplementationOnce((params) => {
+            expect(params['page[number]']).toBeUndefined()
+            expect(params['filter[suppressed]']).toEqual('true,false')
+
+            expect(params['filter[keywords]']).toEqual('blue medium')
+            expect(params['filter[Genre]']).toEqual('Abstract,Still Life')
+            expect(params['filter[Medium]']).toEqual('Etching,Collage')
+            return Promise.resolve()
+          })
+
+          suppressed.value = [true, false]
           expect(performSearch).toHaveBeenCalledOnce()
         })
       })
@@ -182,7 +229,6 @@ describe('search', () => {
       })
 
       describe('set()', () => {
-        // TODO: test that we don't clobber keywords and facets
         it('triggers a search', () => {
           const pageVal = 13
 
@@ -193,6 +239,32 @@ describe('search', () => {
 
           const { page } = storeToRefs(useSearchStore())
           page.value = pageVal
+
+          expect(performSearch).toHaveBeenCalledOnce()
+        })
+
+        it('keeps keywords and facet values', () => {
+          const searchStore = useSearchStore()
+          const { keywords, page } = storeToRefs(searchStore)
+          keywords.value = 'blue medium'
+
+          const { selectedTerms } = searchStore
+          selectedTerms('Medium').value = ['Etching', 'Collage']
+          selectedTerms('Genre').value = ['Abstract', 'Still Life']
+
+          const pageVal = 13
+
+          performSearch.mockReset()
+          performSearch.mockImplementationOnce((params) => {
+            expect(params['filter[keywords]']).toEqual('blue medium')
+            expect(params['filter[Genre]']).toEqual('Abstract,Still Life')
+            expect(params['filter[Medium]']).toEqual('Etching,Collage')
+            expect(params['page[number]']).toEqual(pageVal)
+            return Promise.resolve()
+          })
+
+          page.value = pageVal
+          expect(performSearch).toHaveBeenCalledOnce()
         })
       })
     })
@@ -209,7 +281,100 @@ describe('search', () => {
         })
       })
 
-      // TODO: test set()
+      describe('set()', () => {
+        it('triggers a search', () => {
+          const searchStore = useSearchStore()
+
+          const facetName = 'Genre'
+          const termVals = ['Abstract', 'Still Life']
+
+          performSearch.mockReset()
+          performSearch.mockImplementationOnce((params) => {
+            expect(params[`filter[${facetName}]`]).toEqual(termVals.join(','))
+            return Promise.resolve()
+          })
+
+          const { selectedTerms } = searchStore
+          const termSelection = selectedTerms(facetName)
+
+          termSelection.value = termVals
+
+          expect(performSearch).toHaveBeenCalledOnce()
+        })
+
+        it('resets the page number, but does not alter keywords or other facet values', () => {
+          const searchStore = useSearchStore()
+          const { keywords, page } = storeToRefs(searchStore)
+          keywords.value = 'blue medium'
+          page.value = 2
+
+          const { selectedTerms } = searchStore
+          selectedTerms('Medium').value = ['Etching', 'Collage']
+
+          performSearch.mockReset()
+          performSearch.mockImplementationOnce((params) => {
+            expect(params['page[number]']).toBeUndefined()
+
+            expect(params['filter[keywords]']).toEqual('blue medium')
+            expect(params['filter[Genre]']).toEqual('Abstract,Still Life')
+            expect(params['filter[Medium]']).toEqual('Etching,Collage')
+            return Promise.resolve()
+          })
+
+          selectedTerms('Genre').value = ['Abstract', 'Still Life']
+
+          expect(performSearch).toHaveBeenCalledOnce()
+        })
+      })
+    })
+
+    describe('canResetSearch()', () => {
+      it('defaults to false', () => {
+        const { canResetSearch } = useSearchStore()
+        expect(canResetSearch()).toEqual(false)
+      })
+
+      it('returns true if keywords are set', () => {
+        const searchStore = useSearchStore()
+        const { canResetSearch } = searchStore
+
+        const { keywords } = storeToRefs(searchStore)
+        keywords.value = 'blue medium'
+
+        expect(canResetSearch()).toEqual(true)
+      })
+
+      it('returns true if facet terms are selected', () => {
+        const { selectedTerms, canResetSearch } = useSearchStore()
+
+        const termSelection = selectedTerms('Genre')
+        termSelection.value = ['Abstract', 'Still Life']
+
+        expect(canResetSearch()).toEqual(true)
+      })
+    })
+
+    describe('resetSearch()', () => {
+      it('triggers a search', () => {
+        const searchStore = useSearchStore()
+        const { selectedTerms, resetSearch } = searchStore
+
+        const { page } = storeToRefs(searchStore)
+        page.value = 2
+
+        const termSelection = selectedTerms('Genre')
+        termSelection.value = ['Abstract', 'Still Life']
+
+        performSearch.mockReset()
+        performSearch.mockImplementationOnce((params) => {
+          const keys = Object.keys(params)
+          expect(keys).toHaveLength(0)
+          return Promise.resolve()
+        })
+
+        resetSearch()
+        expect(performSearch).toHaveBeenCalledOnce()
+      })
     })
   })
 })

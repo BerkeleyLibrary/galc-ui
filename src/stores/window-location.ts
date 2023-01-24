@@ -67,7 +67,9 @@ export const useWindowLocationStore = defineStore('window-location', () => {
     const sp = baseSearchParams(clearParams, url)
     if (params) {
       for (const [name, value] of Object.entries(params)) {
-        sp.set(name, value.toString())
+        if (value) {
+          sp.set(name, value.toString())
+        }
       }
     }
     url.search = sp.toString()
