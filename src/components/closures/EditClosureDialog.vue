@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useClosuresStore } from '../../stores/closures'
-import { dateToDateInput, ensureDate } from '../../helpers/date-helper'
+import { ensureDate, formatPlainDate } from '../../helpers/date-helper'
 import { storeToRefs } from 'pinia'
 
 // ------------------------------------------------------------
@@ -57,7 +57,7 @@ function dateInputModel (dateAttr) {
     get () {
       const patch = closurePatch.value
       const date = patch[dateAttr]
-      const result = date ? dateToDateInput(date) : null
+      const result = date ? formatPlainDate(date) : null
       return result
     },
     set (v) {
