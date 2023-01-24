@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useClosuresStore } from '../../stores/closures'
-import { ensureDate, formatPlainDate } from '../../helpers/date-helper'
+import { ensureDate, formatPlainDate, validateDateRange } from '../../helpers/date-helper'
 import { storeToRefs } from 'pinia'
+import { DateRangeAttr } from "../../types/DateRange"
 
 // ------------------------------------------------------------
 // Stores
@@ -14,9 +15,9 @@ const { closurePatch } = storeToRefs(closures)
 // ------------------------------------------------------------
 // Local state
 
-const title = computed(() => closurePatch.value.id ? 'Editing Closure' : 'New Closure')
+const title = computed(() => closurePatch.value?.id ? 'Editing Closure' : 'New Closure')
 
-const hasEndDate = ref(!!closurePatch.value.endDate)
+const hasEndDate = ref(!!closurePatch.value?.endDate)
 
 const startDateInputModel = dateInputModel('startDate')
 const endDateInputModel = dateInputModel('endDate')
@@ -25,22 +26,8 @@ const endDateInputModel = dateInputModel('endDate')
 // Validation
 
 const validationErrors = computed(() => {
-  const errors = {}
-  const patch = closurePatch.value
-  const startDateValid = isValidDate(patch.startDate)
-  if (!startDateValid) {
-    errors.startDate = 'You must specify a start date.'
-  }
-  if (hasEndDate.value) {
-    const endDateValid = isValidDate(patch.endDate)
-    if (!endDateValid) {
-      errors.endDate = 'You must specify an end date.'
-    } else if (startDateValid && !isDateRangeValid()) {
-      errors.startDate = 'The start date must be at least one day after the end date.'
-      errors.endDate = 'The end date must be at least one day after the start date.'
-    }
-  }
-
+  const patch = closurePatch.value!
+  const errors = validateDateRange(patch.startDate, patch.endDate)
   console.log('validationErrors: %o', errors)
   return errors
 })
@@ -52,54 +39,28 @@ const canSave = computed(() => {
 // ------------------------------------------------------------
 // Helper functions
 
-function dateInputModel (dateAttr) {
+function dateInputModel(dateAttr: DateRangeAttr) {
   return computed({
-    get () {
-      const patch = closurePatch.value
+    get() {
+      const patch = closurePatch.value!
       const date = patch[dateAttr]
-      const result = date ? formatPlainDate(date) : null
-      return result
+      return formatPlainDate(date) ?? ''
     },
-    set (v) {
-      // TODO: is this right?
+    set(v: string) {
       const vActual = ensureDate(v)
-      const patch = closurePatch.value
+      const patch = closurePatch.value!
       patch[dateAttr] = vActual
     }
   })
 }
 
-function isDateRangeValid () {
-  const patch = closurePatch.value
-  if (patch) {
-    const startDate = ensureDate(patch.startDate)
-    const endDate = ensureDate(patch.endDate)
-    return startDate < endDate
-  }
-  return false
-}
-
-function isValidDate (date) {
-  try {
-    if (date) {
-      const dateActual = ensureDate(date)
-      if (dateActual instanceof Date) {
-        return !isNaN(dateActual.getTime())
-      }
-    }
-  } catch (e) {
-    console.log(e)
-  }
-  return false
-}
-
 // ------------------------------------------------------------
 // Actions
 
-function saveChanges () {
+function saveChanges() {
   const patch = { ...closurePatch.value }
   if (!hasEndDate.value) {
-    patch.endDate = null
+    delete patch.endDate
   }
   applyEdit(patch)
 }
