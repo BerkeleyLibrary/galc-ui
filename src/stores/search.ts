@@ -115,6 +115,7 @@ export const useSearchStore = defineStore('search', () => {
     return termSelection
   }
 
+  // TODO: make this a computed property
   function canResetSearch() {
     const params = currentSearchParams()
     return params && Object.keys(params).length > 0
