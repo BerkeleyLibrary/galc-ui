@@ -1,8 +1,8 @@
+import { DateRange } from "./DateRange"
+
 // TODO: separate ClosurePatch (w/ID optional) from Closure
-type Closure = {
+type Closure = DateRange & {
   id?: string
-  startDate?: string,
-  endDate?: string,
   note?: string,
   createdAt?: string,
   updatdAt?: string,
