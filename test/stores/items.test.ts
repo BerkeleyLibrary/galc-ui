@@ -1,6 +1,6 @@
 import { createPinia, setActivePinia, storeToRefs } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest'
-import { newPatch, useItemsStore } from "../../src/stores/items"
+import { newEmptyImage, newPatch, useItemsStore } from "../../src/stores/items"
 import { Item, ItemEntry } from "../../src/types/Item"
 import { Image } from "../../src/types/Image"
 import { items as itemData } from "../data/items"
@@ -72,6 +72,17 @@ function assertCopyOf(expected: Item, actual: Item) {
 
 // ------------------------------------------------------------
 // Tests
+
+describe('newEmptyImage()', () => {
+  it('returns a new, empty image', () => {
+    const img = newEmptyImage()
+    expect(img).toBeTypeOf('object')
+    expect(img.id).toBeUndefined()
+    expect(img.thumbnail).toBeUndefined()
+    expect(img.basename).toBeUndefined()
+    expect(img.links).toBeUndefined()
+  })
+})
 
 describe('items', () => {
   beforeEach(() => {

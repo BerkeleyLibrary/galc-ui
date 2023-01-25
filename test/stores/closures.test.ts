@@ -1,6 +1,6 @@
 import { createPinia, setActivePinia, storeToRefs } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { useClosuresStore } from "../../src/stores/closures"
+import { newEmptyClosure, useClosuresStore } from "../../src/stores/closures"
 import { Closure } from "../../src/types/Closure"
 
 // ------------------------------------------------------------
@@ -22,6 +22,14 @@ vi.mock('@/stores/api', () => {
 
 // ------------------------------------------------------------
 // Tests
+
+describe('newEmptyClosure()', () => {
+  it('returns a new empty closure', () => {
+    const cls = newEmptyClosure()
+    expect(cls.id).toBeFalsy()
+    expect(cls.startDate).toEqual('')
+  })
+})
 
 describe('closures', () => {
   beforeEach(() => {

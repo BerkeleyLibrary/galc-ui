@@ -6,7 +6,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "yarn eslint --ext .js,.ts,.vue src test",
-    "test": "yarn vitest run"
+    "test": "yarn vitest run",
+    "coverage": "yarn vitest run --coverage"
   },
   "dependencies": {
     "@types/lodash": "^4.14.191",
@@ -34,6 +35,7 @@
     "@typescript-eslint/eslint-plugin": "^5.48.1",
     "@typescript-eslint/parser": "^5.48.1",
     "@vitejs/plugin-vue": "^2.3.0",
+    "@vitest/coverage-c8": "^0.28.2",
     "@vue/compiler-sfc": "^3.2.45",
     "@vue/eslint-config-typescript": "^11.0.2",
     "eslint": "^8.16.0",
