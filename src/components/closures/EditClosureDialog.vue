@@ -26,6 +26,7 @@ const endDateInputModel = dateInputModel('endDate')
 // Validation
 
 const validationErrors = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const patch = closurePatch.value!
   const errors = validateDateRange(patch.startDate, patch.endDate)
   console.log('validationErrors: %o', errors)
@@ -42,13 +43,15 @@ const canSave = computed(() => {
 function dateInputModel(dateAttr: DateRangeAttr) {
   return computed({
     get() {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const patch = closurePatch.value!
       const date = patch[dateAttr]
       return formatPlainDate(date) ?? ''
     },
     set(v: string) {
-      const vActual = ensureDate(v)
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const patch = closurePatch.value!
+      const vActual = ensureDate(v)
       patch[dateAttr] = vActual
     }
   })

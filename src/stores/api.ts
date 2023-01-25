@@ -1,11 +1,8 @@
-// @ts-ignore
+import axios from 'axios'
+// @ts-ignore: no type information provided
 import JsonApi from 'devour-client'
 import { defineStore } from 'pinia'
 import { computed, Ref, ref } from 'vue'
-import decamelize from 'decamelize'
-import camelcaseKeys from 'camelcase-keys'
-import mapObject from 'map-obj'
-import axios from 'axios'
 
 import { useFacetStore } from './facets'
 import { useResultStore } from './results'
@@ -24,6 +21,8 @@ import { GalcApi, Result } from "../types/GalcApi"
 import { Facet } from "../types/Facet"
 import { ClosureResults } from "../types/ClosureResults"
 import { AUTH_TOKEN_PARAM } from "../helpers/params"
+import { camelizePayload, decamelizePayload } from "../helpers/camelize-helper"
+import { handleError } from "../helpers/handle-error"
 
 // ------------------------------------------------------------
 // Store definition
@@ -90,9 +89,11 @@ export const useApiStore = defineStore('api', () => {
 
   function loadClosures(params = {}): Promise<ClosureResults> {
     incrementLoadCount()
-    return galcApi()
+    const found = galcApi()
       .findAll('closures', params)
+    const caught = found
       .catch(handleError<ClosureResults>(`loadClosures(${params}) failed`))
+    return caught
       .finally(decrementLoadCount)
   }
 
@@ -277,7 +278,7 @@ function newJsonApi(apiUrl: string, authToken?: string | null) {
   const options = authToken ? { apiUrl: apiUrl, bearer: authToken } : { apiUrl }
   const jsonApi = new JsonApi(options)
   jsonApi.axios.defaults.withCredentials = true
-  jsonApi.insertMiddlewareBefore('response', camelcaseMiddleware)
+  jsonApi.insertMiddlewareBefore('response', camelizeMiddleware)
   jsonApi.insertMiddlewareBefore('axios-request', decamelizeMiddleware)
   for (const [name, attrs] of Object.entries(models)) {
     jsonApi.define(name, attrs)
@@ -350,67 +351,19 @@ const models = {
   }
 }
 
-// TODO: display errors
-function handleError<T = void>(msg: string): (error: any) => Promise<T> {
-  // TODO: transition to error state
-  return (error: any) => {
-    console.log(`${msg}: %o`, error)
-    return Promise.resolve(<T>{})
-  }
-}
-
 // ------------------------------------------------------------
 // Camelization/Decamelization
 
-type ResponsePayload<T> = {
-  res: Result<T>
-}
-
-type RequestPayload<T> = {
-  req: Result<T>
-}
-
 // TODO: do this on server side with JSONAPI::Serializer.set_key_transform
-const camelcaseMiddleware = {
-  name: 'camelcase-middleware',
-  res: (payload: ResponsePayload<any>) => {
-    const axiosData = payload.res.data
-    if (typeof axiosData === 'object') {
-      axiosData.data = camelcaseKeys(axiosData.data, { deep: true })
-    }
-    return payload
-  }
-}
 
+// Decamelize request data
 const decamelizeMiddleware = {
   name: 'decamelize-middleware',
-  req: (payload: RequestPayload<any>) => {
-    const axiosData = payload.req.data
-    if (axiosData) {
-      axiosData.data = decamelizeKeys(axiosData.data)
-    }
-    return payload
-  }
+  req: decamelizePayload
 }
 
-function decamelizeKeys(data: any): any {
-  if (Array.isArray(data)) {
-    return data.map(d => decamelizeKeys(d))
-  }
-  if (!isObject(data)) {
-    return data
-  }
-  return mapObject(data, (k, v) => {
-    const key = decamelize(<string>k)
-    const value = decamelizeKeys(v)
-    return [key, value]
-  })
-}
-
-function isObject(value: any): boolean {
-  return typeof value === 'object' &&
-    value !== null &&
-    !(value instanceof RegExp) &&
-    !(value instanceof Error) &&
-    !(value instanceof Date)
+// Camelize response data
+const camelizeMiddleware = {
+  name: 'camelize-middleware',
+  res: camelizePayload
 }

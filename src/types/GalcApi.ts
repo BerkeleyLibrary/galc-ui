@@ -8,12 +8,14 @@ import { User } from "./User"
 import { Image } from "./Image"
 import { Closure } from "./Closure"
 
-type Result<T> = {
+type ApiObject = Item | User | Closure | Image | Reservation
+
+type Result<T extends ApiObject | Array<ApiObject>> = {
   // TODO: does this have to be optional?
   data?: T
 }
 
-type One<T> = {
+type One<T extends ApiObject> = {
   get(): Promise<Result<T>>,
   patch(v: T): Promise<Result<T>>
 }
@@ -21,26 +23,25 @@ type One<T> = {
 // TODO: check whether we're really returning Promise<T> or Promise<Result<T>>
 type GalcApi = {
   one(endpoint: 'item', id: string): One<Item>
-  find(endpoint: 'item', id: string, params: Params): Promise<Result<Item>>
-  create(endpoint: 'item', item: Item):  Promise<Result<Item>>
-  findAll(endpoint: 'items', params: Params): Promise<ItemResults>
-
-  create(endpoint: 'reservation', args: RsvnArgs): Promise<Result<Reservation>>
-
   one(endpoint: 'user', id: string): One<User>
-
-  find(endpoint: 'image', id: string): Promise<Result<Image>>
-  destroy(endpoint: 'image', id: string): Promise<void>
-
-  create(endpoint: 'closure', closure: Closure): Promise<Result<Closure>>
   one(endpoint: 'closure', id: string): One<Closure>
+
+  find(endpoint: 'item', id: string, params: Params): Promise<Result<Item>>
+  find(endpoint: 'image', id: string): Promise<Result<Image>>
+
+  create(endpoint: 'item', item: Item):  Promise<Result<Item>>
+  create(endpoint: 'reservation', args: RsvnArgs): Promise<Result<Reservation>>
+  create(endpoint: 'closure', closure: Closure): Promise<Result<Closure>>
+
+  destroy(endpoint: 'image', id: string): Promise<void>
   destroy(endpoint: 'closure', id: string): Promise<void>
 
+  findAll(endpoint: 'items', params: Params): Promise<ItemResults>
   findAll(endpoint: 'closures', params: Params): Promise<ClosureResults>
   findAll(endpoint: 'facets', params: Params): Promise<FacetResults>
 }
 
-export type { GalcApi, Result }
+export type { GalcApi, ApiObject, Result }
 
 type RsvnArgs = {
   item: { id: string }

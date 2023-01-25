@@ -28,8 +28,8 @@ vi.mock('@/stores/window-location', () => {
 // ------------------------------
 // Mock api store
 
-const fetchItem: Mock<[String], Promise<Result<Item>>> = vi.fn()
-const reserveItem: Mock<[String], Promise<void>> = vi.fn()
+const fetchItem: Mock<[string], Promise<Result<Item>>> = vi.fn()
+const reserveItem: Mock<[string], Promise<void>> = vi.fn()
 const apiStore = { fetchItem, reserveItem }
 
 vi.mock('@/stores/api', () => {

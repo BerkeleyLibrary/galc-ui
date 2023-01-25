@@ -11,19 +11,22 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:vue/vue3-essential',
-    '@vue/eslint-config-typescript',
-    // TODO: figure out why this blows up on Vue components
-    // 'plugin:@typescript-eslint/recommended'
+    "@vue/typescript/recommended"
   ],
+  parser: 'vue-eslint-parser',
+  parserOptions: {
+    parser: '@typescript-eslint/parser',
+  },
   plugins: ['@typescript-eslint'],
   rules: {
     'dot-notation': ['error', { 'allowPattern': '^[A-Z]' }],
     'no-unused-vars': 'off',
     'object-shorthand': ['error', 'consistent-as-needed'],
     '@typescript-eslint/no-unused-vars': ['warn', { 'varsIgnorePattern': '^_', 'argsIgnorePattern': '^_' }],
+    '@typescript-eslint/ban-ts-comment': ['error', { 'ts-ignore': 'allow-with-description' }],
     'vue/html-closing-bracket-spacing': 0,
     'vue/max-attributes-per-line': 0,
     'vue/multi-word-component-names': 'off',
     'vue/singleline-html-element-content-newline': 0
-  }
+  },
 }
