@@ -7,7 +7,10 @@ export default defineConfig({
     coverage: {
       provider: 'c8',
       reporter: ['text', 'html'],
-      reportsDirectory: './artifacts/coverage'
+      reportsDirectory: './artifacts/coverage',
+      // TODO: check component coverage
+      lines: 100,
+      branches: 100
     }
   },
   resolve: {
