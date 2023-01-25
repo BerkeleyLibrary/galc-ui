@@ -13,12 +13,10 @@ const props = defineProps<{
   page: number
 }>()
 
-const windowLocationStore = useWindowLocationStore()
-const { location } = storeToRefs(windowLocationStore)
-const { computeRelativeUrl } = windowLocationStore
+const { relativeUrl } = useWindowLocationStore()
 
 const linkUrl = computed(() => {
-  return computeRelativeUrl(location.value, { page: props.page })
+  return relativeUrl({ page: props.page })
 })
 
 function navigateTo(newPage: number) {

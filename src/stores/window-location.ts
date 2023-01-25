@@ -61,21 +61,6 @@ export const useWindowLocationStore = defineStore('window-location', () => {
     return params.get(paramName)
   }
 
-  function computeRelativeUrl(oldLocation: URL, params: Params, clearParams = false): URL {
-    const url = new URL(oldLocation)
-
-    const sp = baseSearchParams(clearParams, url)
-    if (params) {
-      for (const [name, value] of Object.entries(params)) {
-        if (value) {
-          sp.set(name, value.toString())
-        }
-      }
-    }
-    url.search = sp.toString()
-
-    return url
-  }
   // ------------------------------
   // Events
 
@@ -94,13 +79,28 @@ export const useWindowLocationStore = defineStore('window-location', () => {
   // ------------------------------
   // Store
 
-  return { location, relativeUrl, setParams, deleteParam, readParam, computeRelativeUrl }
+  return { location, relativeUrl, setParams, deleteParam, readParam }
 
 // --------------------------------------------------
 // Private implementation
 
-// TODO: Something less hacky
+  function computeRelativeUrl(oldLocation: URL, params: Params, clearParams = false): URL {
+    const url = new URL(oldLocation)
 
+    const sp = baseSearchParams(clearParams, url)
+    if (params) {
+      for (const [name, value] of Object.entries(params)) {
+        if (value) {
+          sp.set(name, value.toString())
+        }
+      }
+    }
+    url.search = sp.toString()
+
+    return url
+  }
+
+  // TODO: Something less hacky
   function baseSearchParams(clearParams: boolean, url: URL) {
     const currentParams = url.searchParams
     if (!clearParams) {
@@ -112,7 +112,6 @@ export const useWindowLocationStore = defineStore('window-location', () => {
         newParams.append(param, currentVal)
       }
     }
-
-    return clearParams ? newParams : currentParams
+    return newParams
   }
 })

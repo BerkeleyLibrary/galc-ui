@@ -1,6 +1,7 @@
 import { createPinia, setActivePinia, storeToRefs } from 'pinia'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { useWindowLocationStore } from "../../src/stores/window-location"
+import { AUTH_TOKEN_PARAM, LOGIN_PARAM, RESERVE_ITEM_PARAM } from "../../src/helpers/params"
 
 // ------------------------------------------------------------
 // Tests
@@ -66,6 +67,97 @@ describe('window-location', () => {
       const { location } = storeToRefs(useWindowLocationStore())
       const actualUrl = location.value
       expect(actualUrl.toString()).toEqual(window.location.href)
+    })
+  })
+
+  describe('relativeUrl', () => {
+    it('appends parameters', () => {
+      const { relativeUrl } = useWindowLocationStore()
+
+      window.history.pushState('', '', '?keywords=blue%2Cmedium')
+      const oldUrl = new URL(window.location.href)
+
+      const params = { page: 2 }
+      const newUrl = relativeUrl(params)
+
+      const expectedUrlStr = `${oldUrl.toString()}&page=2`
+      expect(newUrl.toString()).toEqual(expectedUrlStr)
+    })
+
+    it('can clear parameters', () => {
+      const { relativeUrl } = useWindowLocationStore()
+      const subqueryToReplace = 'keywords=blue%2Cmedium'
+
+      window.history.pushState('', '', `?${subqueryToReplace}`)
+      const oldUrl = new URL(window.location.href)
+
+      const params = { page: 2 }
+      const newUrl = relativeUrl(params, true)
+
+      const expectedUrlStr = oldUrl.toString().replace(subqueryToReplace, 'page=2')
+      expect(newUrl.toString()).toEqual(expectedUrlStr)
+    })
+
+    it('preserves protected parameters', () => {
+      const { relativeUrl } = useWindowLocationStore()
+      const subqueryToReplace = 'keywords=blue%2Cmedium'
+
+      const subqueryToKeep = Object.entries({
+        [LOGIN_PARAM]: 'true',
+        [AUTH_TOKEN_PARAM]: 'aGVscCBJIGFtIHRyYXBwZWQgaW4gYSB1bml0IHRlc3Q',
+        [RESERVE_ITEM_PARAM]: '8675309'
+      }).map(([k, v]) => `${k}=${v}`).join('&')
+
+      window.history.pushState('', '', `?${subqueryToKeep}&${subqueryToReplace}`)
+      const oldUrl = new URL(window.location.href)
+
+      const params = { page: 2 }
+      const newUrl = relativeUrl(params, true)
+
+      const expectedUrlStr = oldUrl.toString().replace(subqueryToReplace, 'page=2')
+      expect(newUrl.toString()).toEqual(expectedUrlStr)
+    })
+  })
+
+  describe('readParam', () => {
+    it('reads a parameter', () => {
+      window.history.pushState('', '', '?keywords=blue%2Cmedium')
+
+      const { readParam } = useWindowLocationStore()
+      const val = readParam('keywords')
+      expect(val).toEqual('blue,medium')
+    })
+  })
+
+  describe('setParams', () => {
+    it('sets parameters', () => {
+      const windowLocationStore = useWindowLocationStore()
+      const { setParams } = windowLocationStore
+      const params = { keywords: 'blue,medium' }
+      setParams(params)
+
+      const expectedSearch = '?keywords=blue%2Cmedium'
+
+      const { location } = storeToRefs(windowLocationStore)
+      const url = location.value
+      expect(url.search).toEqual(expectedSearch)
+
+      const newUrl = new URL(window.location.href)
+      expect(newUrl.search).toEqual(expectedSearch)
+    })
+  })
+
+  describe('deleteParam', () => {
+    it('reads and deletes a parameter', () => {
+      const windowLocationStore = useWindowLocationStore()
+      const { location } = storeToRefs(windowLocationStore)
+
+      window.history.pushState('', '', '?keywords=blue%2Cmedium')
+      const { deleteParam } = windowLocationStore
+      const val = deleteParam('keywords')
+      expect(val).toEqual('blue,medium')
+
+      expect(location.value.toString()).not.toContain('keywords')
     })
   })
 })
