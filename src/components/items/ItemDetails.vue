@@ -4,6 +4,8 @@ import { useFacetStore } from '../../stores/facets'
 import { computed } from 'vue'
 import { useSessionStore } from '../../stores/session'
 import { useAdminStore } from '../../stores/admin'
+import { Term } from "../../types/Term"
+import { Item } from "../../types/Item"
 
 // ------------------------------------------------------------
 // Store
@@ -15,9 +17,7 @@ const { showHiddenFields } = storeToRefs(useAdminStore())
 // ------------------------------------------------------------
 // Properties
 
-const props = defineProps({
-  item: { type: Object, default: null }
-})
+const props = defineProps<{item: Item}>()
 
 // ------------------------------------------------------------
 // Helper functions
@@ -52,9 +52,11 @@ const adminMetadata = computed(() => {
   }
 })
 
+type FacetTerms = { [key: string]: string[] }
+
 const facetTerms = computed(() => {
   const item = props.item
-  const terms = {}
+  const terms: FacetTerms = {}
   if (item.terms) {
     for (const term of item.terms) {
       const facetName = getFacetName(term)
@@ -67,18 +69,19 @@ const facetTerms = computed(() => {
   return terms
 })
 
-function facetValue (facetName) {
+function facetValue (facetName: string): string | undefined {
   const terms = facetTerms.value[facetName]
   if (terms) {
     return terms.join(', ')
   }
 }
 
-function getFacetName (term) {
+// TODO: something less awful; inflate term facet on load? index terms by ID in store?
+function getFacetName (term: Term): string {
   const facetId = term.facet.id
-  // TODO: something less awful; inflate term facet on load? index terms by ID in store?
-  const facet = facets.value.find((f) => f.id === facetId)
-  return facet && facet.name
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const facet = facets.value.find((f) => f.id === facetId)!
+  return facet.name
 }
 </script>
 

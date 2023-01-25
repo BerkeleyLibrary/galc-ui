@@ -28,9 +28,7 @@ const endDateInputModel = dateInputModel('endDate')
 const validationErrors = computed(() => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const patch = closurePatch.value!
-  const errors = validateDateRange(patch.startDate, patch.endDate)
-  console.log('validationErrors: %o', errors)
-  return errors
+  return validateDateRange(patch.startDate, patch.endDate)
 })
 
 const canSave = computed(() => {

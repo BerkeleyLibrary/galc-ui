@@ -1,33 +1,46 @@
 <script setup lang="ts">
 import { computed, onMounted, onUpdated } from 'vue'
+import { storeToRefs } from "pinia"
 import { useFacetStore } from '../../stores/facets'
-import { storeToRefs } from 'pinia'
 import { useItemsStore } from '../../stores/items'
 
 import EditTermSelection from './EditTermSelection.vue'
+import { ItemAttrs } from "../../types/Item"
 
 const items = useItemsStore()
 const { itemPatch } = storeToRefs(items)
-
 const facetStore = useFacetStore()
 const { facetForName } = facetStore
 
-const props = defineProps({
-  attr: { type: String, default: null },
-  label: { type: String, default: null },
-  required: { type: Boolean, default: false }
-})
+const props = defineProps<{
+  attr: string,
+  label: string,
+  required?: boolean
+}>()
 
-const facet = computed(() => facetForName(props.label))
+const facet = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return facetForName(props.label)!
+})
 
 const isFacet = computed(() => !!facet.value)
 
 const attrValue = computed({
   get () {
-    return itemPatch.value[props.attr]
+    // TODO: pass in item?
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const patch = itemPatch.value!
+    // TODO: split facet value & plain attribute fields so we don't have to do this
+    const attr = props.attr as keyof ItemAttrs
+    return patch[attr]
   },
-  set (v) {
-    itemPatch.value[props.attr] = v
+  set (v: string | undefined) {
+    // TODO: pass in item?
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const patch = itemPatch.value!
+    // TODO: split facet value & plain attribute fields so we don't have to do this
+    const attr = props.attr as keyof ItemAttrs
+    patch[attr] = v
   }
 })
 
@@ -47,7 +60,8 @@ function scrollFirstSelectedTermIntoView () {
   if (!currentFacet) {
     return
   }
-  const patchTermIds = itemPatch.value.terms.map((t2) => t2.id)
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const patchTermIds = itemPatch.value!.terms.map((t2) => t2.id)
   const firstSelectedTerm = currentFacet.terms.find((t) => patchTermIds.includes(t.id))
   if (!firstSelectedTerm) {
     return

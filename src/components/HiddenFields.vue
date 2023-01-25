@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAdminStore } from '../stores/admin'
 
@@ -13,16 +13,6 @@ function onToggle (event: Event) {
     expanded.value = open
   }
 }
-
-const showHidden = computed({
-  get () {
-    return showHiddenFields.value
-  },
-  set (v) {
-    showHiddenFields.value = v
-  }
-})
-
 </script>
 
 <!-- TODO: share code w/Facet, TermSelection, Suppressed -->
@@ -33,7 +23,7 @@ const showHidden = computed({
       <summary>Hidden fields</summary>
       <template v-if="expanded">
         <div class="galc-term-selection">
-          <input id="galc-show-hidden-fields" v-model="showHidden" type="checkbox">
+          <input id="galc-show-hidden-fields" v-model="showHiddenFields" type="checkbox">
           <label for="galc-show-hidden-fields">show hidden fields</label>
         </div>
       </template>

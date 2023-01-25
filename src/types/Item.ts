@@ -1,12 +1,8 @@
 import {Image} from "./Image";
 import { Term } from "./Term"
 
-// TODO: separate ItemPatch (w/ID optional) from Item
-type Item = {
-    // Required
-    id?: string,
-    title: string,
-    suppressed: boolean,
+type ItemAttrs = {
+    title?: string,
 
     // Optional
     artist?: string,
@@ -27,11 +23,19 @@ type Item = {
     updatedAt?: string,
     permalinkUri?: string
 
+}
+
+// TODO: separate ItemPatch (w/ID optional) from Item
+type Item = ItemAttrs & {
+    // Required
+    id?: string,
+    suppressed: boolean,
+
     // Relationships
     image?: Image
     terms: Term[]
 }
 
-export type { Item }
+export type { ItemAttrs, Item }
 
 export type ItemEntry = [keyof Item, string | boolean | Image | Term[]]

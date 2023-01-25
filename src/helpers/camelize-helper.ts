@@ -5,22 +5,19 @@ import { DevourRequestPayload, DevourResponsePayload } from "../types/Devour"
 import { JSONObject, JSONRecord, JSONValue } from "../types/JSON"
 
 function camelizePayload(payload: DevourResponsePayload) {
-  console.log('camelizing: %o', payload)
-  const axiosResponse = payload.res.data
-  if (typeof axiosResponse === 'object') {
-    const dataInner = axiosResponse.data
-    axiosResponse.data = camelcaseKeys(<JSONObject>dataInner, { deep: true })
-    console.log('camelized: %o', payload)
+  const data = payload.res.data
+  if (typeof data === 'object') {
+    data.data = camelcaseKeys(<JSONObject>data.data, { deep: true })
+    if (data.included) {
+      data.included = camelcaseKeys(data.included, { deep: true })
+    }
   }
   return payload
 }
-
 function decamelizePayload(payload: DevourRequestPayload) {
-  console.log('decamelizing: %o', payload)
-  const axiosRequest = payload.req.data
-  if (axiosRequest) {
-    axiosRequest.data = decamelizeKeys(axiosRequest.data)
-    console.log('decamelized: %o', payload)
+  const message = payload.req.data
+  if (message) {
+    message.data = decamelizeKeys(message.data)
   }
   return payload
 }

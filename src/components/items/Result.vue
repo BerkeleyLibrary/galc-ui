@@ -9,6 +9,7 @@ import ReserveButton from './ReserveButton.vue'
 import { usePreviewStore } from '../../stores/preview'
 import { useResultStore } from '../../stores/results'
 import { useSessionStore } from '../../stores/session'
+import { Item } from "../../types/Item"
 
 // ------------------------------------------------------------
 // Store
@@ -20,9 +21,7 @@ const { isAdmin } = storeToRefs(useSessionStore())
 // ------------------------------------------------------------
 // Properties
 
-const props = defineProps({
-  item: { type: Object, default: null }
-})
+const props = defineProps<{item: Item}>()
 
 // ------------------------------------------------------------
 // Local state
@@ -32,12 +31,12 @@ const available = computed(() => getAvailability(props.item))
 const image = computed(() => props.item?.image)
 
 // TODO: Cleaner way to encapsulate links
-const thumbnailUri = computed(() => image.value?.links.icon.href)
+const thumbnailUri = computed(() => image.value?.links?.icon?.href)
 
 // ------------------------------------------------------------
 // Actions
 
-function showPreview (_event) {
+function showPreview (_event: MouseEvent) {
   startPreview(props.item)
 }
 

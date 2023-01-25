@@ -1,16 +1,18 @@
 <!-- TODO: share code w/TermSelection -->
 <script setup lang="ts">
-import { useItemsStore } from '../../stores/items'
 import { computed } from 'vue'
-import { storeToRefs } from 'pinia'
+import { storeToRefs } from "pinia"
+import { useItemsStore } from '../../stores/items'
+import { Term } from "../../types/Term"
+import { Facet } from "../../types/Facet"
 
 // ------------------------------------------------------------
 // Properties
 
-const props = defineProps({
-  facet: { type: Object, default: null },
-  term: { type: Object, default: null }
-})
+const props = defineProps<{
+  facet: Facet,
+  term: Term
+}>()
 
 // ------------------------------------------------------------
 // Stores
@@ -23,17 +25,21 @@ const { itemPatch } = storeToRefs(items)
 
 // TODO: something less awful (can we use term objects instead of values?)
 const selected = computed({
-  get () {
+  get() {
+    // TODO: pass in item?
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const patch = itemPatch.value!
     const facet = props.facet
-    const patch = itemPatch.value
     const selectedTerms = patch.terms.filter((t) => t.facet.id === facet.id)
     const selectedValues = selectedTerms.map((t) => t.value)
     return selectedValues
   },
-  set (v) {
+  set(v) {
+    // TODO: pass in item?
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const patch = itemPatch.value!
     const facet = props.facet
-    const patch = itemPatch.value
-    const vTerms = facet.terms.filter((t) => v.includes(t.value))
+    const vTerms = facet.terms.filter((t: Term) => v.includes(t.value))
     const otherTerms = patch.terms.filter((t) => t.facet.id !== facet.id)
     const uniqueTerms = new Set(otherTerms.concat(...vTerms))
     patch.terms = [...uniqueTerms]

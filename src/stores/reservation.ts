@@ -9,6 +9,7 @@ import { Item } from "../types/Item"
 import { Result } from "../types/GalcApi"
 import { useWindowLocationStore } from "./window-location"
 import { RESERVE_ITEM_PARAM } from "../helpers/params"
+import { handleError } from "../helpers/handle-error"
 
 export const useReservationStore = defineStore('reservation', () => {
   // --------------------------------------------------
@@ -40,6 +41,7 @@ export const useReservationStore = defineStore('reservation', () => {
           startReservation(item)
         }
       })
+      .catch(handleError(`fetchItem(${reserveItemId}) failed`))
   }
 
   function clearCurrentRsvn() {
@@ -59,10 +61,7 @@ export const useReservationStore = defineStore('reservation', () => {
 
   // TODO: Handle/prevent multiple simultaneous attempted reservations
   function startReservation(item: Item) {
-    const rsvn = {
-      item: item,
-      confirmed: false
-    }
+    const rsvn = { item, confirmed: false }
     currentReservation.value = rsvn
   }
 
@@ -88,9 +87,6 @@ export const useReservationStore = defineStore('reservation', () => {
   }
 
   function reservationSuccessful({ data }: Result<Reservation>) {
-    if (!data) {
-      return
-    }
     const item = data.item
     const itemId = <string>item.id
     reservedItemIds.value.push(itemId)

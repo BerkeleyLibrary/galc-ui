@@ -74,10 +74,7 @@ export const useSearchStore = defineStore('search', () => {
       }
       const search = { ...state.value.search }
       search.suppressed = v
-      setState({
-        search: search,
-        page: DEFAULT_PAGE
-      })
+      setState({ search, page: DEFAULT_PAGE })
     }
   })
 
@@ -104,10 +101,7 @@ export const useSearchStore = defineStore('search', () => {
         set(v: string[]) {
           const search: Search = { ...state.value.search }
           search[facetName] = v
-          setState({
-            search: search,
-            page: DEFAULT_PAGE
-          })
+          setState({ search, page: DEFAULT_PAGE })
         }
       })
       computedTermSelections[facetName] = termSelection
