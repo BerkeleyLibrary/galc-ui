@@ -184,6 +184,14 @@ describe('reservation', () => {
       expect(rsvn.item).toEqual(item)
       expect(rsvn.confirmed).toEqual(true)
     })
+
+    it('does nothing if there is no reservation to confirm',async () => {
+      const rsvnStore = useReservationStore()
+      const { confirmReservation } = rsvnStore
+
+      await confirmReservation()
+      expect(reserveItem).not.toHaveBeenCalled()
+    })
   })
 
   describe('cancelReservation', () => {

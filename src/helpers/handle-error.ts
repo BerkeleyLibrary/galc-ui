@@ -1,9 +1,6 @@
 type Reason = unknown
 
-// TODO: display errors
+// TODO: display errors / transition to error state
 export function handleError(msg: string): (error: Reason) => void {
-  // TODO: transition to error state
-  return (error: Reason) => {
-    console.log(`${msg}: %o`, error)
-  }
+  return (error: Reason) => console.log(`${msg}: %o`, error)
 }
