@@ -1,6 +1,7 @@
 ############################################################
 # Custom ignores
 
+/artifacts
 /tmp
 
 # Yarn v3 -- see https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored

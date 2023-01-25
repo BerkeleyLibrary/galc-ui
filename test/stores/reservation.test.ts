@@ -17,7 +17,7 @@ import { RESERVE_ITEM_PARAM } from "../../src/helpers/params"
 // Mock window location store
 
 const relativeUrl: Mock<[Params], URL> = vi.fn()
-const deleteParam : Mock<[string], string> = vi.fn()
+const deleteParam: Mock<[string], string> = vi.fn()
 const windowLocationStore = { relativeUrl, deleteParam }
 vi.mock('@/stores/window-location', () => {
   return {
@@ -72,36 +72,70 @@ describe('reservation', () => {
 
   afterEach(() => {
     vi.restoreAllMocks()
+    isAuthenticated.value = true
+    closed.value = false
   })
 
   describe('init', () => {
-    it('reserves the item specified in the URL', async () => {
-      const item = itemData[0]
-      const itemId = <string> item.id
+    describe('when reservation allowed', () => {
+      it('reserves the item specified in the URL', async () => {
+        const item = itemData[0]
+        const itemId = <string>item.id
 
-      deleteParam.mockImplementationOnce((param) => {
-        expect(param).toEqual(RESERVE_ITEM_PARAM)
-        return itemId
+        deleteParam.mockImplementationOnce((param) => {
+          expect(param).toEqual(RESERVE_ITEM_PARAM)
+          return itemId
+        })
+
+        const resultItem = newPatch(item)
+        fetchItem.mockImplementationOnce((id) => {
+          expect(id).toEqual(itemId)
+          const result = { data: resultItem }
+          return Promise.resolve(result)
+        })
+
+        const rsvnStore = useReservationStore()
+        const { init } = rsvnStore
+        await init()
+
+        expect(deleteParam).toHaveBeenCalledOnce()
+        expect(fetchItem).toHaveBeenCalledOnce()
+
+        const { currentReservation } = storeToRefs(rsvnStore)
+        const rsvn = <Reservation>currentReservation.value
+        expect(rsvn.item).toEqual(resultItem)
+        expect(rsvn.confirmed).toEqual(false)
       })
+    })
 
-      const resultItem = newPatch(item)
-      fetchItem.mockImplementationOnce((id) => {
-        expect(id).toEqual(itemId)
-        const result = { data: resultItem}
-        return Promise.resolve(result)
-      })
+    describe('when reservation not allowed', () => {
+      const cases = {
+        'user is not authenticated': () => { isAuthenticated.value = false },
+        'GALC is closed': () => { closed.value = true }
+      }
 
-      const rsvnStore = useReservationStore()
-      const { init } = rsvnStore
-      await init()
+      for (const [condition, setup] of Object.entries(cases)) {
+        it(`does not reserve an item if ${condition}`, async() => {
+          setup()
 
-      expect(deleteParam).toHaveBeenCalledOnce()
-      expect(fetchItem).toHaveBeenCalledOnce()
+          const item = itemData[0]
+          const itemId = <string>item.id
 
-      const { currentReservation } = storeToRefs(rsvnStore)
-      const rsvn = <Reservation> currentReservation.value
-      expect(rsvn.item).toEqual(resultItem)
-      expect(rsvn.confirmed).toEqual(false)
+          deleteParam.mockImplementationOnce((param) => {
+            expect(param).toEqual(RESERVE_ITEM_PARAM)
+            return itemId
+          })
+
+          const rsvnStore = useReservationStore()
+          const { init } = rsvnStore
+          await init()
+
+          expect(fetchItem).not.toHaveBeenCalled()
+
+          const { currentReservation } = storeToRefs(rsvnStore)
+          expect(currentReservation.value).toBeFalsy()
+        })
+      }
     })
   })
 
@@ -230,7 +264,7 @@ describe('reservation', () => {
       })
 
       const { reserveItemRedirectUrl } = useReservationStore()
-      const redirectUrl = <URL> reserveItemRedirectUrl(item)
+      const redirectUrl = <URL>reserveItemRedirectUrl(item)
       expect(redirectUrl.toString()).toEqual(expectedUrl.toString())
     })
   })

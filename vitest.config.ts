@@ -3,7 +3,12 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
-    environment: 'jsdom'
+    environment: 'jsdom',
+    coverage: {
+      provider: 'c8',
+      reporter: ['text', 'html'],
+      reportsDirectory: './artifacts/coverage'
+    }
   },
   resolve: {
     alias: {
