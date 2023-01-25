@@ -87,7 +87,7 @@ export const useSearchStore = defineStore('search', () => {
     },
     set(v) {
       const newState = { ...state.value }
-      // @ts-ignore
+      // @ts-ignore: type signature for parseInt() is incorrect
       newState.page = parseInt(v) || DEFAULT_PAGE
       setState(newState)
     }
@@ -276,7 +276,7 @@ function toBooleans(strList: string): boolean[] {
 
 function pageFrom(urlSearchParams: URLSearchParams): number {
   const pageVal = urlSearchParams.get(PAGE_PARAM)
-  // @ts-ignore
+  // @ts-ignore: type signature for parseInt() is incorrect
   return parseInt(pageVal) || DEFAULT_PAGE
 }
 

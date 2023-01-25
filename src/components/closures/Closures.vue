@@ -99,7 +99,7 @@ function deleteHandler(closure, event) {
 // --------------------------------------------------
 // Helper functions
 
-function comparatorFor(attr: String) {
+function comparatorFor(attr: string) {
   return (a, b) => {
     const aVal = a ? a[attr] : null
     const bVal = b ? b[attr] : null

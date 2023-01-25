@@ -24,7 +24,7 @@ vi.mock('@/stores/api', () => {
 // Mock facet store
 
 const facetNames = ref(allFacetNames)
-const expandAll: Mock<[String], void> = vi.fn()
+const expandAll: Mock<[string], void> = vi.fn()
 const collapseAll = vi.fn()
 const facetStore = { facetNames, expandAll, collapseAll }
 

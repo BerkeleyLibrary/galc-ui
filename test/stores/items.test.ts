@@ -26,7 +26,7 @@ vi.mock('@/stores/api', () => {
 // ------------------------------
 // Mock search store
 
-const refreshSearch: Mock<any[], Promise<void>> = vi.fn()
+const refreshSearch: Mock<[], Promise<void>> = vi.fn()
 const searchStore = { refreshSearch }
 
 vi.mock('@/stores/search', () => {

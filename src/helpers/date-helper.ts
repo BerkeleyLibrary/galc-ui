@@ -16,8 +16,8 @@ export function formatPlainDate(date: Date | string | undefined): string | undef
     const d = ensureDate(date)
     return formatDate(d, rawDateFmtISO)
   } catch (e) {
-    console.log('Invalid date: %o', date)
-    console.log(e)
+    // console.log('Invalid date: %o', date)
+    // console.log(e)
     return undefined
   }
 }

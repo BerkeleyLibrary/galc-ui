@@ -55,7 +55,7 @@ describe('formatPlainDate', () => {
   })
 
   it('returns undefined for null', () => {
-    // @ts-ignore
+    // @ts-ignore: invalid value for testing
     const dateStr = formatPlainDate(null)
     expect(dateStr).toBeUndefined()
   })
