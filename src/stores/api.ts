@@ -89,18 +89,14 @@ export const useApiStore = defineStore('api', () => {
 
   function loadClosures(params = {}): Promise<ClosureResults> {
     incrementLoadCount()
-    const found = galcApi()
+    return galcApi()
       .findAll('closures', params)
-    const caught = found
-      .catch(handleError<ClosureResults>(`loadClosures(${params}) failed`))
-    return caught
       .finally(decrementLoadCount)
   }
 
   function fetchItem(itemId: string): Promise<Result<Item>> {
     return galcApi()
       .find('item', itemId, { include: 'terms' })
-      .catch(handleError(`fetchItem(${itemId}) failed`))
   }
 
   function saveItem(item: Item): Promise<Result<Item>> {
@@ -132,7 +128,6 @@ export const useApiStore = defineStore('api', () => {
   function fetchImage(imageId: string): Promise<Result<Image>> {
     return galcApi()
       .find('image', imageId)
-      .catch(handleError(`fetchImage(${imageId}) failed`))
   }
 
   function deleteImage(image: { id: string }) {
@@ -227,10 +222,8 @@ export const useApiStore = defineStore('api', () => {
   }
 
   function facetsLoaded({ data }: Result<Facet[]>) {
-    if (data) {
-      const facets = useFacetStore()
-      facets.facets = data
-    }
+    const facets = useFacetStore()
+    facets.facets = data
   }
 
   function incrementLoadCount() {
@@ -247,7 +240,7 @@ export const useApiStore = defineStore('api', () => {
     return {
       url: imageApiEndpoint,
       timeout: 10000,
-      headers: headers,
+      headers,
       withCredentials: true,
       // FilePond's default revert()/DELETE passes the ID in the request body
       // instead of using a RESTful URL, so we need a custom implementation here
@@ -275,7 +268,7 @@ export const useApiStore = defineStore('api', () => {
 // Private implementation
 
 function newJsonApi(apiUrl: string, authToken?: string | null) {
-  const options = authToken ? { apiUrl: apiUrl, bearer: authToken } : { apiUrl }
+  const options = authToken ? { apiUrl, bearer: authToken } : { apiUrl }
   const jsonApi = new JsonApi(options)
   jsonApi.axios.defaults.withCredentials = true
   jsonApi.insertMiddlewareBefore('response', camelizeMiddleware)

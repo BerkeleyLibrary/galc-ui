@@ -37,5 +37,10 @@ export default defineConfig({
     },
     sourcemap: true
   },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src')
+    }
+  },
   plugins: [vue(), stripDevCSS()]
 })

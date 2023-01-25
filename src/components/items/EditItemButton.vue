@@ -2,14 +2,13 @@
 import { storeToRefs } from 'pinia'
 import { useItemsStore } from '../../stores/items'
 import { computed } from 'vue'
+import { Item } from "../../types/Item"
 
 const items = useItemsStore()
 const { editItem } = items
 const { itemPatch } = storeToRefs(items)
 
-const props = defineProps({
-  item: { type: Object, default: null }
-})
+const props = defineProps<{item: Item}>()
 
 const editingThisItem = computed(() => {
   const patch = itemPatch.value
@@ -26,8 +25,8 @@ const buttonText = computed(() => {
   return editing ? 'Editing…' : 'Edit print'
 })
 
-function doEdit (event) {
-  event.target.blur()
+function doEdit (event: MouseEvent) {
+  (event.target as HTMLButtonElement).blur()
   editItem(props.item)
 }
 </script>

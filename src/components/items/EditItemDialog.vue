@@ -9,13 +9,12 @@ import 'filepond/dist/filepond.min.css'
 import timesCircle from '../../assets/times-circle.svg'
 
 import { newEmptyImage, useItemsStore } from '../../stores/items'
+import { useApiStore } from '../../stores/api'
+import { handleError } from "../../helpers/handle-error"
 
 import ItemDetails from './ItemDetails.vue'
 import ItemImage from './ItemImage.vue'
 import ItemAttributeField from './ItemAttributeField.vue'
-import { useApiStore } from '../../stores/api'
-import { Image } from "../../types/Image"
-import { Result } from "../../types/GalcApi"
 
 // ------------------------------------------------------------
 // Stores
@@ -89,18 +88,18 @@ function saveChanges() {
 const files = ref([])
 
 function setImageId(imageId: string | undefined) {
+  const patch = itemPatch.value
+  if (!patch) {
+    return
+  }
+
   if (imageId) {
-    fetchImage(imageId).then(({ data }: Result<Image>) => {
-      const patch = itemPatch.value
-      if (patch) {
-        patch.image = data
-      }
-    })
+    fetchImage(imageId)
+      .then(({ data }) => { patch.image = data })
+      .catch(handleError(`fetchImage(${imageId}) failed`))
   } else {
-    const patch = itemPatch.value
-    if (patch) {
-      patch.image = newEmptyImage()
-    }
+    patch.image = newEmptyImage()
+
   }
 }
 
@@ -121,7 +120,7 @@ function onProcessFile(err: FilePondErrorDescription | null, img: FilePondFile) 
     console.log('No image returned')
     return
   }
-  // TODO: Load this from the server as JSONAPI, and set it on itemPatch
+  // TODO: Load the whole image from the server as JSONAPI, and set it on itemPatch
   const imageId = img.serverId
   console.log('Processed file, id = %o', imageId)
   setImageId(imageId)
@@ -234,7 +233,7 @@ onMounted(() => {
           </td>
         </tr>
         <tr v-for="(label, attr) in attrs" :key="`${attr}-row`" :class="{ 'galc-item-invalid': !!validationErrors[attr] }" :title="validationErrors[attr]">
-          <th scope="row"><label for="`galc-${attr}-field`">{{ label }}</label></th>
+          <th scope="row"><label :for="`galc-${attr}-field`">{{ label }}</label></th>
           <td>
             <ItemAttributeField :id="`galc-${attr}-field`" :attr="attr" :label="label"/>
           </td>

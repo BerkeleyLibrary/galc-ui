@@ -22,7 +22,7 @@ const { editClosure, deleteClosure } = closuresStore
 // --------------------------------------------------
 // Constants
 
-const attrs = ['startDate', 'endDate', 'note']
+const attrs = ['startDate', 'endDate', 'note'] as const
 
 // --------------------------------------------------
 // Local state
@@ -31,6 +31,8 @@ type Period = 'future' | 'current' | 'past'
 type ShowFlags = { [K in Period]: boolean }
 type FlagEntry = [Period, boolean]
 type ClosuresByPeriod = { [K in Period]?: Array<Closure> }
+type SortAttr = typeof attrs[number]
+type SortVal = string | Date | undefined
 
 const showFlags: Ref<ShowFlags> = ref({
   future: true,
@@ -39,7 +41,7 @@ const showFlags: Ref<ShowFlags> = ref({
 })
 
 
-const sortAttrRef = ref('startDate')
+const sortAttrRef: Ref<SortAttr> = ref('startDate')
 const sortDirRef = ref(1)
 
 // --------------------------------------------------
@@ -74,8 +76,8 @@ const closuresToShow: ComputedRef<ClosuresByPeriod> = computed(() => {
 // --------------------------------------------------
 // Event handlers
 
-function setSortAttr(sortAttr, event) {
-  event.target.blur()
+function setSortAttr(sortAttr: SortAttr, event: MouseEvent) {
+  (event.target as HTMLButtonElement).blur()
   if (sortAttr === sortAttrRef.value) {
     const sortDir = sortDirRef.value
     sortDirRef.value = -sortDir
@@ -84,30 +86,30 @@ function setSortAttr(sortAttr, event) {
   }
 }
 
-function editHandler(closure, event) {
-  event.target.blur()
+function editHandler(closure: Closure, event: MouseEvent) {
+  (event.target as HTMLButtonElement).blur()
   editClosure(closure)
 }
 
 // TODO: get delete working
 // TODO: confirmation
-function deleteHandler(closure, event) {
-  event.target.blur()
+function deleteHandler(closure: Closure, event: MouseEvent) {
+  (event.target as HTMLButtonElement).blur()
   deleteClosure(closure)
 }
 
 // --------------------------------------------------
 // Helper functions
 
-function comparatorFor(attr: string) {
-  return (a, b) => {
-    const aVal = a ? a[attr] : null
-    const bVal = b ? b[attr] : null
+function comparatorFor(attr: SortAttr) {
+  return (a: Closure, b: Closure) => {
+    const aVal = a ? a[attr] : undefined
+    const bVal = b ? b[attr] : undefined
     return compare(aVal, bVal)
   }
 }
 
-function compare(a, b) {
+function compare(a: SortVal, b: SortVal) {
   if (a === b) {
     return 0
   }

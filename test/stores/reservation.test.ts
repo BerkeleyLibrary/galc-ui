@@ -226,7 +226,7 @@ describe('reservation', () => {
 
       const item = newPatch(origItem)
       const user = { id: '5551212' }
-      const rsvnResponse = { id: `${user.id}/${item.id}`, item: item, user: user }
+      const rsvnResponse = { id: `${user.id}/${item.id}`, item, user }
       reservationSuccessful({ data: rsvnResponse })
 
       expect(isReserved(item)).toEqual(true)

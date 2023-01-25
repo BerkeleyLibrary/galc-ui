@@ -21,7 +21,7 @@ module.exports = {
   rules: {
     'dot-notation': ['error', { 'allowPattern': '^[A-Z]' }],
     'no-unused-vars': 'off',
-    'object-shorthand': ['error', 'consistent-as-needed'],
+    'object-shorthand': ['error', 'properties'],
     '@typescript-eslint/no-unused-vars': ['warn', { 'varsIgnorePattern': '^_', 'argsIgnorePattern': '^_' }],
     '@typescript-eslint/ban-ts-comment': ['error', { 'ts-ignore': 'allow-with-description' }],
     'vue/html-closing-bracket-spacing': 0,

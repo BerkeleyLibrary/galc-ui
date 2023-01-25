@@ -11,8 +11,7 @@ import { Closure } from "./Closure"
 type ApiObject = Item | User | Closure | Image | Reservation
 
 type Result<T extends ApiObject | Array<ApiObject>> = {
-  // TODO: does this have to be optional?
-  data?: T
+  data: T
 }
 
 type One<T extends ApiObject> = {

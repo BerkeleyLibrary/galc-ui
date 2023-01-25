@@ -1,7 +1,8 @@
-import { JSONValue } from "./JSON"
+import { JSONObject, JSONValue } from "./JSON"
 
 type DevourData = {
-  data: JSONValue
+  data: JSONValue // TODO: is this ever not a JSONObject?
+  included?: JSONObject
 }
 
 type DevourMessage = { data: DevourData }

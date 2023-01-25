@@ -9,13 +9,13 @@ export const useSessionStore = defineStore('session', () => {
   // --------------------------------------------------
   // State
 
-  const user: Ref<User|null> = ref(null)
+  const user: Ref<User | null> = ref(null)
   const loginSet: Ref<boolean> = ref(false)
 
   // --------------------------------------------------
   // Exported functions and properties
 
-  async function init () {
+  async function init() {
     const { readParam } = useWindowLocationStore()
 
     // TODO: can we just watch window.location?
@@ -42,10 +42,8 @@ export const useSessionStore = defineStore('session', () => {
     return userObj ? userObj.email : undefined
   })
 
-  function updateUser ({ data }: Result<User>) {
-    if (data) {
-      user.value = data
-    }
+  function updateUser({ data }: Result<User>) {
+    user.value = data
   }
 
   const exported = { init, doLogin, email, isAuthenticated, isAdmin, updateUser }

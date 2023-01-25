@@ -3,6 +3,7 @@ import { computed, Ref, ref } from 'vue'
 import { useApiStore } from './api'
 import { Closure } from "../types/Closure"
 import { ClosureResults } from "../types/ClosureResults"
+import { handleError } from "../helpers/handle-error"
 
 export function newEmptyClosure(): Closure {
   return { startDate: '', note: '' }
@@ -89,9 +90,9 @@ export const useClosuresStore = defineStore('closures', () => {
 
   function reloadClosures(): Promise<void> {
     const { loadClosures } = useApiStore()
-    return loadClosures().then(({ data }: ClosureResults) => {
-      closures.value = data
-    })
+    return loadClosures()
+      .then(({ data }: ClosureResults) => { closures.value = data })
+      .catch(handleError(`loadClosures() failed`))
   }
 
   function newPatch(cls: Closure) {
