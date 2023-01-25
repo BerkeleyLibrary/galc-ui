@@ -1,4 +1,4 @@
-import { defineStore, storeToRefs } from 'pinia'
+import { defineStore, Store, storeToRefs } from 'pinia'
 import { computed, Ref, ref, WritableComputedRef } from 'vue'
 
 import { useApiStore } from './api'
@@ -45,10 +45,20 @@ export const useSearchStore = defineStore('search', () => {
   // --------------------------------------------------
   // Exported functions and properties
 
-  async function init() {
+  async function init(this: Store) {
     state.value = readWindowLocation()
     expandAll(activeFacetNames.value)
+
     return refreshSearch()
+      .finally(() => {
+        // workaround for https://github.com/vuejs/pinia/discussions/1687
+        const { $dispose } = this
+        this.$dispose = () => {
+          $dispose()
+          window.removeEventListener('popstate', onPopstate)
+        }
+        window.addEventListener('popstate', onPopstate)
+      })
   }
 
   const keywords: WritableComputedRef<string | undefined> = computed({
@@ -80,13 +90,10 @@ export const useSearchStore = defineStore('search', () => {
 
   const page: WritableComputedRef<number> = computed({
     get() {
-      return state.value.page || DEFAULT_PAGE
+      return state.value.page
     },
     set(v) {
-      const newState = { ...state.value }
-      // @ts-ignore: type signature for parseInt() is incorrect
-      newState.page = parseInt(v) || DEFAULT_PAGE
-      setState(newState)
+      setState({ ...state.value, page: v })
     }
   })
 
@@ -119,7 +126,7 @@ export const useSearchStore = defineStore('search', () => {
     return setState(emptyState())
   }
 
-  function refreshSearch() {
+  function refreshSearch(): Promise<void> {
     return doSearch(state.value)
   }
 
@@ -159,7 +166,7 @@ export const useSearchStore = defineStore('search', () => {
     }
   }
 
-  function doSearch(_state: SearchState) {
+  function doSearch(_state: SearchState): Promise<void> {
     const searchParams = currentSearchParams()
     const { setParams } = useWindowLocationStore()
     setParams(searchParams)
@@ -177,7 +184,7 @@ export const useSearchStore = defineStore('search', () => {
 
     const keywordsVal = search.keywords
     if (keywordsVal) {
-      params.keywords = <string> keywordsVal
+      params.keywords = <string>keywordsVal
     }
 
     if (isAdmin.value) {
@@ -189,7 +196,7 @@ export const useSearchStore = defineStore('search', () => {
 
     const { facetNames } = storeToRefs(useFacetStore())
     for (const facetName of facetNames.value) {
-      const termValues = <string[]> search[facetName]
+      const termValues = <string[]>search[facetName]
       if (termValues && termValues.length > 0) {
         params[facetName] = termValues.join(',')
       }
@@ -206,10 +213,10 @@ export const useSearchStore = defineStore('search', () => {
   // --------------------------------------------------
   // Event handling
 
-  window.addEventListener('popstate', () => {
+  function onPopstate() {
     const newState = readWindowLocation()
     setState(newState)
-  })
+  }
 
   // --------------------------------------------------
   // Store definition
@@ -241,8 +248,7 @@ function searchFrom(urlSearchParams: URLSearchParams): Search {
   if (isAdmin.value) {
     const suppressedVal = urlSearchParams.get(SUPPRESSED_PARAM)
     if (suppressedVal) {
-      const suppressed = toBooleans(suppressedVal)
-      newSearch.suppressed = suppressed.length != 0 ? suppressed : [false]
+      newSearch.suppressed = parseSuppressed(suppressedVal)
     }
   }
 
@@ -257,15 +263,20 @@ function searchFrom(urlSearchParams: URLSearchParams): Search {
   return newSearch
 }
 
-function toBooleans(strList: string): boolean[] {
-  const strVals = strList.split(',')
-  const booleans: boolean[] = []
+function parseSuppressed(suppressedVal: string): boolean[] | undefined {
+  const suppressed: boolean[] = []
+
+  const strVals = suppressedVal.split(',')
+
   for (const b of [true, false]) {
     if (strVals.includes(b.toString())) {
-      booleans.push(b)
+      suppressed.push(b)
     }
   }
-  return booleans
+
+  if (suppressed.length != 0) {
+    return suppressed
+  }
 }
 
 function pageFrom(urlSearchParams: URLSearchParams): number {

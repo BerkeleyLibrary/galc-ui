@@ -55,20 +55,23 @@ describe('search', () => {
   })
 
   afterEach(() => {
+    useSearchStore().$dispose()
     vi.restoreAllMocks()
+    isAdmin.value = false
   })
 
   describe('init()', () => {
-    it('reads the initial state from the window location and triggers a search', async () => {
-      const searchStore = useSearchStore()
-      const { init, selectedTerms } = searchStore
-      const { keywords, page } = storeToRefs(searchStore)
-
+    beforeEach(() => {
       expandAll.mockImplementationOnce((fnames) => {
         expect(fnames).toHaveLength(2)
         expect(fnames).toContain('Genre')
         expect(fnames).toContain('Medium')
       })
+    })
+
+    it('reads the initial state from the window location and triggers a search', async () => {
+      const { selectedTerms } = useSearchStore()
+      const { keywords, page } = storeToRefs(useSearchStore())
 
       performSearch.mockImplementationOnce((params) => {
         expect(params['filter[keywords]']).toEqual('blue medium')
@@ -81,7 +84,7 @@ describe('search', () => {
       const query = '?keywords=blue+medium&Genre=Abstract%2CStill+Life&Medium=Etching%2CCollage&page=2'
       window.history.pushState('', '', query)
 
-      await init()
+      await useSearchStore().init()
 
       expect(expandAll).toHaveBeenCalledOnce()
       expect(performSearch).toHaveBeenCalledOnce()
@@ -101,13 +104,117 @@ describe('search', () => {
       expect(mediumTerms).toContain('Etching')
       expect(mediumTerms).toContain('Collage')
     })
+
+    it('ignores garbage page numbers', async () => {
+      performSearch.mockImplementationOnce((params) => {
+        expect(params['filter[keywords]']).toEqual('blue medium')
+        expect(params['filter[Genre]']).toEqual('Abstract,Still Life')
+        expect(params['filter[Medium]']).toEqual('Etching,Collage')
+        expect(params['page[number]']).toBeUndefined()
+        return Promise.resolve()
+      })
+
+      const badPageParam = 'chocolate'
+      const query = `?keywords=blue+medium&Genre=Abstract%2CStill+Life&Medium=Etching%2CCollage&page=${badPageParam}`
+      window.history.pushState('', '', query)
+
+      await useSearchStore().init()
+
+      expect(expandAll).toHaveBeenCalledOnce()
+      expect(performSearch).toHaveBeenCalledOnce()
+    })
+
+    it('ignores "suppressed"', async () => {
+      performSearch.mockImplementationOnce((params) => {
+        expect(params['filter[keywords]']).toEqual('blue medium')
+        expect(params['filter[Genre]']).toEqual('Abstract,Still Life')
+        expect(params['filter[Medium]']).toEqual('Etching,Collage')
+        expect(params['page[number]']).toEqual(2)
+        expect(params['filter[suppressed]']).toBeUndefined()
+        return Promise.resolve()
+      })
+
+      const query = `?keywords=blue+medium&Genre=Abstract%2CStill+Life&Medium=Etching%2CCollage&page=2&suppressed=true%2Cfalse`
+      window.history.pushState('', '', query)
+
+      await useSearchStore().init()
+
+      expect(expandAll).toHaveBeenCalledOnce()
+      expect(performSearch).toHaveBeenCalledOnce()
+    })
+
+    describe('as admin', () => {
+      beforeEach(() => {
+        isAdmin.value = true
+      })
+
+      it('reads the initial state from the window location and triggers a search', async () => {
+        const searchStore = useSearchStore()
+
+        performSearch.mockImplementationOnce((params) => {
+          expect(params['filter[keywords]']).toEqual('blue medium')
+          expect(params['filter[Genre]']).toEqual('Abstract,Still Life')
+          expect(params['filter[Medium]']).toEqual('Etching,Collage')
+          expect(params['page[number]']).toEqual(2)
+          expect(params['filter[suppressed]']).toBeUndefined()
+          return Promise.resolve()
+        })
+
+        const query = `?keywords=blue+medium&Genre=Abstract%2CStill+Life&Medium=Etching%2CCollage&page=2`
+        window.history.pushState('', '', query)
+
+        await searchStore.init()
+
+        expect(expandAll).toHaveBeenCalledOnce()
+        expect(performSearch).toHaveBeenCalledOnce()
+      })
+
+      it('reads "suppressed"', async () => {
+        const searchStore = useSearchStore()
+
+        performSearch.mockImplementationOnce((params) => {
+          expect(params['filter[keywords]']).toEqual('blue medium')
+          expect(params['filter[Genre]']).toEqual('Abstract,Still Life')
+          expect(params['filter[Medium]']).toEqual('Etching,Collage')
+          expect(params['page[number]']).toEqual(2)
+          expect(params['filter[suppressed]']).toEqual('true,false')
+          return Promise.resolve()
+        })
+
+        const query = '?keywords=blue+medium&Genre=Abstract%2CStill+Life&Medium=Etching%2CCollage&page=2&suppressed=true%2Cfalse'
+        window.history.pushState('', '', query)
+
+        await searchStore.init()
+
+        expect(expandAll).toHaveBeenCalledOnce()
+        expect(performSearch).toHaveBeenCalledOnce()
+      })
+
+      it('ignores a garbage "suppressed" value', async () => {
+        const searchStore = useSearchStore()
+
+        performSearch.mockImplementationOnce((params) => {
+          expect(params['filter[keywords]']).toEqual('blue medium')
+          expect(params['filter[Genre]']).toEqual('Abstract,Still Life')
+          expect(params['filter[Medium]']).toEqual('Etching,Collage')
+          expect(params['page[number]']).toEqual(2)
+          expect(params['filter[suppressed]']).toBeUndefined()
+          return Promise.resolve()
+        })
+
+        const badSuppressedValue = 'chocolate'
+        const query = `?keywords=blue+medium&Genre=Abstract%2CStill+Life&Medium=Etching%2CCollage&page=2&suppressed=${badSuppressedValue}`
+        window.history.pushState('', '', query)
+
+        await searchStore.init()
+
+        expect(expandAll).toHaveBeenCalledOnce()
+        expect(performSearch).toHaveBeenCalledOnce()
+      })
+    })
   })
 
   describe('search state', () => {
-    afterEach(() => {
-      isAdmin.value = false
-    })
-
     describe('keywords', () => {
       describe('get()', () => {
         it('defaults to empty', () => {
@@ -375,6 +482,46 @@ describe('search', () => {
         resetSearch()
         expect(performSearch).toHaveBeenCalledOnce()
       })
+    })
+  })
+
+  describe('popState listener', () => {
+    it('triggers a search',  async () => {
+      const searchStore = useSearchStore()
+      const { selectedTerms } = searchStore
+      const { keywords, page } = storeToRefs(searchStore)
+
+      const query = '?keywords=blue+medium&Genre=Abstract%2CStill+Life&Medium=Etching%2CCollage&page=2'
+      window.history.pushState('', '', query)
+
+      performSearch.mockImplementationOnce((_params) => Promise.resolve())
+
+      await searchStore.init()
+
+      performSearch.mockReset()
+
+      performSearch.mockImplementation((params) => {
+        expect(params['filter[keywords]']).toBeUndefined()
+        expect(params['filter[Genre]']).toBeUndefined()
+        expect(params['filter[Medium]']).toBeUndefined()
+        expect(params['page[number]']).toBeUndefined()
+        return Promise.resolve()
+      })
+
+      expect(performSearch).not.toHaveBeenCalled()
+      window.history.pushState('', '', '/')
+      // workaround for https://github.com/jsdom/jsdom/issues/1565
+
+      expect(performSearch).not.toHaveBeenCalled()
+      window.dispatchEvent(new PopStateEvent('popstate'))
+
+      expect(performSearch).toHaveBeenCalledOnce()
+
+      expect(page.value).toEqual(1)
+      expect(keywords.value).toBeUndefined()
+      for (const facetName of ['Genre', 'Medium']) {
+        expect(selectedTerms(facetName).value).toHaveLength(0)
+      }
     })
   })
 })
