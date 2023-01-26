@@ -39,7 +39,8 @@ function doDelete (event: MouseEvent) {
 .galc-delete-item-button {
   &:not(:disabled) {
     color: #fff !important;
-    background-color: #ee1f60;
+    // slight tweak from official "Rose Garden" to increase contrast
+    background-color: #e81256;
   }
 }
 </style>
