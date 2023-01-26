@@ -27,11 +27,11 @@ jobs:
       - name: Check style
         run: yarn lint
 
+      - name: Run tests w/coverage
+        run: yarn coverage
+
       - name: Build
         run: yarn build
-
-      - name: Test
-        run: yarn test
 
       - name: Upload distribution
         if: ${{ always() }}
@@ -39,6 +39,13 @@ jobs:
         with:
           name: dist
           path: dist/**
+
+      - name: Upload artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifacts
+          path: artifacts/**
 
   # TODO: stop hard-coding ref_name and package-name
   publish-snapshot:
