@@ -48,7 +48,7 @@ function showPreview (_event: MouseEvent) {
     <ItemDetails :item="item"/>
     <div class="galc-result-actions">
       <template v-if="isAdmin">
-        <DeleteItemButton :item="item"/>
+        <DeleteItemButton class="galc-delete-item-button" :item="item"/>
         <EditItemButton :item="item"/>
       </template>
       <ReserveButton :item="item" :available="available"/>
@@ -115,18 +115,41 @@ function showPreview (_event: MouseEvent) {
     height: 42px;
     padding: 6px 10px;
     margin-bottom: 0.5em;
-    transition: background-color .25s, color .25s;
+    margin-top: 0.5em;
+    transition: background-color .25s, color .25s, border .25s;
     color: #000;
     font-size: 1rem;
+
+    border: 1px solid #fdb515;
 
     &:hover {
       background-color: #000;
       color: #fff;
+      border: 1px solid black;
     }
 
     &:disabled {
       color: #46535e;
       background-color: #eeeeee;
+      border: 1px solid #eeeeee;
+    }
+
+    &.galc-delete-item-button {
+      text-transform: none;
+      background-color: #fff;
+      border: 1px solid #DDD5C7;
+      font-weight: normal;
+      transition: filter .25s;
+
+      &:hover {
+        color: #000;
+        background-color: #fff;
+        filter: invert(1);
+      }
+
+      &:disabled {
+        color: #000;
+      }
     }
   }
 }

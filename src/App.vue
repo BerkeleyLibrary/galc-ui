@@ -50,5 +50,22 @@ onMounted(() => {
 <style lang="scss">
 section.galc {
   font-variant-numeric: lining-nums;
+
+  // TODO: share global CSS class with thumbnail?
+  .galc-control {
+    cursor: pointer;
+  }
+
+  .galc-icon {
+    display: inline-block;
+    height: 1.2rem !important;
+    width: 1.2rem;
+    border: 3px solid transparent;
+    border-radius: 4px;
+    margin-bottom: -0.25rem;
+    pointer-events: none;
+    outline: none !important;
+  }
+
 }
 </style>

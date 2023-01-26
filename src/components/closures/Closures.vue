@@ -343,20 +343,4 @@ function formatVal(val: Date | string) {
   }
 }
 
-// TODO: share global CSS class with thumbnail?
-.galc-control {
-  cursor: pointer;
-}
-
-.galc-icon {
-  display: inline-block;
-  height: 1.3rem !important;
-  width: 1.3rem;
-  border: 3px solid transparent;
-  border-radius: 4px;
-  margin-bottom: -0.2rem;
-  pointer-events: none;
-  outline: none !important;
-}
-
 </style>
