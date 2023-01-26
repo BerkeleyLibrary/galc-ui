@@ -48,8 +48,8 @@ function showPreview (_event: MouseEvent) {
     <ItemDetails :item="item"/>
     <div class="galc-result-actions">
       <template v-if="isAdmin">
-        <EditItemButton :item="item"/>
         <DeleteItemButton :item="item"/>
+        <EditItemButton :item="item"/>
       </template>
       <ReserveButton :item="item" :available="available"/>
     </div>
@@ -66,6 +66,11 @@ function showPreview (_event: MouseEvent) {
     img {
       cursor: pointer;
     }
+  }
+
+  .galc-result-actions {
+    display: flex;
+    flex-direction: column;
   }
 
   @media only screen and (max-width: 700px) {
@@ -87,8 +92,8 @@ function showPreview (_event: MouseEvent) {
 
     .galc-result-actions {
       width: 160px;
-      justify-self: end;
-      align-self: end;
+      height: 100%;
+      justify-content: end;
     }
   }
 
