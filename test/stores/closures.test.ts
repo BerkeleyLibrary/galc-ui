@@ -131,6 +131,25 @@ describe('closures', () => {
       const { closures } = storeToRefs(useClosuresStore())
       expect(closures.value).toEqual(expectedClosures)
     })
+
+    it('logs errors', async () => {
+      const reason = 'oops'
+      loadClosures.mockImplementationOnce(() => Promise.reject(reason))
+
+      const log = vi.spyOn(console, 'log')
+      log.mockImplementationOnce((fmt, arg) => {
+        expect(fmt).toEqual('loadClosures() failed: %o')
+        expect(arg).toEqual(reason)
+      })
+
+      const { init } = useClosuresStore()
+      await init()
+
+      expect(log).toHaveBeenCalledOnce()
+
+      const { closures } = storeToRefs(useClosuresStore())
+      expect(closures.value).toEqual([])
+    })
   })
 
   describe('newClosure', () => {
