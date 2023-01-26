@@ -32,8 +32,14 @@ function doDelete (event: MouseEvent) {
 
 <template>
   <button v-if="deletingAnyItem" disabled>{{ buttonText }}</button>
-  <button v-else @click="doDelete">{{ buttonText }}</button>
+  <button class="galc-delete-item-button" v-else @click="doDelete">{{ buttonText }}</button>
 </template>
 
 <style lang="scss">
+.galc-delete-item-button {
+  &:not(:disabled) {
+    color: #fff !important;
+    background-color: #ee1f60;
+  }
+}
 </style>
