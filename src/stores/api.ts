@@ -96,7 +96,7 @@ export const useApiStore = defineStore('api', () => {
 
   function fetchItem(itemId: string): Promise<Result<Item>> {
     return galcApi()
-      .find('item', itemId, { include: 'terms' })
+      .find('item', itemId, { include: 'image,terms' })
   }
 
   function saveItem(item: Item): Promise<Result<Item>> {
