@@ -66,9 +66,12 @@ export const useSearchStore = defineStore('search', () => {
       return state.value.search.keywords
     },
     set(v) {
+      const oldSearch = state.value.search
+      const newSearch = { keywords: v, suppressed: oldSearch.suppressed }
+
       collapseAll()
       setState({
-        search: { keywords: v },
+        search: newSearch,
         page: DEFAULT_PAGE
       })
     }

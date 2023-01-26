@@ -33,6 +33,7 @@ type GalcApi = {
   create(endpoint: 'closure', closure: Closure): Promise<Result<Closure>>
 
   destroy(endpoint: 'image', id: string): Promise<void>
+  destroy(endpoint: 'item', id: string): Promise<void>
   destroy(endpoint: 'closure', id: string): Promise<void>
 
   findAll(endpoint: 'items', params: Params): Promise<ItemResults>

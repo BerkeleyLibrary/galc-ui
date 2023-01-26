@@ -108,6 +108,15 @@ export const useApiStore = defineStore('api', () => {
     }
   }
 
+  function deleteItem(item: Item): Promise<void> {
+    const itemId = item.id
+    if (itemId) {
+      return galcApi().destroy('item', itemId)
+    } else {
+      return Promise.resolve()
+    }
+  }
+
   function saveClosure(closure: Closure): Promise<Result<Closure>> {
     const api = galcApi()
     if (closure.id) {
@@ -118,8 +127,9 @@ export const useApiStore = defineStore('api', () => {
   }
 
   function deleteClosure(closure: Closure): Promise<void> {
-    if (closure.id) {
-      return galcApi().destroy('closure', closure.id)
+    const closureId = closure.id
+    if (closureId) {
+      return galcApi().destroy('closure', closureId)
     } else {
       return Promise.resolve()
     }
@@ -160,6 +170,7 @@ export const useApiStore = defineStore('api', () => {
     saveClosure,
     saveItem,
     deleteClosure,
+    deleteItem,
     loadFacets,
     performSearch,
     reserveItem,

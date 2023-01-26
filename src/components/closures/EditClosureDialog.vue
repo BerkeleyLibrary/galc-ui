@@ -186,7 +186,7 @@ function saveChanges() {
     margin-left: 1rem;
     font-size: 1rem;
     font-weight: bold;
-    color: #d00000;
+    color: #c00000;
 
     &::before {
       content: '❌';

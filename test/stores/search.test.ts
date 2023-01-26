@@ -261,6 +261,37 @@ describe('search', () => {
           keywords.value = 'blue medium'
           expect(performSearch).toHaveBeenCalledOnce()
         })
+
+        it('does not reset "suppressed"', () => {
+          isAdmin.value = true
+
+          const suppressedVal = [true, false]
+
+          const searchStore = useSearchStore()
+          const { suppressed } = storeToRefs(searchStore)
+          suppressed.value = suppressedVal
+
+          const { keywords, page } = storeToRefs(searchStore)
+          page.value = 2
+
+          const { selectedTerms } = searchStore
+          selectedTerms('Genre').value = ['Abstract', 'Still Life']
+          selectedTerms('Medium').value = ['Etching', 'Collage']
+
+          performSearch.mockReset()
+          performSearch.mockImplementationOnce((params) => {
+            expect(params['page[number]']).toBeUndefined()
+            expect(params['filter[Genre]']).toBeUndefined()
+            expect(params['filter[Medium]']).toBeUndefined()
+
+            expect(params['filter[keywords]']).toEqual('blue medium')
+            expect(params['filter[suppressed]']).toEqual('true,false')
+            return Promise.resolve()
+          })
+
+          keywords.value = 'blue medium'
+          expect(performSearch).toHaveBeenCalledOnce()
+        })
       })
     })
 

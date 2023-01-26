@@ -20,7 +20,7 @@ import ItemAttributeField from './ItemAttributeField.vue'
 // Stores
 
 const items = useItemsStore()
-const { itemForId, applyEdit, revertEdit, cancelEdit } = items
+const { itemForId, applyEdit, revertEdit, cancelEdit, thumbnailUriFor } = items
 const { itemPatch } = storeToRefs(items)
 
 const apiStore = useApiStore()
@@ -72,9 +72,6 @@ const title = computed(() => {
 })
 
 const image = computed(() => itemPatch.value?.image || newEmptyImage())
-
-// TODO: Cleaner way to encapsulate links
-const thumbnailUri = computed(() => image.value?.links?.icon?.href)
 
 // TODO: track whether we've changed anything, disable save if not
 
@@ -198,7 +195,7 @@ onMounted(() => {
     <section class="galc-edit-item-preview">
       <h3>Preview</h3>
       <div class="galc-result-thumbnail">
-        <ItemImage :image-uri="thumbnailUri" :alt="`thumbnail of “${itemPatch.title}” by ${itemPatch.artist}`"/>
+        <ItemImage :image-uri="thumbnailUriFor(itemPatch)" :alt="`thumbnail of “${itemPatch.title}” by ${itemPatch.artist}`"/>
       </div>
       <ItemDetails :item="itemPatch"/>
     </section>
