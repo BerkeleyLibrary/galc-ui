@@ -43,6 +43,7 @@ export const useItemsStore = defineStore('items', () => {
   // State
 
   const itemPatch: Ref<Item | undefined> = ref()
+  const itemToDelete: Ref<Item | undefined> = ref()
 
   // --------------------------------------------------
   // Exported functions
@@ -84,8 +85,49 @@ export const useItemsStore = defineStore('items', () => {
     }
   }
 
+  function deleteItem(item: Item) {
+    itemToDelete.value = item
+  }
+
+  function confirmDelete() {
+    const item = itemToDelete.value
+    if (item) {
+      const { deleteItem } = useApiStore()
+      const { refreshSearch } = useSearchStore()
+      return deleteItem(item).then(refreshSearch).finally(cancelDelete)
+    }
+  }
+
+  function cancelDelete() {
+    itemToDelete.value = undefined
+  }
+
+  // TODO: Cleaner way to encapsulate links
+  function thumbnailUriFor(item: Item | undefined): string | undefined {
+    return item?.image?.links?.icon?.href
+  }
+
+  // TODO: Cleaner way to encapsulate links
+  function imageUriFor(item: Item | undefined): string | undefined {
+    return item?.image?.links?.alternate?.href
+  }
+
   // --------------------------------------------------
   // Store definition
 
-  return { itemPatch, newItem, editItem, itemForId, applyEdit, revertEdit, cancelEdit }
+  return {
+    itemPatch,
+    itemToDelete,
+    newItem,
+    editItem,
+    itemForId,
+    applyEdit,
+    revertEdit,
+    cancelEdit,
+    deleteItem,
+    confirmDelete,
+    cancelDelete,
+    thumbnailUriFor,
+    imageUriFor
+  }
 })

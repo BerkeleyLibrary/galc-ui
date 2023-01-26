@@ -15,9 +15,10 @@ import PreviewDialog from './items/PreviewDialog.vue'
 import ConfirmationDialog from './ConfirmationDialog.vue'
 import EditClosureDialog from './closures/EditClosureDialog.vue'
 import EditItemDialog from './items/EditItemDialog.vue'
+import DeleteItemDialog from "./items/DeleteItemDialog.vue"
 
 const { loading } = storeToRefs(useApiStore())
-const { itemPatch } = storeToRefs(useItemsStore())
+const { itemPatch, itemToDelete } = storeToRefs(useItemsStore())
 const { closurePatch } = storeToRefs(useClosuresStore())
 const { currentReservation, completedReservation } = storeToRefs(useReservationStore())
 const { currentPreview } = storeToRefs(usePreviewStore())
@@ -25,6 +26,9 @@ const { currentPreview } = storeToRefs(usePreviewStore())
 const activeModal = computed(() => {
   if (loading.value) {
     return Spinner
+  }
+  if (itemToDelete.value) {
+    return DeleteItemDialog
   }
   if (itemPatch.value) {
     return EditItemDialog

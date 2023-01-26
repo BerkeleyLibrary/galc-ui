@@ -16,8 +16,7 @@ const editingThisItem = computed(() => {
 })
 
 const editingAnyItem = computed(() => {
-  const patch = itemPatch.value
-  return !!patch
+  return !!itemPatch.value
 })
 
 const buttonText = computed(() => {

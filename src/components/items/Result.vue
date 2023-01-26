@@ -10,6 +10,8 @@ import { usePreviewStore } from '../../stores/preview'
 import { useResultStore } from '../../stores/results'
 import { useSessionStore } from '../../stores/session'
 import { Item } from "../../types/Item"
+import DeleteItemButton from "./DeleteItemButton.vue"
+import { useItemsStore } from "../../stores/items"
 
 // ------------------------------------------------------------
 // Store
@@ -17,6 +19,7 @@ import { Item } from "../../types/Item"
 const { startPreview } = usePreviewStore()
 const { getAvailability } = useResultStore()
 const { isAdmin } = storeToRefs(useSessionStore())
+const { thumbnailUriFor } = useItemsStore()
 
 // ------------------------------------------------------------
 // Properties
@@ -27,11 +30,6 @@ const props = defineProps<{item: Item}>()
 // Local state
 
 const available = computed(() => getAvailability(props.item))
-
-const image = computed(() => props.item?.image)
-
-// TODO: Cleaner way to encapsulate links
-const thumbnailUri = computed(() => image.value?.links?.icon?.href)
 
 // ------------------------------------------------------------
 // Actions
@@ -45,11 +43,14 @@ function showPreview (_event: MouseEvent) {
 <template>
   <section class="galc-result">
     <div class="galc-result-thumbnail">
-      <ItemImage :image-uri="thumbnailUri" :alt="`thumbnail of “${item.title}” by ${item.artist}`" @click="showPreview"/>
+      <ItemImage :image-uri="thumbnailUriFor(item)" :alt="`thumbnail of “${item.title}” by ${item.artist}`" @click="showPreview"/>
     </div>
     <ItemDetails :item="item"/>
     <div class="galc-result-actions">
-      <EditItemButton v-if="isAdmin" :item="item"/>
+      <template v-if="isAdmin">
+        <EditItemButton :item="item"/>
+        <DeleteItemButton :item="item"/>
+      </template>
       <ReserveButton :item="item" :available="available"/>
     </div>
   </section>
