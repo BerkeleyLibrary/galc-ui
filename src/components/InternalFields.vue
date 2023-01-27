@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAdminStore } from '../stores/admin'
 
-const { showHiddenFields } = storeToRefs(useAdminStore())
+const { showInternalFields } = storeToRefs(useAdminStore())
 
 const expanded = ref(true)
 
@@ -18,13 +18,13 @@ function onToggle (event: Event) {
 <!-- TODO: share code w/Facet, TermSelection, Suppressed -->
 <template>
   <fieldset class="galc-facet">
-    <legend>Hidden fields</legend>
+    <legend>Internal fields</legend>
     <details :open="expanded" @toggle="onToggle">
-      <summary>Hidden fields</summary>
+      <summary>Internal fields</summary>
       <template v-if="expanded">
         <div class="galc-term-selection">
-          <input id="galc-show-hidden-fields" v-model="showHiddenFields" type="checkbox">
-          <label for="galc-show-hidden-fields">show hidden fields</label>
+          <input id="galc-show-hidden-fields" v-model="showInternalFields" type="checkbox">
+          <label for="galc-show-hidden-fields">show internal fields</label>
         </div>
       </template>
     </details>

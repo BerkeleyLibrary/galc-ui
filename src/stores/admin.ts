@@ -13,7 +13,7 @@ export const useAdminStore = defineStore('admin', () => {
   // State
 
   const adminMode: Ref<AdminMode> = ref(MODE_ITEMS)
-  const showHiddenFields: Ref<boolean> = ref(true)
+  const showInternalFields: Ref<boolean> = ref(true)
 
   // --------------------------------------------------
   // Exported functions and properties
@@ -38,7 +38,7 @@ export const useAdminStore = defineStore('admin', () => {
     showClosures()
   }
 
-  const exported = { adminMode, showHiddenFields, showClosures, createClosure, showItems, createItem }
+  const exported = { adminMode, showInternalFields, showClosures, createClosure, showItems, createItem }
 
   // --------------------------------------------------
   // Store definition

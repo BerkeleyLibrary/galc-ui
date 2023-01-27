@@ -3,7 +3,6 @@ import { storeToRefs } from 'pinia'
 import { useFacetStore } from '../../stores/facets'
 import { computed } from 'vue'
 import { useSessionStore } from '../../stores/session'
-import { useAdminStore } from '../../stores/admin'
 import { Term } from "../../types/Term"
 import { Item } from "../../types/Item"
 
@@ -12,12 +11,11 @@ import { Item } from "../../types/Item"
 
 const { facets } = storeToRefs(useFacetStore())
 const { isAdmin } = storeToRefs(useSessionStore())
-const { showHiddenFields } = storeToRefs(useAdminStore())
 
 // ------------------------------------------------------------
 // Properties
 
-const props = defineProps<{item: Item}>()
+const props = defineProps<{item: Item, showInternalFields: boolean}>()
 
 // ------------------------------------------------------------
 // Helper functions
@@ -25,19 +23,22 @@ const props = defineProps<{item: Item}>()
 const metadata = computed(() => {
   return {
     Date: props.item.date || 'No Date',
+    Dimensions: props.item.dimensions,
+
     Decade: facetValue('Decade'),
     Size: facetValue('Size'),
-    Dimensions: props.item.dimensions,
+
     Genre: facetValue('Genre'),
     Appearance: facetValue('Appearance'),
+
     Series: props.item.series
   }
 })
 
-const showAdminMetadata = computed(() => isAdmin.value && showHiddenFields.value)
+const showInternalFields = computed(() => isAdmin.value && props.showInternalFields)
 
-const adminMetadata = computed(() => {
-  if (!showAdminMetadata.value) {
+const internalFields = computed(() => {
+  if (!showInternalFields.value) {
     return {}
   }
   return {
@@ -83,18 +84,19 @@ function getFacetName (term: Term): string {
   const facet = facets.value.find((f) => f.id === facetId)!
   return facet.name
 }
+
 </script>
 
 <template>
   <div class="galc-item-details">
     <div class="galc-item-header">
-      <p class="galc-item-medium">{{ facetValue('Medium') }}</p>
-      <h3 class="galc-item-title">{{ item.title }}</h3>
+      <p class="galc-item-medium">{{ facetValue('Medium') || '\u202f' }}</p>
+      <h3 class="galc-item-title">{{ item.title || '\u202f' }}</h3>
       <p class="galc-item-artist">
-        <a v-if="item.artistUrl" :href="item.artistUrl" target="_blank" rel="noopener">{{ item.artist }}</a>
-        <template v-else>{{ item.artist }}</template>
+        <a v-if="item.artistUrl" :href="item.artistUrl" target="_blank" rel="noopener">{{ item.artist || '\u202f' }}</a>
+        <template v-else>{{ item.artist || '\u202f' }}</template>
       </p>
-      <p class="galc-item-metadata">{{ item.description }}</p>
+      <p class="galc-item-metadata">{{ item.description || '\u202f' }}</p>
     </div>
     <div class="galc-item-body">
       <table class="galc-item-metadata">
@@ -107,11 +109,11 @@ function getFacetName (term: Term): string {
             </tr>
           </template>
         </tbody>
-        <tbody v-if="showAdminMetadata" class="galc-admin-metadata">
+        <tbody v-if="showInternalFields" class="galc-admin-metadata">
           <tr>
-            <th scope="rowgroup">Hidden fields</th>
+            <th scope="rowgroup">Internal fields</th>
           </tr>
-          <template v-for="(v, k) in adminMetadata" :key="k">
+          <template v-for="(v, k) in internalFields" :key="k">
             <tr>
               <th scope="row">{{ k }}</th>
               <td v-if="v">{{ v }}</td>

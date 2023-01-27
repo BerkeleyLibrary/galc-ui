@@ -31,26 +31,34 @@ const { fetchImage, deleteImage } = apiStore
 // Constants
 
 // TODO: real i18n
-const attrs = {
-  mmsId: 'MMS ID',
-  barcode: 'Barcode',
+const publicAttrs = {
+  title: 'Title',
+  description: 'Description',
   artist: 'Artist',
   artistUrl: 'Artist URL',
-  title: 'Title',
+
   date: 'Date',
-  description: 'Description',
   dimensions: 'Dimensions',
+
   decade: 'Decade',
-  medium: 'Medium',
-  genre: 'Genre',
   size: 'Size',
+
+  genre: 'Genre',
+  medium: 'Medium',
+
   appearance: 'Appearance',
   series: 'Series',
+}
+
+// TODO: real i18n
+const adminAttrs = {
+  mmsId: 'MMS ID',
+  barcode: 'Barcode',
   circulation: 'Circulation',
   location: 'Location',
   value: 'Value',
   appraisalDate: 'Appraisal Date',
-  notes: 'Notes'
+  notes: 'Notes',
 }
 
 // ------------------------------------------------------------
@@ -183,6 +191,14 @@ onMounted(() => {
   if (header) {
     header.scrollIntoView()
   }
+  // TODO: something more general — focus on first error?
+  const titleError = !!validationErrors.value.title
+  if (titleError) {
+    const titleField = document.getElementById('galc-title-input')
+    if (titleField) {
+      titleField.focus()
+    }
+  }
 })
 
 </script>
@@ -191,21 +207,22 @@ onMounted(() => {
   <section class="galc-edit-item-dialog" role="alertdialog" aria-modal="true" aria-labelledby="galc-dialog-title" aria-describedby="galc-edit-item-message">
     <h2 id="galc-dialog-title">{{ title }}</h2>
 
-    <!-- TODO: add hidden fields toggle -->
     <section class="galc-edit-item-preview">
       <h3>Preview</h3>
       <div class="galc-result-thumbnail">
         <ItemImage :image-uri="thumbnailUriFor(itemPatch)" :alt="`thumbnail of “${itemPatch.title}” by ${itemPatch.artist}`"/>
       </div>
-      <ItemDetails :item="itemPatch"/>
+      <ItemDetails :item="itemPatch" :show-internal-fields="true"/>
+      <section class="galc-validation-errors">
+        <p v-for="(validationError, attr) of validationErrors" :key="`validation-error-${attr}`" class="galc-validation-error">
+          {{ validationError }}
+        </p>
+      </section>
     </section>
 
-    <p v-for="(validationError, attr) of validationErrors" :key="`validation-error-${attr}`" class="galc-validation-error">
-      {{ validationError }}
-    </p>
 
     <form class="galc-edit-item-form">
-      <h3>Metadata</h3>
+      <h3>Image</h3>
       <table class="galc-edit-attributes-table">
         <tr :class="{ 'galc-item-invalid': !!validationErrors['image'] }" :title="validationErrors['image']">
           <th scope="row">Image</th>
@@ -229,7 +246,19 @@ onMounted(() => {
             />
           </td>
         </tr>
-        <tr v-for="(label, attr) in attrs" :key="`${attr}-row`" :class="{ 'galc-item-invalid': !!validationErrors[attr] }" :title="validationErrors[attr]">
+      </table>
+      <h3>Metadata</h3>
+      <table class="galc-edit-attributes-table">
+        <tr v-for="(label, attr) in publicAttrs" :key="`${attr}-row`" :class="{ 'galc-item-invalid': !!validationErrors[attr] }" :title="validationErrors[attr]">
+          <th scope="row"><label :for="`galc-${attr}-field`">{{ label }}</label></th>
+          <td>
+            <ItemAttributeField :id="`galc-${attr}-field`" :attr="attr" :label="label"/>
+          </td>
+        </tr>
+      </table>
+      <h4>Internal fields</h4>
+      <table class="galc-edit-attributes-table">
+        <tr v-for="(label, attr) in adminAttrs" :key="`${attr}-row`" :class="{ 'galc-item-invalid': !!validationErrors[attr] }" :title="validationErrors[attr]">
           <th scope="row"><label :for="`galc-${attr}-field`">{{ label }}</label></th>
           <td>
             <ItemAttributeField :id="`galc-${attr}-field`" :attr="attr" :label="label"/>
@@ -272,13 +301,19 @@ onMounted(() => {
     border-bottom: 1px solid #ddd5c7;
   }
 
+  h4 {
+    //color: #46535e;
+    font-size: 1.2rem;
+    border-bottom: 1px solid #ddd5c7;
+  }
+
   .galc-edit-item-preview {
     display: grid;
-    grid-template-columns: min(180px, 45%) minmax(0, 1fr);
+    grid-template-columns: min(180px, 45%) minmax(0, 1fr) auto;
     grid-column-gap: 0.75rem;
 
     h3 {
-      grid-column: 1 / 3;
+      grid-column: 1 / 4;
     }
 
     @media only screen and (min-width: 700px) {

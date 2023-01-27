@@ -12,6 +12,7 @@ import { useSessionStore } from '../../stores/session'
 import { Item } from "../../types/Item"
 import DeleteItemButton from "./DeleteItemButton.vue"
 import { useItemsStore } from "../../stores/items"
+import { useAdminStore } from "../../stores/admin"
 
 // ------------------------------------------------------------
 // Store
@@ -20,6 +21,7 @@ const { startPreview } = usePreviewStore()
 const { getAvailability } = useResultStore()
 const { isAdmin } = storeToRefs(useSessionStore())
 const { thumbnailUriFor } = useItemsStore()
+const { showInternalFields } = storeToRefs(useAdminStore())
 
 // ------------------------------------------------------------
 // Properties
@@ -30,6 +32,10 @@ const props = defineProps<{item: Item}>()
 // Local state
 
 const available = computed(() => getAvailability(props.item))
+
+const showAdmin = computed(() => {
+  return isAdmin.value && showInternalFields.value
+})
 
 // ------------------------------------------------------------
 // Actions
@@ -45,7 +51,7 @@ function showPreview (_event: MouseEvent) {
     <div class="galc-result-thumbnail">
       <ItemImage :image-uri="thumbnailUriFor(item)" :alt="`thumbnail of “${item.title}” by ${item.artist}`" @click="showPreview"/>
     </div>
-    <ItemDetails :item="item"/>
+    <ItemDetails :item="item" :show-internal-fields="showAdmin"/>
     <div class="galc-result-actions">
       <template v-if="isAdmin">
         <DeleteItemButton class="galc-delete-item-button" :item="item"/>

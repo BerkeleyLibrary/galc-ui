@@ -68,10 +68,10 @@ describe('admin', () => {
     })
   })
 
-  describe('showHiddenFields', () => {
+  describe('showInternalFields', () => {
     it('defaults to true', () => {
-      const { showHiddenFields } = storeToRefs(useAdminStore())
-      expect(showHiddenFields.value).toEqual(true)
+      const { showInternalFields } = storeToRefs(useAdminStore())
+      expect(showInternalFields.value).toEqual(true)
     })
   })
 

@@ -83,7 +83,13 @@ const rootTerms = computed(() => facet.value && facet.value.terms.filter(t => !t
       <legend>{{ facet.name }}</legend>
       <EditTermSelection v-for="term in rootTerms" :key="`term-option-${term.id}`" :facet="facet" :term="term"/>
     </fieldset>
-    <input v-else v-model="attrValue" type="text" :required="required">
+    <div v-else class="galc-item-attribute-value">
+      <input v-model="attrValue" type="text" :id="`galc-${attr}-input`" :required="required">
+      <div class="galc-attribute-required-label" v-if="required">
+        (required)
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -139,6 +145,19 @@ const rootTerms = computed(() => facet.value && facet.value.terms.filter(t => !t
       label {
         grid-column: 3 / 4;
       }
+    }
+  }
+
+  .galc-item-attribute-value {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    div.galc-attribute-required-label {
+      height: min-content;
+      margin-bottom: 20px;
+      margin-left: 0.5em;
+      font-size: smaller;
     }
   }
 }

@@ -6,7 +6,7 @@ import { useSessionStore } from '../stores/session'
 import filter from '../assets/filter.svg'
 
 import Suppressed from './Suppressed.vue'
-import HiddenFields from './HiddenFields.vue'
+import InternalFields from './InternalFields.vue'
 import Facet from './Facet.vue'
 import TermDeselection from './TermDeselection.vue'
 
@@ -25,7 +25,7 @@ const { isAdmin } = storeToRefs(useSessionStore())
     </label>
     <form class="galc-facet-form">
       <Suppressed v-if="isAdmin"/>
-      <HiddenFields v-if="isAdmin"/>
+      <InternalFields v-if="isAdmin"/>
       <Facet
         v-for="facet in facets"
         :id="`galc-facet-${facet.name}`"
