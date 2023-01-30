@@ -54,8 +54,8 @@ function showPreview (_event: MouseEvent) {
     <ItemDetails :item="item" :show-internal-fields="showAdmin"/>
     <div class="galc-result-actions">
       <template v-if="isAdmin">
+        <EditItemButton class="galc-action primary" :item="item"/>
         <DeleteItemButton class="galc-action secondary" :item="item"/>
-        <EditItemButton class="galc-action secondary" :item="item"/>
       </template>
       <ReserveButton class="galc-action primary" :item="item" :available="available"/>
     </div>
