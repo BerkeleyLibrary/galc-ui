@@ -111,9 +111,9 @@ function saveChanges() {
       {{ validationError }}
     </p>
     <div class="galc-closure-actions">
-      <button class="galc-closure-cancel" @click="cancelEdit">Cancel</button>
-      <button v-if="canSave" class="galc-closure-confirm" @click="saveChanges">Save Changes</button>
-      <button v-else class="galc-closure-confirm" disabled>Save Changes</button>
+      <button class="galc-action secondary" @click="cancelEdit">Cancel</button>
+      <button v-if="canSave" class="galc-action primary" @click="saveChanges">Save Changes</button>
+      <button v-else class="galc-action primary" disabled>Save Changes</button>
     </div>
   </section>
 </template>
@@ -201,42 +201,8 @@ function saveChanges() {
     justify-content: center;
     gap: 1em;
 
-    // TODO: share button styles
     button {
       width: 180px;
-      white-space: nowrap;
-      text-transform: uppercase;
-      font-weight: 700;
-      height: 42px;
-      padding: 6px 10px;
-      transition: background-color .25s, color .25s, border .25s;
-      color: #000;
-      font-size: 1rem;
-
-      &.galc-closure-cancel {
-        background-color: white;
-        border: 1px solid black;
-
-        &:hover {
-          background-color: #000;
-          color: #fff;
-        }
-      }
-
-      &.galc-closure-confirm {
-        border: 1px solid transparent;
-
-        &:hover {
-          border-color: black;
-          background-color: #000;
-          color: #fff;
-        }
-
-        &:disabled {
-          color: #46535e;
-          background-color: #eeeeee;
-        }
-      }
     }
   }
 }

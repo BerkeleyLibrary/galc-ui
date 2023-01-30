@@ -4,8 +4,6 @@ import { useItemsStore } from '../../stores/items'
 import { computed } from 'vue'
 import { Item } from "../../types/Item"
 
-import deleteIcon from '../../assets/trash-alt.svg'
-
 const items = useItemsStore()
 const { deleteItem } = items
 const { itemToDelete } = storeToRefs(items)
@@ -33,17 +31,9 @@ function doDelete (event: MouseEvent) {
 </script>
 
 <template>
-  <button v-if="deletingAnyItem" disabled>
-    <img class="galc-icon" :alt="`delete ${item.title}`" :src="deleteIcon">
-    {{ buttonText }}
-  </button>
-  <button v-else @click="doDelete">
-    <img class="galc-icon" :alt="`delete ${item.title}`" :src="deleteIcon">
-    {{ buttonText }}
-  </button>
+  <button v-if="deletingAnyItem" disabled>{{ buttonText }}</button>
+  <button v-else @click="doDelete">{{ buttonText }}</button>
 </template>
 
 <style lang="scss">
-.galc-delete-item-button {
-}
 </style>

@@ -29,8 +29,8 @@ const { confirmDelete, cancelDelete, thumbnailUriFor } = itemsStore
     </section>
 
     <div class="galc-delete-actions">
-      <button class="galc-delete-cancel" @click="cancelDelete">Cancel</button>
-      <button class="galc-delete-confirm" @click="confirmDelete">Delete print</button>
+      <button class="galc-action secondary" @click="cancelDelete">Cancel</button>
+      <button class="galc-action secondary" @click="confirmDelete">Delete print</button>
     </div>
   </section>
 </template>
@@ -77,39 +77,9 @@ const { confirmDelete, cancelDelete, thumbnailUriFor } = itemsStore
     justify-content: center;
     gap: 1em;
 
-    // TODO: share button styles
     button {
       width: 180px;
-      white-space: nowrap;
-      text-transform: uppercase;
-      font-weight: 700;
-      height: 42px;
-      padding: 6px 10px;
-      transition: background-color .25s, color .25s, border .25s;
-      color: #000;
-      font-size: 1rem;
-
-      &.galc-delete-cancel {
-        background-color: white;
-        border: 1px solid black;
-
-        &:hover {
-          background-color: #000;
-          color: #fff;
-        }
-      }
-
-      &.galc-delete-confirm {
-        border: 1px solid #fdb515;
-
-        &:hover {
-          border-color: black;
-          background-color: #000;
-          color: #fff;
-        }
-      }
     }
-
   }
 
   @media only screen and (min-width: 700px) {

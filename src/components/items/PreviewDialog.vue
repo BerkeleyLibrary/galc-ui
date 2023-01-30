@@ -15,7 +15,7 @@ const { imageUriFor } = useItemsStore()
 <template>
   <div class="galc-item-preview">
     <ItemImage class="galc-item-preview-image" :image-uri="imageUriFor(currentPreview)" :alt="`preview “${currentPreview.title}” by ${currentPreview.artist}`"/>
-    <button @click="endPreview">Close</button>
+    <button  class="galc-action primary" @click="endPreview">Close</button>
   </div>
 </template>
 
@@ -35,29 +35,6 @@ const { imageUriFor } = useItemsStore()
     width: fit-content;
     // TODO: Figure out how to size image block properly w/o aspect ratio problems
     object-fit: contain;
-  }
-
-  button {
-    width: 100%;
-    white-space: nowrap;
-    text-transform: uppercase;
-    font-weight: 700;
-    height: 42px;
-    padding: 6px 10px;
-    margin-bottom: 0.5em;
-    transition: background-color .25s, color .25s;
-    color: #000;
-    font-size: 1rem;
-
-    &:hover {
-      background-color: #000;
-      color: #fff;
-    }
-
-    &:disabled {
-      color: #46535e;
-      background-color: #eeeeee;
-    }
   }
 }
 </style>

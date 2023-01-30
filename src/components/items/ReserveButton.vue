@@ -35,7 +35,10 @@ function tryReserve (event: MouseEvent) {
 
 const reservingThisItem = computed(() => {
   const rsvn = currentReservation.value
-  return rsvn && rsvn.item.id === props.item.id
+  if (rsvn) {
+    return rsvn.item.id === props.item.id
+  }
+  return false
 })
 
 const reservingAnyItem = computed(() => {
@@ -54,34 +57,60 @@ const closureMessage = computed(() => {
       return 'Closed'
     }
   }
-  return null
+  return undefined
+})
+
+const canReserve = computed(() => {
+  const item = props.item
+
+  return props.available && !(
+    closed.value ||
+    item.suppressed ||
+    reservingThisItem.value ||
+    reservingAnyItem.value ||
+    isReserved(item)
+  )
+})
+
+const buttonMsg = computed(() => {
+  const isClosed = closed.value
+  if (isClosed) {
+    return closureMessage.value
+  }
+
+  if (!props.available) {
+    return 'Item unavailable'
+  }
+
+  const item = props.item
+  if (item.suppressed) {
+    return 'Suppressed'
+  }
+
+  if (reservingThisItem.value) {
+    return 'Reserving…'
+  }
+
+  if (isReserved(item)) {
+    return 'Reserved'
+  }
+
+  return 'Reserve print'
 })
 
 </script>
 
 <template>
-  <!-- TODO: clean this up -->
-  <button v-if="item.suppressed" disabled>Suppressed</button>
-  <button v-else-if="reservingThisItem" disabled>Reserving…</button>
-  <button v-else-if="closureMessage" disabled>{{ closureMessage }}</button>
-  <button v-else-if="isReserved(item)" disabled>Reserved</button>
-  <template v-else-if="available">
-    <button v-if="reservingAnyItem" disabled>Reserve print</button>
-    <button v-else-if="isAuthenticated" @click="tryReserve">Reserve print</button>
-    <form v-else method="post" class="galc-reserve-button-form" :action="loginUrl">
-      <input type="hidden" name="origin" :value="reserveItemRedirectUrl(item)">
-      <input type="submit" value="Reserve print">
-    </form>
-  </template>
-  <button v-else disabled>Item unavailable</button>
+  <button v-if="!canReserve" disabled>{{ buttonMsg }}</button>
+  <button v-else-if="isAuthenticated" @click="tryReserve">{{ buttonMsg }}</button>
+  <form v-else method="post" class="galc-reserve-button-form" :action="loginUrl">
+    <input type="hidden" name="origin" :value="reserveItemRedirectUrl(item)">
+    <input type="submit" class="galc-action primary" value="Reserve print">
+  </form>
 </template>
 
 <style lang="scss">
 .galc-reserve-button-form {
   display: contents;
-
-  input {
-    font-size: 1rem;
-  }
 }
 </style>

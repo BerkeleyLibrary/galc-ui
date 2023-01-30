@@ -45,8 +45,8 @@ const item = computed(() => {
     </div>
 
     <div class="galc-reserve-actions">
-      <button class="galc-reserve-cancel" @click="cancelReservation">Cancel</button>
-      <button class="galc-reserve-confirm" @click="confirmReservation">Reserve print</button>
+      <button class="galc-action secondary" @click="cancelReservation">Cancel</button>
+      <button  class="galc-action primary" @click="confirmReservation">Reserve print</button>
     </div>
   </section>
 </template>
@@ -76,39 +76,9 @@ const item = computed(() => {
     justify-content: center;
     gap: 1em;
 
-    // TODO: share button styles
     button {
       width: 180px;
-      white-space: nowrap;
-      text-transform: uppercase;
-      font-weight: 700;
-      height: 42px;
-      padding: 6px 10px;
-      transition: background-color .25s, color .25s, border .25s;
-      color: #000;
-      font-size: 1rem;
-
-      &.galc-reserve-cancel {
-        background-color: white;
-        border: 1px solid black;
-
-        &:hover {
-          background-color: #000;
-          color: #fff;
-        }
-      }
-
-      &.galc-reserve-confirm {
-        border: 1px solid #fdb515;
-
-        &:hover {
-          border-color: black;
-          background-color: #000;
-          color: #fff;
-        }
-      }
     }
-
   }
 
   @media only screen and (min-width: 700px) {

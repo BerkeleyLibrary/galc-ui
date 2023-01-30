@@ -48,8 +48,13 @@ onMounted(() => {
 </template>
 
 <style lang="scss">
+// TODO: extract to external CSS file?
 section.galc {
   font-variant-numeric: lining-nums;
+
+  $color-california-gold: #fdb515;
+  $color-pacific: #46535e;
+  $color-bay-fog: #ddd5c7;
 
   // TODO: share global CSS class with thumbnail?
   .galc-control {
@@ -67,5 +72,42 @@ section.galc {
     outline: none !important;
   }
 
+  .galc-action {
+    height: 42px;
+    padding: 6px 10px;
+
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    white-space: nowrap;
+
+    border: none;
+    transition: background-color .25s, color .25s;
+
+    &.primary {
+      background-color: $color-california-gold;
+      color: black;
+
+      &:hover:not(:disabled) {
+        background-color: black;
+        color: white;
+      }
+    }
+
+    &.secondary {
+      background-color: black;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background-color: $color-california-gold;
+        color: black;
+      }
+    }
+
+    &:disabled {
+      color: black;
+      background: $color-bay-fog;
+    }
+  }
 }
 </style>

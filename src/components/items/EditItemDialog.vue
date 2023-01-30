@@ -274,10 +274,10 @@ onMounted(() => {
     </form>
 
     <div class="galc-edit-item-actions">
-      <button class="galc-edit-item-cancel" @click="cancel">Cancel</button>
-      <button class="galc-edit-item-cancel" @click="revert">Revert</button>
-      <button v-if="canSave" class="galc-edit-item-confirm" @click="saveChanges">Save changes</button>
-      <button v-else disabled>Save Changes</button>
+      <button class="galc-action secondary" @click="cancel">Cancel</button>
+      <button class="galc-action secondary" @click="revert">Revert</button>
+      <button v-if="canSave" class="galc-action primary" @click="saveChanges">Save changes</button>
+      <button v-else  class="galc-action primary" disabled>Save Changes</button>
     </div>
   </section>
 </template>
@@ -387,44 +387,9 @@ onMounted(() => {
     gap: 1em;
     margin-top: 1rem;
 
-    // TODO: share button styles
     button {
       width: 180px;
-      white-space: nowrap;
-      text-transform: uppercase;
-      font-weight: 700;
-      height: 42px;
-      padding: 6px 10px;
-      transition: background-color .25s, color .25s, border .25s;
-      color: #000;
-      font-size: 1rem;
-
-      &.galc-edit-item-cancel, &.galc-edit-item-revert {
-        background-color: white;
-        border: 1px solid black;
-
-        &:hover {
-          background-color: #000;
-          color: #fff;
-        }
-      }
-
-      &.galc-edit-item-confirm {
-        border: 1px solid #fdb515;
-
-        &:hover {
-          border-color: black;
-          background-color: #000;
-          color: #fff;
-        }
-      }
-
-      &:disabled {
-        color: #46535e;
-        background-color: #eeeeee;
-      }
     }
-
   }
 
   .galc-edit-image-upload {

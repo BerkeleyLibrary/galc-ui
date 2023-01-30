@@ -80,7 +80,7 @@ nav.galc-toolbar {
       justify-content: start;
 
       button {
-        color: #000;
+        color: black;
         line-height: inherit;
         font-size: 1rem;
         line-height: 1.15;
@@ -102,8 +102,8 @@ nav.galc-toolbar {
           text-decoration-thickness: 3px;
 
           &:hover {
-            background-color: #000 !important;
-            color: #fff !important;
+            background-color: black !important;
+            color: white !important;
             text-decoration: none !important;
           }
         }

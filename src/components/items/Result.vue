@@ -54,10 +54,10 @@ function showPreview (_event: MouseEvent) {
     <ItemDetails :item="item" :show-internal-fields="showAdmin"/>
     <div class="galc-result-actions">
       <template v-if="isAdmin">
-        <DeleteItemButton class="galc-delete-item-button" :item="item"/>
-        <EditItemButton :item="item"/>
+        <DeleteItemButton class="galc-action secondary" :item="item"/>
+        <EditItemButton class="galc-action secondary" :item="item"/>
       </template>
-      <ReserveButton :item="item" :available="available"/>
+      <ReserveButton class="galc-action primary" :item="item" :available="available"/>
     </div>
   </section>
 </template>
@@ -112,51 +112,10 @@ function showPreview (_event: MouseEvent) {
     }
   }
 
-  // TODO: share button styles
-  button, input[type=submit] {
-    width: 100%;
-    white-space: nowrap;
-    text-transform: uppercase;
-    font-weight: 700;
-    height: 42px;
-    padding: 6px 10px;
+  .galc-action {
     margin-bottom: 0.5em;
     margin-top: 0.5em;
-    transition: background-color .25s, color .25s, border .25s;
-    color: #000;
-    font-size: 1rem;
-
-    border: 1px solid #fdb515;
-
-    &:hover {
-      background-color: #000;
-      color: #fff;
-      border: 1px solid black;
-    }
-
-    &:disabled {
-      color: #46535e;
-      background-color: #eeeeee;
-      border: 1px solid #eeeeee;
-    }
-
-    &.galc-delete-item-button {
-      text-transform: none;
-      background-color: #fff;
-      border: 1px solid #DDD5C7;
-      font-weight: normal;
-      transition: filter .25s;
-
-      &:hover {
-        color: #000;
-        background-color: #fff;
-        filter: invert(1);
-      }
-
-      &:disabled {
-        color: #000;
-      }
-    }
   }
+
 }
 </style>
