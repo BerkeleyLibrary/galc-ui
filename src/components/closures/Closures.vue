@@ -22,7 +22,7 @@ const { editClosure, deleteClosure } = closuresStore
 // --------------------------------------------------
 // Constants
 
-const attrs = ['startDate', 'endDate', 'note'] as const
+const attrs = ['startDate', 'endDate'] as const
 
 // --------------------------------------------------
 // Local state
@@ -137,9 +137,13 @@ function formatVal(val: Date | string) {
       </ul>
     </form>
     <div v-for="(cls, period) of closuresToShow" :key="`galc-closures-${period}`" class="galc-closures-table-outer">
-      <h4>{{ startCase(period) }} closures</h4>
       <table class="galc-closures-table">
         <thead>
+          <tr class="galc-closures-table-section">
+            <th scope="col" colspan="4">
+              <h4>{{ startCase(period) }} closures</h4>
+            </th>
+          </tr>
           <tr>
             <th scope="col">
               Edit
@@ -245,11 +249,11 @@ function formatVal(val: Date | string) {
   }
 
   table.galc-closures-table {
-    width: 100%;
+    width: max-content;
     margin-bottom: 1.5rem;
 
     display: grid;
-    grid-template-columns: min-content auto auto minmax(0, 1fr) min-content;
+    grid-template-columns: min-content auto auto min-content;
     column-gap: 1rem;
     row-gap: 0.25rem;
 
@@ -286,6 +290,11 @@ function formatVal(val: Date | string) {
           img.galc-icon-hidden {
             opacity: 0;
           }
+        }
+
+        &[colspan="4"] {
+          grid-column: 1 / span 4;
+          border-bottom: none;
         }
       }
     }
