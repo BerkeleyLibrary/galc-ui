@@ -55,6 +55,7 @@ section.galc {
   $color-california-gold: #fdb515;
   $color-pacific: #46535e;
   $color-bay-fog: #ddd5c7;
+  $color-lco-disabled: #6e757c;
 
   // TODO: share global CSS class with thumbnail?
   .galc-control {
@@ -105,8 +106,8 @@ section.galc {
     }
 
     &:disabled {
-      color: black;
-      background: $color-bay-fog;
+      color: white;
+      background: $color-lco-disabled;
     }
   }
 }
