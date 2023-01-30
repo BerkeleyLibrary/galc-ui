@@ -141,7 +141,7 @@ function formatVal(val: Date | string) {
       <table class="galc-closures-table">
         <thead>
           <tr>
-            <th class="galc-control" scope="col">
+            <th scope="col">
               Edit
             </th>
             <th v-for="attr of attrs" :key="attr" :class="{ 'galc-note-attr': attr === 'note' }" scope="col">
@@ -151,7 +151,7 @@ function formatVal(val: Date | string) {
                 <img v-else class="galc-icon galc-icon-hidden" :src="sortIndicator" :alt="`Sort by ${startCase(attr)}`">
               </button>
             </th>
-            <th class="galc-control" scope="col">
+            <th scope="col">
               Delete
             </th>
           </tr>
@@ -235,7 +235,6 @@ function formatVal(val: Date | string) {
       height: min-content;
       font-weight: normal;
       line-height: 1.15;
-      cursor: pointer;
     }
 
   }
