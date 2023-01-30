@@ -62,14 +62,14 @@ fieldset.galc-term-deselection {
     top: -9999px;
   }
 
-  // TODO: share w/other icon styles
   img.term-deselect-icon {
-    height: 0.9rem;
-    width: 0.9rem;
-    filter: invert(100%);
+    height: 1rem;
+    width: 1rem;
+    // convert black to "Founder's Rock" #3b7ea1
+    filter: invert(43%) sepia(6%) saturate(3452%) hue-rotate(157deg) brightness(102%) contrast(95%);
     display: inline;
-    margin-bottom: -2px;
-    margin-right: 4px;
+    margin-bottom: -3px;
+    margin-right: 3px;
   }
 
   div.ds-term {
@@ -78,18 +78,26 @@ fieldset.galc-term-deselection {
     input[type=checkbox] {
       display: none;
 
+      $color-pacific: #46535e;
+      $color-hours-services: #f2f4f7;
+
       &:checked ~ label {
         display: block;
         font-size: 1rem;
         line-height: 1.75rem;
         font-weight: normal;
-        color: white;
-        // slight tweak from official "Founder's Rock" RGB to increase contrast
-        // (exact color per jloesberg, cf. Hours)
-        background-color: #2c5e77;
+        color: $color-pacific;
+        background-color: $color-hours-services;
         padding: 2px 8px;
         margin: 6px 16px 6px 0;
         cursor: pointer;
+
+        transition: border-color .25s;
+        border: 1px solid $color-hours-services;
+
+        &:hover {
+          border-color: $color-pacific;
+        }
       }
     }
 
