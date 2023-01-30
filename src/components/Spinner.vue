@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import spinnerUrl from '../assets/circle-notch.svg'
+import spinnerUrl from '../assets/spinner.svg'
 </script>
 
 <template>
@@ -17,7 +17,7 @@ div.galc-spinner-container {
   justify-content: space-around;
 
   img.galc-spinner {
-    $img-size: 24px;
+    $img-size: 64px;
 
     @keyframes spin {
       100% {
@@ -29,7 +29,7 @@ div.galc-spinner-container {
     width: $img-size !important;
     display: block;
 
-    animation: spin 1.5s linear infinite;
+    animation: spin 0.72s steps(12, end) infinite;
     //opacity: 1 !important;
     //filter: invert(1);
   }
