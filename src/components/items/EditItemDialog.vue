@@ -204,7 +204,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="galc-edit-item-dialog" role="alertdialog" aria-modal="true" aria-labelledby="galc-dialog-title" aria-describedby="galc-edit-item-message">
+  <section class="galc-edit-item-dialog" role="alertdialog" aria-modal="true" aria-labelledby="galc-dialog-title" aria-describedby="galc-dialog-title">
     <h2 id="galc-dialog-title">{{ title }}</h2>
 
     <section class="galc-edit-item-preview">
@@ -225,13 +225,13 @@ onMounted(() => {
       <h3>Image</h3>
       <table class="galc-edit-attributes-table">
         <tr :class="{ 'galc-item-invalid': !!validationErrors['image'] }" :title="validationErrors['image']">
-          <th scope="row">Image</th>
+          <th scope="row"><label for="galc-image-input">Image</label></th>
           <td class="galc-edit-image-upload">
             <button v-if="image.basename" class="galc-edit-image-remove" @click="clearImageId">
               <img alt="Remove current image" :src="timesCircle" class="galc-edit-image-remove-icon">
               <span class="galc-edit-image-remove-label">Remove</span>
             </button>
-            <input type="text" :value="image.basename" disabled>
+            <input type="text" id="galc-image-input" :value="image.basename" disabled>
             <file-pond
               ref="pond"
               class-name="galc-edit-image-uploader"
@@ -265,9 +265,9 @@ onMounted(() => {
           </td>
         </tr>
         <tr>
-          <th scope="row">Suppressed?</th>
+          <th scope="row"><label for="galc-suppressed-input">Suppressed?</label></th>
           <td style="vertical-align: center;">
-            <input v-model="itemPatch.suppressed" type="checkbox">
+            <input v-model="itemPatch.suppressed" id="galc-suppressed-input" type="checkbox">
           </td>
         </tr>
       </table>
