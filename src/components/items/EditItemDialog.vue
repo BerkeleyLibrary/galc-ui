@@ -249,7 +249,9 @@ onMounted(() => {
       </table>
       <h3>Metadata</h3>
       <table class="galc-edit-attributes-table">
+        <!-- TODO: extract an ItemAttributeRow component -->
         <tr v-for="(label, attr) in publicAttrs" :key="`${attr}-row`" :class="{ 'galc-item-invalid': !!validationErrors[attr] }" :title="validationErrors[attr]">
+          <!-- TODO: don't generate labels for facet fieldsets -->
           <th scope="row"><label :for="`galc-${attr}-input`">{{ label }}</label></th>
           <td>
             <ItemAttributeField :id="`galc-${attr}-field`" :attr="attr" :label="label"/>
@@ -258,6 +260,7 @@ onMounted(() => {
       </table>
       <h4>Internal fields</h4>
       <table class="galc-edit-attributes-table">
+        <!-- TODO: extract an ItemAttributeRow component -->
         <tr v-for="(label, attr) in adminAttrs" :key="`${attr}-row`" :class="{ 'galc-item-invalid': !!validationErrors[attr] }" :title="validationErrors[attr]">
           <th scope="row"><label :for="`galc-${attr}-input`">{{ label }}</label></th>
           <td>

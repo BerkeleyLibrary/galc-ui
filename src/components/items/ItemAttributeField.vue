@@ -77,6 +77,7 @@ const rootTerms = computed(() => facet.value && facet.value.terms.filter(t => !t
 
 </script>
 
+<!-- TODO: separate this into facet and non-facet components -->
 <template>
   <div class="galc-item-attribute-field">
     <fieldset v-if="isFacet" :id="`galc-item-term-selection-${facet.name}`" class="galc-item-term-selection">
