@@ -250,7 +250,7 @@ onMounted(() => {
       <h3>Metadata</h3>
       <table class="galc-edit-attributes-table">
         <tr v-for="(label, attr) in publicAttrs" :key="`${attr}-row`" :class="{ 'galc-item-invalid': !!validationErrors[attr] }" :title="validationErrors[attr]">
-          <th scope="row"><label :for="`galc-${attr}-field`">{{ label }}</label></th>
+          <th scope="row"><label :for="`galc-${attr}-input`">{{ label }}</label></th>
           <td>
             <ItemAttributeField :id="`galc-${attr}-field`" :attr="attr" :label="label"/>
           </td>
@@ -259,7 +259,7 @@ onMounted(() => {
       <h4>Internal fields</h4>
       <table class="galc-edit-attributes-table">
         <tr v-for="(label, attr) in adminAttrs" :key="`${attr}-row`" :class="{ 'galc-item-invalid': !!validationErrors[attr] }" :title="validationErrors[attr]">
-          <th scope="row"><label :for="`galc-${attr}-field`">{{ label }}</label></th>
+          <th scope="row"><label :for="`galc-${attr}-input`">{{ label }}</label></th>
           <td>
             <ItemAttributeField :id="`galc-${attr}-field`" :attr="attr" :label="label"/>
           </td>
