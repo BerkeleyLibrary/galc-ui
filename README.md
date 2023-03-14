@@ -31,7 +31,7 @@ that uses the dummy [`index.html`](index.html) page in the project root director
 2. Ensure that the [galc-api](https://github.com/BerkeleyLibrary/galc-api) back end is
    available and running on port 3000.
 
-3In the project root directory:
+3. In the project root directory:
  
    1. install the dependencies:
 
