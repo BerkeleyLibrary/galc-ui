@@ -417,6 +417,17 @@ describe('search', () => {
             expect(termSelection.value).toHaveLength(0)
           }
         })
+
+        it('consistently returns the same value', () => {
+          const { selectedTerms } = useSearchStore()
+
+          for (const facetName of allFacetNames) {
+            const termSelection = selectedTerms(facetName)
+            expect(termSelection.value).toHaveLength(0)
+
+            expect(selectedTerms((facetName))).toEqual(termSelection)
+          }
+        })
       })
 
       describe('set()', () => {

@@ -103,17 +103,7 @@ export const useSearchStore = defineStore('search', () => {
   function selectedTerms(facetName: string) {
     let termSelection: WritableComputedRef<string[]> = computedTermSelections[facetName]
     if (!termSelection) {
-      termSelection = computed({
-        get() {
-          const terms = <string[]>state.value.search[facetName] || []
-          return terms
-        },
-        set(v: string[]) {
-          const search: Search = { ...state.value.search }
-          search[facetName] = v
-          setState({ search, page: DEFAULT_PAGE })
-        }
-      })
+      termSelection = newTermSelection(facetName)
       computedTermSelections[facetName] = termSelection
     }
     return termSelection
@@ -159,6 +149,20 @@ export const useSearchStore = defineStore('search', () => {
       return termValues && termValues.length
     })
   })
+
+  function newTermSelection(facetName: string) {
+    return computed({
+      get() {
+        const terms = <string[]>state.value.search[facetName] || []
+        return terms
+      },
+      set(v: string[]) {
+        const search: Search = { ...state.value.search }
+        search[facetName] = v
+        setState({ search, page: DEFAULT_PAGE })
+      }
+    })
+  }
 
   function readWindowLocation(): SearchState {
     // TODO: use helper

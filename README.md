@@ -52,9 +52,20 @@ Tests and code coverage are configured in [`vitest.config.ts`](vitest.config.ts)
 - `yarn test` runs the tests
 - `yarn coverage` runs the tests with coverage
 
-Note that currently not all files are covered (uncomment `all: true` in 
+Be aware that currently not all files are covered (uncomment `all: true` in 
 `vitest.config.js` to see what files are not covered), but also that those
 files that are covered have both line coverage and branch coverage.
+
+Note that the line numbers reported as branch coverage failures by the 
+underlying [IstanbulJS](https://github.com/istanbuljs) engine are not always
+intuitive — the underlying problem is likely on the first line reported, but
+the range of lines may not be correct. Typical bnranch coverage issues include:
+
+- `if(obj)` checks that are never passed a `null` or `undefined` value
+- equality checks with `!==` for objects (e.g. `URL`) that are never equal
+  (in the case of `URL`, use `toString()`, instead)
+- default values for function parameters that are never used (the parameter
+  is always passed explicitly)
 
 ### Code style
 

@@ -280,6 +280,15 @@ describe('items', () => {
 
       expect(itemToDelete.value).toBeUndefined()
     })
+
+    it('can be called safely even with no item to delete', async () => {
+      const itemsStore = useItemsStore()
+      const { itemToDelete } = storeToRefs(itemsStore)
+      expect(itemToDelete.value).toBeUndefined() // just to be sure
+
+      const { confirmDelete } = itemsStore
+      await confirmDelete()
+    })
   })
 
   describe('thumbnailUriFor', () => {

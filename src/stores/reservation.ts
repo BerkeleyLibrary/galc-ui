@@ -35,13 +35,13 @@ export const useReservationStore = defineStore('reservation', () => {
 
     const { fetchItem } = useApiStore()
     return fetchItem(reserveItemId)
-      .then(({ data }: Result<Item>) => {
-        const item = data
-        if (item) {
-          startReservation(item)
-        }
-      })
+      .then(doStartReservation)
       .catch(handleError(`fetchItem(${reserveItemId}) failed`))
+  }
+
+  function doStartReservation({ data }: Result<Item>) {
+    const item = data
+    startReservation(item)
   }
 
   function clearCurrentRsvn() {
@@ -108,10 +108,8 @@ export const useReservationStore = defineStore('reservation', () => {
   }
 
   function reserveItemRedirectUrl(item: Item): URL | undefined {
-    if (item.id) {
-      const { relativeUrl } = useWindowLocationStore()
-      return relativeUrl({ [RESERVE_ITEM_PARAM]: item.id })
-    }
+    const { relativeUrl } = useWindowLocationStore()
+    return relativeUrl({ [RESERVE_ITEM_PARAM]: item.id })
   }
 
   const exported = {

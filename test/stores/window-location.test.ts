@@ -36,6 +36,17 @@ describe('window-location', () => {
 
         expect(window.location.href).toEqual(expectedUrl.toString())
       })
+
+      it('does not modify the window history unless changed', () => {
+        const expectedUrl = new URL('/galc', window.location.href)
+
+        const { location } = storeToRefs(useWindowLocationStore())
+        location.value = expectedUrl
+
+        const lengthBefore = window.history.length
+        location.value = expectedUrl
+        expect(window.history.length).toEqual(lengthBefore)
+      })
     })
 
     it('updates on hash change', () => {
@@ -98,6 +109,17 @@ describe('window-location', () => {
       expect(newUrl.toString()).toEqual(expectedUrlStr)
     })
 
+    it('ignores undefined parameters', () => {
+      const { relativeUrl } = useWindowLocationStore()
+
+      window.history.pushState('', '', `?keywords=blue%2Cmedium`)
+      const oldUrl = new URL(window.location.href)
+
+      const params = { page: undefined }
+      const newUrl = relativeUrl(params, false)
+      expect(newUrl.toString()).toEqual(oldUrl.toString())
+    })
+
     it('preserves protected parameters', () => {
       const { relativeUrl } = useWindowLocationStore()
       const subqueryToReplace = 'keywords=blue%2Cmedium'
@@ -158,6 +180,20 @@ describe('window-location', () => {
       expect(val).toEqual('blue,medium')
 
       expect(location.value.toString()).not.toContain('keywords')
+    })
+
+    it('returns null if the parameter is not set', () => {
+      const windowLocationStore = useWindowLocationStore()
+      const { location } = storeToRefs(windowLocationStore)
+
+      window.history.pushState('', '', '?keywords=blue%2Cmedium')
+      const newLocation = location.value
+
+      const { deleteParam } = windowLocationStore
+      const val = deleteParam('chocolate')
+      expect(val).toEqual(null)
+
+      expect(location.value).toEqual(newLocation)
     })
   })
 })

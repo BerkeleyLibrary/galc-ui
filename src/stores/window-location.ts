@@ -20,11 +20,11 @@ export const useWindowLocationStore = defineStore('window-location', () => {
   // Exported state
 
   const location: WritableComputedRef<URL> = computed({
-    get () { return currentLocation.value },
+    get() { return currentLocation.value },
 
-    set (v) {
+    set(v) {
       const oldLocation = new URL(window.location.href)
-      if (v !== oldLocation) {
+      if (v.toString() !== oldLocation.toString()) {
         window.history.pushState(`location.set(${v})`, '', v)
       }
       updateState()
@@ -68,10 +68,10 @@ export const useWindowLocationStore = defineStore('window-location', () => {
   window.addEventListener('popstate', updateState)
   window.addEventListener('hashchange', updateState)
 
-  function updateState (_event?: Event) {
+  function updateState(_event?: Event) {
     const oldLocation = currentLocation.value
     const newLocation = new URL(window.location.href)
-    if (oldLocation !== newLocation) {
+    if (oldLocation.toString() !== newLocation.toString()) {
       currentLocation.value = newLocation
     }
   }
@@ -81,18 +81,16 @@ export const useWindowLocationStore = defineStore('window-location', () => {
 
   return { location, relativeUrl, setParams, deleteParam, readParam }
 
-// --------------------------------------------------
-// Private implementation
+  // --------------------------------------------------
+  // Private implementation
 
-  function computeRelativeUrl(oldLocation: URL, params: Params, clearParams = false): URL {
+  function computeRelativeUrl(oldLocation: URL, params: Params, clearParams: boolean): URL {
     const url = new URL(oldLocation)
 
     const sp = baseSearchParams(clearParams, url)
-    if (params) {
-      for (const [name, value] of Object.entries(params)) {
-        if (value) {
-          sp.set(name, value.toString())
-        }
+    for (const [name, value] of Object.entries(params)) {
+      if (value) {
+        sp.set(name, value.toString())
       }
     }
     url.search = sp.toString()

@@ -17,7 +17,7 @@ import { RESERVE_ITEM_PARAM } from "../../src/helpers/params"
 // Mock window location store
 
 const relativeUrl: Mock<[Params], URL> = vi.fn()
-const deleteParam: Mock<[string], string> = vi.fn()
+const deleteParam: Mock<[string], string | null> = vi.fn()
 const windowLocationStore = { relativeUrl, deleteParam }
 vi.mock('@/stores/window-location', () => {
   return {
@@ -108,6 +108,22 @@ describe('reservation', () => {
       })
     })
 
+    it('does nothing if no item is specified', async () => {
+      deleteParam.mockImplementationOnce((param) => {
+        expect(param).toEqual(RESERVE_ITEM_PARAM)
+        return null
+      })
+
+      const rsvnStore = useReservationStore()
+      const { init } = rsvnStore
+      await init()
+
+      expect(fetchItem).not.toHaveBeenCalled()
+
+      const { currentReservation } = storeToRefs(rsvnStore)
+      expect(currentReservation.value).toBeFalsy()
+    })
+
     describe('when reservation not allowed', () => {
       const cases = {
         'user is not authenticated': () => { isAuthenticated.value = false },
@@ -115,7 +131,7 @@ describe('reservation', () => {
       }
 
       for (const [condition, setup] of Object.entries(cases)) {
-        it(`does not reserve an item if ${condition}`, async() => {
+        it(`does not reserve an item if ${condition}`, async () => {
           setup()
 
           const item = itemData[0]
@@ -185,7 +201,7 @@ describe('reservation', () => {
       expect(rsvn.confirmed).toEqual(true)
     })
 
-    it('does nothing if there is no reservation to confirm',async () => {
+    it('does nothing if there is no reservation to confirm', async () => {
       const rsvnStore = useReservationStore()
       const { confirmReservation } = rsvnStore
 
@@ -232,15 +248,37 @@ describe('reservation', () => {
       startReservation(origItem)
       const rsvn = currentReservation.value
 
-      const item = newPatch(origItem)
+      const rsvnItem = newPatch(origItem)
       const user = { id: '5551212' }
-      const rsvnResponse = { id: `${user.id}/${item.id}`, item, user }
+      const rsvnResponse = { id: `${user.id}/${rsvnItem.id}`, item: rsvnItem, user }
       reservationSuccessful({ data: rsvnResponse })
 
-      expect(isReserved(item)).toEqual(true)
+      expect(isReserved(rsvnItem)).toEqual(true)
 
       expect(currentReservation.value).toBeFalsy()
       expect(completedReservation.value).toEqual(rsvn)
+    })
+
+    it('handles a successful reservation while another reservation is in progress', () => {
+      const rsvnStore = useReservationStore()
+      const { startReservation, reservationSuccessful, isReserved } = rsvnStore
+      const { currentReservation, completedReservation } = storeToRefs(rsvnStore)
+
+      const item0 = itemData[0]
+      startReservation(item0)
+      const newReservation = currentReservation.value
+      expect(currentReservation.value).not.toBeFalsy()
+
+      const item1 = itemData[1]
+      const rsvnItem = newPatch(item1)
+      const user = { id: '5551212' }
+      const rsvnResponse = { id: `${user.id}/${rsvnItem.id}`, item: rsvnItem, user }
+      reservationSuccessful({ data: rsvnResponse })
+
+      expect(isReserved(rsvnItem)).toEqual(true)
+
+      expect(currentReservation.value).toEqual(newReservation)
+      expect(completedReservation.value).toBeFalsy()
     })
   })
 

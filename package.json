@@ -5,7 +5,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "yarn eslint --ext .js,.ts,.vue src test",
+    "lint": "yarn eslint --ext .js,.ts,.vue src/ test/",
     "test": "yarn vitest run",
     "coverage": "yarn vitest run --coverage"
   },
@@ -35,7 +35,7 @@
     "@typescript-eslint/eslint-plugin": "^5.48.1",
     "@typescript-eslint/parser": "^5.48.1",
     "@vitejs/plugin-vue": "^2.3.0",
-    "@vitest/coverage-c8": "^0.28.2",
+    "@vitest/coverage-istanbul": "^0.31.4",
     "@vue/compiler-sfc": "^3.2.45",
     "@vue/eslint-config-typescript": "^11.0.2",
     "eslint": "^8.16.0",
@@ -50,7 +50,7 @@
     "typescript": "^4.9.4",
     "typescript-eslint": "^0.0.1-alpha.0",
     "vite": "^2.9.13",
-    "vitest": "^0.27.1"
+    "vitest": "^0.31.4"
   },
   "files": [
     "dist"
@@ -64,6 +64,6 @@
     },
     "./css": "./dist/style.css"
   },
-  "version": "0.0.0",
+  "version": "0.0.4",
   "packageManager": "yarn@3.2.1"
 }

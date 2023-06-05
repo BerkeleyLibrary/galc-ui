@@ -5,10 +5,11 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     coverage: {
-      provider: 'c8',
+      // all: true, // TODO: enable this, test components
+      provider: 'istanbul',
       reporter: ['text', 'html'],
       reportsDirectory: './artifacts/coverage',
-      // TODO: check component coverage
+      src: ['src'],
       lines: 100,
       branches: 100
     }

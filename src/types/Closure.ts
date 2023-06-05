@@ -8,7 +8,7 @@ type Closure = DateRange & {
   updatdAt?: string,
   current?: boolean,
   past?: boolean,
-  future?: boolean
+  future?: boolean,
 }
 
 export type { Closure }
