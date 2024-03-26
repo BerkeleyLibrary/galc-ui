@@ -131,7 +131,7 @@ function getFacetName (term: Term): string {
 
   .galc-item-metadata {
     font-size: 1rem;
-    line-height: 1.25rem;
+    line-height: 1.5rem;
   }
 
   h3 {
@@ -158,8 +158,8 @@ function getFacetName (term: Term): string {
 
   p.galc-item-medium {
     font-size: 1rem;
-    line-height: 1em;
-    text-transform: uppercase;
+    line-height: 1.5em;
+    //text-transform: uppercase;
     margin: 0;
   }
 
