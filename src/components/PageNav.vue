@@ -40,7 +40,7 @@ nav.page-nav {
 
   ul, p.page-nav-items {
     font-size: 1.25rem;
-    line-height: 1.25em;
+    line-height: 1.5em;
     margin: 0;
   }
 
