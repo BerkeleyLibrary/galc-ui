@@ -42,5 +42,8 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src')
     }
   },
-  plugins: [vue(), stripDevCSS()]
+  plugins: [vue(), stripDevCSS()],
+  define: {
+    'process.env': process.env
+  }
 })
