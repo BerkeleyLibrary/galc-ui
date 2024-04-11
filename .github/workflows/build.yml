@@ -10,7 +10,7 @@ jobs:
 
     steps:
       - name: get env
-        run: echo $GITHUB
+        run: echo "${{ toJson(github) }}"
 
   build:
     runs-on: ubuntu-latest
