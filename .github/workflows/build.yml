@@ -5,6 +5,12 @@ env:
   YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN_LIB_NPM }}
 
 jobs:
+  debug:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: get env
+        run: echo $GITHUB
 
   build:
     runs-on: ubuntu-latest
