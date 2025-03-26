@@ -44,6 +44,8 @@ div.galc-facets {
   }
 
   @media only screen and (min-width: 700px) {
+    margin-right: 1em;
+    
     // TODO: less hacky way to place this differently on desktop and mobile
     .galc-term-deselection {
       display: none;
