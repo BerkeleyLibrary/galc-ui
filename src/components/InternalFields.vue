@@ -35,7 +35,8 @@ function onToggle (event: Event) {
 // TODO: share styles w/Facet, TermSelection, Suppressed
 
 fieldset.galc-facet {
-  display: contents;
+  display: inherit;
+  border: none;
 
   legend {
     position: absolute;
@@ -44,7 +45,8 @@ fieldset.galc-facet {
   }
 
   details {
-    display: contents;
+    display: inherit;
+    border: none;
 
     summary {
       list-style: none;
@@ -87,7 +89,8 @@ fieldset.galc-facet {
 }
 
 div.galc-term-selection {
-  display: contents;
+  display: inherit;
+  border: none;
 
   @media only screen and (max-width: 700px) {
     font-size: 1.125rem;
@@ -111,7 +114,8 @@ div.galc-term-selection {
   }
 
   fieldset.galc-facet-subterms {
-    display: contents;
+    display: inherit;
+    border: none;
   }
 }
 

@@ -94,7 +94,7 @@ div.galc-facets {
 
   form.galc-facet-form {
     display: grid;
-    grid-template-columns: min-content max-content minmax(0, 1fr);
+    grid-template-columns: 1fr;
     align-items: center;
     justify-items: start;
 
@@ -110,6 +110,8 @@ div.galc-facets {
     }
 
     > fieldset {
+      padding-bottom: 0;
+      width: 100%;
 
       details {
         summary {
@@ -127,11 +129,11 @@ div.galc-facets {
         fieldset {
 
           input {
-            grid-column: 2;
+            grid-column: 1;
           }
 
           label {
-            grid-column: 3 / 4;
+            grid-column: 2 / 4;
           }
         }
       }

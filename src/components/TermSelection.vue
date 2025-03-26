@@ -37,7 +37,12 @@ const selected = selectedTerms(props.facet.name)
 
 <style lang="scss">
 div.galc-term-selection {
-  display: contents;
+  border: none;
+  display: grid;
+  grid-template-columns: 18px 3fr;
+  column-gap: 0.5em;
+  margin-left: 0;
+  padding-left: 0;
 
   @media only screen and (max-width: 700px) {
     font-size: 1.125rem;
@@ -61,7 +66,8 @@ div.galc-term-selection {
   }
 
   fieldset.galc-facet-subterms {
-    display: contents;
+    display: block;
+    border: 0;
   }
 }
 </style>
