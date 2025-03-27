@@ -64,6 +64,6 @@
     },
     "./css": "./dist/style.css"
   },
-  "version": "0.0.4",
+  "version": "0.0.10",
   "packageManager": "yarn@3.2.1"
 }

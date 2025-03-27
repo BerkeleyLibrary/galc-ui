@@ -45,7 +45,8 @@ function onToggle (event: Event) {
 
 <style lang="scss">
 fieldset.galc-facet {
-  display: contents;
+  display: inherit;
+  border: none;
 
   legend {
     position: absolute;
@@ -54,7 +55,8 @@ fieldset.galc-facet {
   }
 
   details {
-    display: contents;
+    display: inherit;
+    border: none;
 
     summary {
       list-style: none;
