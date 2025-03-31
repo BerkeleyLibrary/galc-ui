@@ -88,7 +88,7 @@ jobs:
    - runs tests and checks code coverage (`yarn coverage`)
    - builds the NPM module (`yarn build`)
    - saves the resulting `dist` directory as a build artifact
-2. `publish-snapshot`: on each push to the `main` branch:
+2. `publish-snapshot`: on each workflow run or push to the `main` branch:
    - downloads the `dist` directory artifact from the `build` job
    - using `yarn version`, sets the version number in `package.json` to
      a temporary version number using the short commit hash (`0.0.0-<SHA1>`)
