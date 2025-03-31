@@ -59,7 +59,7 @@ jobs:
   publish-snapshot:
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref_name == 'main' && github.event_name == 'push'
+    if: github.ref_name == 'main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
 
     steps:
       - name: Check out repository
@@ -72,7 +72,6 @@ jobs:
           path: dist
 
       - name: Publish latest snapshot
-        if: github.event_name == 'push'
         run: |
           yarn version 0.0.0-"${GITHUB_SHA:0:7}" --immediate
           yarn npm publish --access public --tag snapshot
