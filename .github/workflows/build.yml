@@ -95,5 +95,5 @@ jobs:
         # NOTE: Assumes tag in form x.y.z
         # TODO: figure out why ${{github.event.release.tag_name}} doesn't work
         run: |
-          yarn version "${github.ref_name}" --immediate
+          yarn version "${{github.ref_name}}" --immediate
           yarn npm publish --access public --tag latest
