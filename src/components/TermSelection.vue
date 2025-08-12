@@ -26,6 +26,7 @@ const selected = selectedTerms(props.facet.name)
       v-model="selected"
       :value="term.value"
       type="checkbox"
+      :aria-label="`Filter by ${term.value}. Currently ${selected.includes(term.value) ? 'selected' : 'not selected'}`"
     >
     <label :for="`term-${term.id}`">{{ term.value }}</label>
     <fieldset v-if="term.children" class="galc-facet-subterms">

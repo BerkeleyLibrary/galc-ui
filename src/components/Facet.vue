@@ -34,7 +34,7 @@ function onToggle (event: Event) {
 <template>
   <fieldset class="galc-facet">
     <legend>{{ facetName }}</legend>
-    <details :open="expanded" @toggle="onToggle">
+    <details :open="expanded" :aria-expanded="expanded" @toggle="onToggle">
       <summary>{{ facetName }}</summary>
       <template v-if="expanded">
         <TermSelection v-for="term in rootTerms" :key="term.id" :facet="props.facet" :term="term"/>
