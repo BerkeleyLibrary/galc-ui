@@ -41,15 +41,11 @@ const { showClosures, createClosure, showItems, createItem } = adminStore
       <li>
         <button @click="showClosures">Manage Closures</button>
       </li>
-    </ul>
-    <ul>
       <li>
         <button v-if="isAuthenticated" @click="logout">Log out</button>
       </li>
-      <li>
-        <button @click="doReset">Reset</button>
-      </li>
     </ul>
+    <button id="resetButton" @click="doReset">Reset</button>
   </nav>
 </template>
 
@@ -61,6 +57,41 @@ nav.galc-toolbar {
 
   display: flex;
   justify-content: space-between;
+
+  button {
+    color: black;
+    line-height: inherit;
+    font-size: 1rem;
+    line-height: 1.15;
+
+    // cf. input[type=Submit], input[value=Reset]
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 20px;
+    background-color: transparent;
+    height: 24px;
+    padding: 0;
+    width: auto;
+    transition: background-color .25s, color .25s;
+
+    &:not(:disabled) {
+      text-decoration: underline;
+      text-decoration-color: #fdb515;
+      text-decoration-skip-ink: none;
+      text-decoration-thickness: 3px;
+
+      &:hover {
+        background-color: black !important;
+        color: white !important;
+        text-decoration: none !important;
+      }
+    }
+  }
+  
+  button#resetButton {
+    margin-left: auto;
+    justify-content: end;
+  }
 
   ul {
     display: flex;
