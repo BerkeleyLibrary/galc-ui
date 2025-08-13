@@ -23,6 +23,18 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      # This is required to confirm that GHA will use the right version of Yarn
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Check yarn version
+        run: |
+          if [ `yarn --version` != `cat package.json | jq .packageManager -r | cut -c 6-` ]; then
+            echo "::warning file=package.json,title=YarnVersionMismatch::Yarn `yarn --version` does not match required version"
+          else
+            echo "::notice file=package.json,title=YarnVersionMatch::Yarn `yarn --version` matches required version"
+          fi
+
       - name: Cache node modules
         uses: actions/cache@v4
         with:
