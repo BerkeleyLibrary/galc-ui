@@ -83,6 +83,16 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      # This is required to confirm that GHA will use the right version of Yarn
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+  
       - name: Download distribution
         uses: actions/download-artifact@v4
         with:
