@@ -77,7 +77,7 @@ jobs:
   publish-snapshot:
     needs: build
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    if: github.ref_name == 'main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
 
     steps:
       - name: Check out repository
@@ -88,6 +88,14 @@ jobs:
         with:
           name: dist
           path: dist
+
+      - name: Check yarn version
+        run: |
+          if [ `yarn --version` != `cat package.json | jq .packageManager -r | cut -c 6-` ]; then
+            echo "::warning file=package.json,title=YarnVersionMismatch::Yarn `yarn --version` does not match required version"
+          else
+            echo "::notice file=package.json,title=YarnVersionMatch::Yarn `yarn --version` matches required version"
+          fi
 
       - name: Publish latest snapshot
         run: |
