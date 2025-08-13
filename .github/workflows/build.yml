@@ -114,7 +114,7 @@ jobs:
           yarn version 0.0.0-"${GITHUB_SHA:0:7}" --immediate
           yarn npm publish --access public --tag snapshot
         env:
-          DEBUG: "npm:*,yarn:*"
+          DEBUG: "*"
 
   publish-release:
     needs: build
