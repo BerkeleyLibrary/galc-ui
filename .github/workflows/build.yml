@@ -87,6 +87,7 @@ jobs:
       - name: Update yarn configuration for auth
         run: |
           yarn config set npmAuthToken "${{ secrets.NPM_ACCESS_TOKEN_LIB_NPM }}"
+          yarn config set npmRegistryServer "https://registry.npmjs.org"
 
       - name: Download distribution
         uses: actions/download-artifact@v4
