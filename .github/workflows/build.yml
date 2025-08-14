@@ -102,7 +102,7 @@ jobs:
           name: dist
           path: dist
       
-      - run: ls -l . dist
+      - run: ls -al . dist
           
       - name: Check yarn version
         run: |
