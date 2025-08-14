@@ -103,7 +103,7 @@ jobs:
       
       - run: |
           pwd
-          ls -al . dist
+          ls -al . dist ../../_temp
           
       - name: Check yarn version
         run: |
