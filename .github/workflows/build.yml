@@ -104,8 +104,7 @@ jobs:
           path: dist
       
       - run: |
-          pwd
-          ls -al . dist ../../_temp
+          yarn npm whoami
           
       - name: Check yarn version
         run: |
