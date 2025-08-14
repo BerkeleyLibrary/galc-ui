@@ -3,6 +3,8 @@ on: [ push, pull_request, release, workflow_dispatch ]
 
 env:
   YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_GALC_UI_PUBLISH_TOKEN }}
+  NODE_AUTH_TOKEN: ${{ secrets.NPM_GALC_UI_PUBLISH_TOKEN }}
+  REGISTRY_URL: https://registry.npmjs.org
 
 jobs:
   debug:
@@ -32,9 +34,6 @@ jobs:
         with:
           node-version: 22
           cache: yarn
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_GALC_UI_PUBLISH_TOKEN }}
-          REGISTRY_URL: https://registry.npmjs.org
 
       - name: Check yarn version
         run: |
@@ -95,17 +94,16 @@ jobs:
         with:
           node-version: 22
           cache: yarn
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_GALC_UI_PUBLISH_TOKEN }}
-          REGISTRY_URL: https://registry.npmjs.org
-  
+
       - name: Download distribution
         uses: actions/download-artifact@v4
         with:
           name: dist
           path: dist
       
-      - run: ls -al . dist
+      - run: |
+          pwd
+          ls -al . dist
           
       - name: Check yarn version
         run: |
