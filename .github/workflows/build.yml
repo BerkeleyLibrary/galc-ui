@@ -91,6 +91,7 @@ jobs:
           path: dist
       
       - run: |
+          yarn npm login
           yarn npm whoami
           
       - name: Check yarn version
