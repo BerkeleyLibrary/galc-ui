@@ -81,8 +81,12 @@ jobs:
       - name: Enable Corepack
         run: corepack enable
 
-      - name: Create .npmrc
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_ACCESS_TOKEN_LIB_NPM }}" > .npmrc
+      # - name: Create .npmrc
+      #   run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_ACCESS_TOKEN_LIB_NPM }}" > .npmrc
+
+      - name: Update yarn configuration for auth
+        run: |
+          yarn config set npmAuthToken "${{ secrets.NPM_ACCESS_TOKEN_LIB_NPM }}"
 
       - name: Download distribution
         uses: actions/download-artifact@v4
