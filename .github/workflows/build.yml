@@ -94,10 +94,7 @@ jobs:
         with:
           name: dist
           path: dist
-      
-      - run: |
-          yarn npm whoami
-          
+
       - name: Check yarn version
         run: |
           if [ `yarn --version` != `cat package.json | jq .packageManager -r | cut -c 6-` ]; then
