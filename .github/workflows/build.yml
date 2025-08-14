@@ -32,6 +32,9 @@ jobs:
         with:
           node-version: 22
           cache: yarn
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_GALC_UI_PUBLISH_TOKEN }}
+          REGISTRY_URL: https://registry.npmjs.org
 
       - name: Check yarn version
         run: |
