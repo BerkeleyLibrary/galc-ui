@@ -27,13 +27,6 @@ jobs:
       - name: Enable Corepack
         run: corepack enable
 
-      - name: Setup NodeJS
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: yarn
-          registry-url: https://registry.npmjs.org
-
       - name: Check yarn version
         run: |
           if [ "`yarn --version`" != "`cat package.json | jq .packageManager -r | cut -c 6-`" ]; then
@@ -88,17 +81,9 @@ jobs:
       - name: Enable Corepack
         run: corepack enable
 
-      - name: Setup NodeJS
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: yarn
-          registry-url: https://registry.npmjs.org
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_GALC_UI_PUBLISH_TOKEN }}
-
       - name: Create .npmrc
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_ACCESS_TOKEN_LIB_NPM }}"
+
       - name: Download distribution
         uses: actions/download-artifact@v4
         with:
