@@ -82,7 +82,7 @@ jobs:
         run: corepack enable
 
       - name: Create .npmrc
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_ACCESS_TOKEN_LIB_NPM }}"
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_ACCESS_TOKEN_LIB_NPM }}" > .npmrc
 
       - name: Download distribution
         uses: actions/download-artifact@v4
