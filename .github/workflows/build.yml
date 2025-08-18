@@ -87,6 +87,7 @@ jobs:
         run: |
           yarn config
           yarn version 0.0.0-"${GITHUB_SHA:0:7}" --immediate
+          cat package.json
           yarn npm publish --access public --tag snapshot
 
   publish-release:
