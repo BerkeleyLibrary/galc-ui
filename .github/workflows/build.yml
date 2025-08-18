@@ -1,6 +1,6 @@
 name: Build
 on: [ push, pull_request, release, workflow_dispatch ]
-
+# noop
 env:
   YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_GALC_UI_PUBLISH_TOKEN }}
 
