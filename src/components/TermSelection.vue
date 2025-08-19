@@ -33,8 +33,7 @@ watch(
         ? `Filter applied: ${props.term.value}`
         : `Filter removed: ${props.term.value}`
     }
-  },
-  { deep: true }
+  }
 )
 
 </script>
