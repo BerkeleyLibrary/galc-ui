@@ -1,5 +1,6 @@
 <!-- TODO: share code w/EditTermSelection -->
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import { useSearchStore } from '../stores/search'
 
 // ------------------------------------------------------------
@@ -17,6 +18,25 @@ const { selectedTerms } = useSearchStore()
 
 const selected = selectedTerms(props.facet.name)
 
+// ------------------------------------------------------------
+// Live message for screen readers
+const liveMessage = ref("")
+
+watch(
+  selected,
+  (newVal, oldVal) => {
+    const wasSelected = oldVal?.includes(props.term.value)
+    const isSelected = newVal.includes(props.term.value)
+
+    if (wasSelected !== isSelected) {
+      liveMessage.value = isSelected
+        ? `Filter applied: ${props.term.value}`
+        : `Filter removed: ${props.term.value}`
+    }
+  },
+  { deep: true }
+)
+
 </script>
 
 <template>
@@ -33,6 +53,9 @@ const selected = selectedTerms(props.facet.name)
       <legend>{{ term.value }}</legend>
       <TermSelection v-for="child in term.children" :key="child.id" :facet="props.facet" :term="child"/>
     </fieldset>
+     <!-- Live region for announcements -->
+
+    <span class="sr-only" aria-live="polite">{{ liveMessage }}</span>
   </div>
 </template>
 
@@ -71,4 +94,19 @@ div.galc-term-selection {
     border: 0;
   }
 }
+
+/* Utility class for screen-reader-only content */
+
+.sr-only {
+  position: absolute;
+  width: auto;      /* allow width to grow */
+  height: auto;     /* allow height to grow */
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 </style>
