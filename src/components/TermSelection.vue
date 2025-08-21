@@ -7,7 +7,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'announce', message: string): void
+  (e: 'status-changed'): void
 }>()
 
 const { selectedTerms } = useSearchStore()
@@ -44,7 +44,7 @@ function onChange() {
         :key="child.id"
         :facet="props.facet"
         :term="child"
-        @announce="emit('announce', $event)"
+        @status-changed="emit('status-changed')"
       />
     </fieldset>
   </div>
