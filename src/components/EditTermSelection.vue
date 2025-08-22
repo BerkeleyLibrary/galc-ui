@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useSearchStore } from '../stores/search'
 import { ref } from 'vue'
 import TermSelection from './TermSelection.vue'
@@ -16,12 +15,16 @@ const liveMessage = ref("")
 function handleStatusChanged() {
   // Compute current status for this facet
   const selected = selectedTerms(props.facet.name).value  // array of selected term values
-  // Build a live message summarizing all selected terms
-  if (selected.length > 0) {
-    liveMessage.value = `Selected filters: ${selected.join(', ')}`
-  } else {
-    liveMessage.value = `No filters selected`
-  }
+  
+  // Force reset before updating so SRs catch the change
+  liveMessage.value = '\u00A0'
+  requestAnimationFrame(() => {
+    if (selected.length > 0) {
+      liveMessage.value = `Selected filters: ${selected.join(', ')}`
+    } else {
+      liveMessage.value = `No filters selected`
+    }
+  })
 }
 
 
@@ -42,7 +45,7 @@ function handleStatusChanged() {
 
     <!-- Single global live region -->
    <span class="sr-only" aria-live="polite" data-testid="live-region">
-  {{ liveMessage || '\u00A0' }}
+  {{ liveMessage }}
 </span>
   </div>
 </template>
