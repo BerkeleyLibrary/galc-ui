@@ -28,9 +28,7 @@ function onToggle (event: Event) {
     expanded.value = open
   }
 }
-const emit = defineEmits<{
-  (e: 'status-changed'): void
-}>()
+
 
 </script>
 
@@ -40,7 +38,7 @@ const emit = defineEmits<{
     <details :open="expanded" :aria-expanded="expanded" @toggle="onToggle">
       <summary>{{ facetName }}</summary>
       <template v-if="expanded">
-        <TermSelection v-for="term in rootTerms" :key="term.id" :facet="props.facet" :term="term" @status-changed="emit('status-changed')"/>
+        <TermSelection v-for="term in rootTerms" :key="term.id" :facet="props.facet" :term="term" />
       </template>
     </details>
   </fieldset>
