@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
+import { computed } from 'vue'
 import { useFacetStore } from '../stores/facets'
 import { useSessionStore } from '../stores/session'
+import { useSearchStore } from '../stores/search'
 
 import filter from '../assets/filter.svg'
 
@@ -10,43 +12,22 @@ import InternalFields from './InternalFields.vue'
 import Facet from './Facet.vue'
 import TermDeselection from './TermDeselection.vue'
 
-import { useSearchStore } from '../stores/search'
-import { computed } from 'vue'
-
 const { facets } = storeToRefs(useFacetStore())
 const { isAdmin } = storeToRefs(useSessionStore())
-//import { watch } from 'vue'
-import { ref } from 'vue'
 
 const search = useSearchStore()
-
-//watch(() => search.activeFacetNames, (val) => {
-// console.log("Active facets:", val)
-//}, { immediate: true })
-
-//console.log('search store11112:', search.selectedTerms('Size').value.join(', '))
-
-
 const liveMessage = computed(() => {
   const parts: string[] = []
-  //console.log('selected FacetName888', search.activeFacetNames.join(', '))
-
   for (const facetName of search.activeFacetNames) {
     const termNames = search.selectedTerms(facetName).value
     if (termNames.length > 0) {
-      //console.log('selected terms8888', `${facetName}: ${termNames.join(', ')}`)
       parts.push(`${facetName}: ${termNames.join(', ')}`)
     }
   }
-
   return parts.length > 0
-    ? `Selected filters 2222– ${parts.join('; ')}.`
+    ? `Selected filters – ${parts.join('; ')}.`
     : 'No filters selected.'
 })
-
-
-
-
 </script>
 
 <template>
@@ -65,7 +46,6 @@ const liveMessage = computed(() => {
         :id="`galc-facet-${facet.name}`"
         :key="facet.name"
         :facet="facet"
-        
       />
     </form>
 
