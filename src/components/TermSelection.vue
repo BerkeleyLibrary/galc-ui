@@ -14,12 +14,7 @@ const props = defineProps({
 // Stores
 
 const { selectedTerms } = useSearchStore()
-
 const selected = selectedTerms(props.facet.name)
-
-const emit = defineEmits<{
-  (e: 'status-changed'): void
-}>()
 
 </script>
 
@@ -31,12 +26,11 @@ const emit = defineEmits<{
       :value="term.value"
       type="checkbox"
       :aria-label="`Filter by ${term.value}. Currently ${selected.includes(term.value) ? 'selected' : 'not selected'}`"
-      @change="emit('status-changed')"
     >
     <label :for="`term-${term.id}`">{{ term.value }}</label>
     <fieldset v-if="term.children" class="galc-facet-subterms">
       <legend>{{ term.value }}</legend>
-      <TermSelection v-for="child in term.children" :key="child.id" :facet="props.facet" :term="child" @change="emit('status-changed')"/>
+      <TermSelection v-for="child in term.children" :key="child.id" :facet="props.facet" :term="child"/>
     </fieldset>
   </div>
 </template>
