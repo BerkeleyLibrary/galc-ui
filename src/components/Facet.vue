@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useFacetStore } from '../stores/facets'
 
 import { Facet } from '../types/Facet'
-import EditTermSelection from './EditTermSelection.vue'
+import TermSelection from './TermSelection.vue'
 
 // ------------------------------------------------------------
 // Properties
@@ -28,6 +28,9 @@ function onToggle (event: Event) {
     expanded.value = open
   }
 }
+const emit = defineEmits<{
+  (e: 'status-changed'): void
+}>()
 
 </script>
 
@@ -37,7 +40,7 @@ function onToggle (event: Event) {
     <details :open="expanded" :aria-expanded="expanded" @toggle="onToggle">
       <summary>{{ facetName }}</summary>
       <template v-if="expanded">
-        <EditTermSelection :facet="facet"  :terms="facet.terms" />
+        <TermSelection v-for="term in rootTerms" :key="term.id" :facet="props.facet" :term="term" @status-changed="emit('status-changed')"/>
       </template>
     </details>
   </fieldset>

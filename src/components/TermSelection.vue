@@ -1,28 +1,26 @@
+<!-- TODO: share code w/EditTermSelection -->
 <script setup lang="ts">
 import { useSearchStore } from '../stores/search'
 
-const props = defineProps<{
-  facet: { name: string }
-  term: { id: string | number; value: string; children?: any[] }
-}>()
+// ------------------------------------------------------------
+// Properties
+
+const props = defineProps({
+  facet: { type: Object, default: null },
+  term: { type: Object, default: null }
+})
+
+// ------------------------------------------------------------
+// Stores
+
+const { selectedTerms } = useSearchStore()
+
+const selected = selectedTerms(props.facet.name)
 
 const emit = defineEmits<{
   (e: 'status-changed'): void
 }>()
 
-const { selectedTerms } = useSearchStore()
-const selected = selectedTerms(props.facet.name)
-
-function onChange() {
-  emit('status-changed')  // no message yet
-  //const isSelected = selected.value.includes(props.term.value)
-  //emit('announce', `${props.facet.name}: ${props.term.value} ${isSelected ? 'applied' : 'removed'}`)
-
-  //emit('announce', isSelected
-  //  ? `Filter applied: ${props.term.value}`
-   // : `Filter removed: ${props.term.value}`
-  //)
-}
 </script>
 
 <template>
@@ -33,19 +31,49 @@ function onChange() {
       :value="term.value"
       type="checkbox"
       :aria-label="`Filter by ${term.value}. Currently ${selected.includes(term.value) ? 'selected' : 'not selected'}`"
-      @change="onChange"
+      @change="emit('status-changed')"
     >
     <label :for="`term-${term.id}`">{{ term.value }}</label>
-
     <fieldset v-if="term.children" class="galc-facet-subterms">
       <legend>{{ term.value }}</legend>
-      <TermSelection
-        v-for="child in term.children"
-        :key="child.id"
-        :facet="props.facet"
-        :term="child"
-        @status-changed="emit('status-changed')"
-      />
+      <TermSelection v-for="child in term.children" :key="child.id" :facet="props.facet" :term="child" @change="emit('status-changed')"/>
     </fieldset>
   </div>
 </template>
+
+<style lang="scss">
+div.galc-term-selection {
+  border: none;
+  display: grid;
+  grid-template-columns: 18px 3fr;
+  column-gap: 0.5em;
+  margin-left: 0;
+  padding-left: 0;
+
+  @media only screen and (max-width: 700px) {
+    font-size: 1.125rem;
+  }
+
+  input[type=checkbox] {
+    margin-bottom: 0.25em;
+
+    @media only screen and (max-width: 700px) {
+      -webkit-transform: scale(1.25);
+    }
+  }
+
+  label {
+    white-space: nowrap;
+    height: min-content;
+    font-weight: normal;
+    line-height: 1.15;
+    margin-bottom: 0.25em;
+    cursor: pointer;
+  }
+
+  fieldset.galc-facet-subterms {
+    display: block;
+    border: 0;
+  }
+}
+</style>

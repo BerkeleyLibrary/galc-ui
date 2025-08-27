@@ -10,8 +10,42 @@ import InternalFields from './InternalFields.vue'
 import Facet from './Facet.vue'
 import TermDeselection from './TermDeselection.vue'
 
+import { useSearchStore } from '../stores/search'
+import { computed } from 'vue'
+
 const { facets } = storeToRefs(useFacetStore())
 const { isAdmin } = storeToRefs(useSessionStore())
+//import { watch } from 'vue'
+import { ref } from 'vue'
+
+const search = useSearchStore()
+
+//watch(() => search.activeFacetNames, (val) => {
+// console.log("Active facets:", val)
+//}, { immediate: true })
+
+//console.log('search store11112:', search.selectedTerms('Size').value.join(', '))
+
+
+const liveMessage = computed(() => {
+  const parts: string[] = []
+  //console.log('selected FacetName888', search.activeFacetNames.join(', '))
+
+  for (const facetName of search.activeFacetNames) {
+    const termNames = search.selectedTerms(facetName).value
+    if (termNames.length > 0) {
+      //console.log('selected terms8888', `${facetName}: ${termNames.join(', ')}`)
+      parts.push(`${facetName}: ${termNames.join(', ')}`)
+    }
+  }
+
+  return parts.length > 0
+    ? `Selected filters 2222– ${parts.join('; ')}.`
+    : 'No filters selected.'
+})
+
+
+
 
 </script>
 
@@ -31,8 +65,13 @@ const { isAdmin } = storeToRefs(useSessionStore())
         :id="`galc-facet-${facet.name}`"
         :key="facet.name"
         :facet="facet"
+        
       />
     </form>
+
+    <!-- Accessible live region -->
+    <span class="sr-only" aria-live="polite" aria-atomic="true">{{ liveMessage }}</span>
+
   </div>
 </template>
 
@@ -147,5 +186,18 @@ div.galc-facets {
       }
     }
   }
-}
+
+  .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+  }
+} 
+
 </style>

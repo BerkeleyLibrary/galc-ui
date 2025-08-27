@@ -123,7 +123,7 @@ export const useSearchStore = defineStore('search', () => {
     return doSearch(state.value)
   }
 
-  const exported = { init, keywords, suppressed, page, selectedTerms, refreshSearch, resetSearch, canResetSearch }
+  //const exported = { init, keywords, suppressed, page, selectedTerms, refreshSearch, resetSearch, canResetSearch }
 
   // --------------------------------------------------
   // Internal functions and properties
@@ -227,6 +227,9 @@ export const useSearchStore = defineStore('search', () => {
 
   // --------------------------------------------------
   // Store definition
+
+  const exported = { init, keywords, suppressed, page, selectedTerms, refreshSearch, resetSearch, canResetSearch, activeFacetNames }
+
 
   return exported
 })
