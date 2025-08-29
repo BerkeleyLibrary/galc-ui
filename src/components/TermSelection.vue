@@ -14,7 +14,6 @@ const props = defineProps({
 // Stores
 
 const { selectedTerms } = useSearchStore()
-
 const selected = selectedTerms(props.facet.name)
 
 </script>

@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
+import { computed } from 'vue'
 import { useFacetStore } from '../stores/facets'
 import { useSessionStore } from '../stores/session'
+import { useSearchStore } from '../stores/search'
 
 import filter from '../assets/filter.svg'
 
@@ -13,6 +15,19 @@ import TermDeselection from './TermDeselection.vue'
 const { facets } = storeToRefs(useFacetStore())
 const { isAdmin } = storeToRefs(useSessionStore())
 
+const search = useSearchStore()
+const liveMessage = computed(() => {
+  const parts: string[] = []
+  for (const facetName of search.activeFacetNames) {
+    const termNames = search.selectedTerms(facetName).value
+    if (termNames.length > 0) {
+      parts.push(`${facetName}: ${termNames.join(', ')}`)
+    }
+  }
+  return parts.length > 0
+    ? `Selected filters – ${parts.join('; ')}.`
+    : 'No filters selected.'
+})
 </script>
 
 <template>
@@ -33,6 +48,10 @@ const { isAdmin } = storeToRefs(useSessionStore())
         :facet="facet"
       />
     </form>
+
+    <!-- Accessible live region -->
+    <span class="sr-only" aria-live="polite" aria-atomic="true">{{ liveMessage }}</span>
+
   </div>
 </template>
 
@@ -147,5 +166,18 @@ div.galc-facets {
       }
     }
   }
-}
+
+  .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+  }
+} 
+
 </style>

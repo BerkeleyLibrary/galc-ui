@@ -29,6 +29,7 @@ function onToggle (event: Event) {
   }
 }
 
+
 </script>
 
 <template>
@@ -37,7 +38,7 @@ function onToggle (event: Event) {
     <details :open="expanded" :aria-expanded="expanded" @toggle="onToggle">
       <summary>{{ facetName }}</summary>
       <template v-if="expanded">
-        <TermSelection v-for="term in rootTerms" :key="term.id" :facet="props.facet" :term="term"/>
+        <TermSelection v-for="term in rootTerms" :key="term.id" :facet="props.facet" :term="term" />
       </template>
     </details>
   </fieldset>
