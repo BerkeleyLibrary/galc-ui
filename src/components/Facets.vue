@@ -94,9 +94,11 @@ const liveMessage = computed(() => {
 </template>
 
 <style lang="scss">
+
 .show-facets-button {
   display: none;
 }
+
 @media only screen and (max-width: 700px) {
   .show-facets-button {
     display: block;
@@ -111,13 +113,14 @@ const liveMessage = computed(() => {
     cursor: pointer;
     border: none;
     border-radius: 4px;
+    height: 33px;
 
     img.show-facets-icon {
       height: 0.9rem;
       width: 0.9rem;
       filter: invert(100%);
       display: inline;
-      margin-bottom: 4px;
+      margin-bottom: -2px;
       margin-left: 4px;
     }
   }
@@ -133,4 +136,6 @@ clip: rect(0, 0, 0, 0);
 white-space: nowrap;
 border-width: 0;
 }
+
+
 </style>
