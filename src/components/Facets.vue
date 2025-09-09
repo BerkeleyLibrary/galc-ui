@@ -94,48 +94,117 @@ const liveMessage = computed(() => {
 </template>
 
 <style lang="scss">
-
-.show-facets-button {
-  display: none;
-}
-
-@media only screen and (max-width: 700px) {
+div.galc-facets {
   .show-facets-button {
-    display: block;
-    font-size: 1rem;
-    line-height: 1.75rem;
-    font-weight: normal;
-    color: white;
-    background-color: #46535e;
-    padding: 2px 8px;
-    margin: 6px 16px 6px 0;
-    width: fit-content;
-    cursor: pointer;
-    border: none;
-    border-radius: 4px;
-    height: 33px;
-
-    img.show-facets-icon {
-      height: 0.9rem;
-      width: 0.9rem;
-      filter: invert(100%);
-      display: inline;
-      margin-bottom: -2px;
-      margin-left: 4px;
+    display: none;
+  }
+ 
+   @media only screen and (min-width: 700px) {
+    margin-right: 1em;
+    // TODO: less hacky way to place this differently on desktop and mobile
+    .galc-term-deselection {
+      display: none;
+    }
+    .show-facets-button {
+      display: none;
+    }
+    form.galc-facet-form {
+      width: 150px;
     }
   }
-}
-.sr-only {
-position: absolute;
-width: 1px;
-height: 1px;
-padding: 0;
-margin: -1px;
-overflow: hidden;
-clip: rect(0, 0, 0, 0);
-white-space: nowrap;
-border-width: 0;
-}
 
+  @media only screen and (max-width: 700px) {
+    .show-facets-button {
+      display: block;
+      font-size: 1rem;
+      line-height: 1.75rem;
+      font-weight: normal;
+      color: white;
+      background-color: #46535e;
+      padding: 2px 8px;
+      margin: 6px 16px 6px 0;
+      width: fit-content;
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      height: 33px;
 
+      img.show-facets-icon {
+        height: 0.9rem;
+        width: 0.9rem;
+        filter: invert(100%);
+        display: inline;
+        margin-bottom: -2px;
+        margin-left: 4px;
+      }
+    }
+  }
+
+  form.galc-facet-form {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    justify-items: start;
+
+    // TODO: rationalize these measurements
+    column-gap: 0.5rem;
+    row-gap: 0;
+    margin-right: 2rem;
+
+    .galc-facet-title {
+      white-space: nowrap;
+      grid-column: 1 / 4;
+      margin-bottom: 0.25em;
+    }
+
+    > fieldset {
+      padding-bottom: 0;
+      width: 100%;
+
+      details {
+        summary {
+          grid-column: 1 / 4;
+        }
+
+        input {
+          grid-column: 1;
+        }
+
+        label {
+          grid-column: 2 / 4;
+        }
+
+        fieldset {
+
+          input {
+            grid-column: 1;
+          }
+
+          label {
+            grid-column: 2 / 4;
+          }
+        }
+      }
+
+      &:not(:first-of-type) {
+        summary {
+          margin-top: 0.25em;
+        }
+      }
+    }
+  }
+
+  .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+  }
+
+}
 </style>

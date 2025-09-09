@@ -45,10 +45,10 @@ function onToggle (event: Event) {
 </template>
 
 <style lang="scss">
-fieldset { padding: 0 0.625em } 
-fieldset.galc-facet {
-  display: inherit;
+.galc-facet {
+  padding: 0 0.625em;
   border: none;
+  display: inherit;
 
   legend {
     position: absolute;
