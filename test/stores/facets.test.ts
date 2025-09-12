@@ -11,6 +11,18 @@ describe('facets', () => {
     setActivePinia(createPinia())
   })
 
+  describe('test toggle funtion', () => {
+    it('should toggle facetsOpen', () => {
+      const store = useFacetStore()
+      const initial = store.facetsOpen
+      store.toggleFacets()
+      expect(store.facetsOpen).toBe(!initial)
+
+      store.toggleFacets()
+      expect(store.facetsOpen).toBe(initial)
+    })
+  })
+
   describe('without data', () => {
     describe('facets', () => {
       it('is initially empty', () => {
