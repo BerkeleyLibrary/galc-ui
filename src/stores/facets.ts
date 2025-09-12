@@ -11,14 +11,20 @@ export const useFacetStore = defineStore('facets', () => {
 
   const facets: Ref<Facet[]> = ref([])
   const facetExpanded: Ref<{ [key: string]: boolean | undefined }> = ref({})
-  const computedExpansionState: {[key: string]: WritableComputedRef<boolean> } = {}
+  const computedExpansionState: { [key: string]: WritableComputedRef<boolean> } = {}
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 700
+  const facetsOpen = ref(!isMobile)
 
   // ------------------------------
   // Computed properties
 
   const facetNames = computed(() => { return facets.value.map(f => f.name) })
 
-  function expanded (facetName: string) {
+  function toggleFacets() {
+    facetsOpen.value = !facetsOpen.value
+  }
+
+  function expanded(facetName: string) {
     let expansionState = computedExpansionState[facetName]
     if (!expansionState) {
       expansionState = computed({
@@ -37,7 +43,7 @@ export const useFacetStore = defineStore('facets', () => {
   // ------------------------------
   // Actions
 
-  function expandAll (expandedNames = facetNames.value) {
+  function expandAll(expandedNames = facetNames.value) {
     const expanded = { ...facetExpanded.value }
     for (const facetName of expandedNames) {
       expanded[facetName] = true
@@ -45,16 +51,16 @@ export const useFacetStore = defineStore('facets', () => {
     facetExpanded.value = expanded
   }
 
-  function collapseAll () {
+  function collapseAll() {
     facetExpanded.value = {}
   }
 
-  function facetForName (name: string): Facet | undefined {
+  function facetForName(name: string): Facet | undefined {
     return facets.value.find((f) => f.name === name)
   }
 
   // ------------------------------
   // Store
 
-  return { facets, expanded, facetNames, facetForName, expandAll, collapseAll }
+  return { facets, expanded, facetNames, facetForName, expandAll, collapseAll, facetsOpen, toggleFacets }
 })
