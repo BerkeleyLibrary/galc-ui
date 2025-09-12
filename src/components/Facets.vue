@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
 import { useFacetStore } from '../stores/facets'
 import { useSessionStore } from '../stores/session'
 import { useSearchStore } from '../stores/search'
@@ -16,8 +16,34 @@ const { facets } = storeToRefs(useFacetStore())
 const { isAdmin } = storeToRefs(useSessionStore())
 
 const search = useSearchStore()
-const facetsOpen = ref(false)
+
 const isMobile = ref(window.innerWidth <= 700)
+const savedStatus = loadFacetsOpen()
+const facetsOpen = ref(
+  savedStatus !== null ? savedStatus : !isMobile.value // first time or localStorage not availabe: mobile close, desktop open
+)
+
+watch(facetsOpen, (val) => {
+  saveFacetsOpen(val)
+})
+
+function saveFacetsOpen(value: boolean) {
+  try {
+    localStorage.setItem('facetsOpen', String(value))
+  } catch (e) {
+    console.warn('Could not save facetsOpen to localStorage.', e)
+  }
+}
+
+function loadFacetsOpen(): boolean | null {
+  try {
+    const status = localStorage.getItem('facetsOpen')
+    return status !== null ? status === 'true' : null
+  } catch (e) {
+    console.warn('Could not read facetsOpen from localStorage', e)
+    return null
+  }
+}
 
 function toggleFacets() {
   facetsOpen.value = !facetsOpen.value
@@ -25,12 +51,6 @@ function toggleFacets() {
 
 function handleWindowResize() {
   isMobile.value = window.innerWidth <= 700
-  if (isMobile.value) {
-    facetsOpen.value = false 
-  }
-  else {
-    facetsOpen.value = true
-  }
 }
 
 onMounted(() => {
