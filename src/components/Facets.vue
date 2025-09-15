@@ -12,13 +12,13 @@ import InternalFields from './InternalFields.vue'
 import Facet from './Facet.vue'
 import TermDeselection from './TermDeselection.vue'
 
-const { facets } = storeToRefs(useFacetStore())
 const { isAdmin } = storeToRefs(useSessionStore())
-
-const search = useSearchStore()
-const { facetsOpen } = storeToRefs(useFacetStore())
-const { toggleFacets } = useFacetStore()
 const isMobile = ref(typeof window !== 'undefined' && window.innerWidth <= 700)
+const search = useSearchStore()
+
+const facetStore = useFacetStore()
+const { facets, facetsOpen } = storeToRefs(facetStore)
+const { toggleFacets } = facetStore
 
 function handleWindowResize() {
   isMobile.value = typeof window !== 'undefined' && window.innerWidth <= 700
