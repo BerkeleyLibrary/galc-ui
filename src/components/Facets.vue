@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { computed } from 'vue'
+import { computed, ref, onMounted, onUnmounted} from 'vue'
 import { useFacetStore } from '../stores/facets'
 import { useSessionStore } from '../stores/session'
 import { useSearchStore } from '../stores/search'
@@ -12,10 +12,26 @@ import InternalFields from './InternalFields.vue'
 import Facet from './Facet.vue'
 import TermDeselection from './TermDeselection.vue'
 
-const { facets } = storeToRefs(useFacetStore())
 const { isAdmin } = storeToRefs(useSessionStore())
-
+const isMobile = ref(typeof window !== 'undefined' && window.innerWidth <= 700)
 const search = useSearchStore()
+
+const facetStore = useFacetStore()
+const { facets, facetsOpen } = storeToRefs(facetStore)
+const { toggleFacets } = facetStore
+
+function handleWindowResize() {
+  isMobile.value = typeof window !== 'undefined' && window.innerWidth <= 700
+}
+
+onMounted(() => {
+  window.addEventListener('resize', handleWindowResize)
+  handleWindowResize()
+})
+onUnmounted(() => {
+  window.removeEventListener('resize', handleWindowResize)
+})
+
 const liveMessage = computed(() => {
   const parts: string[] = []
   for (const facetName of search.activeFacetNames) {
@@ -33,12 +49,24 @@ const liveMessage = computed(() => {
 <template>
   <div class="galc-facets">
     <TermDeselection id-prefix="facets"/>
-    <input id="show-facets" type="checkbox">
-    <label class="show-facets-label" for="show-facets">
+
+    <button
+      v-if="isMobile"
+      class="show-facets-button"
+      type="button"
+      @click="toggleFacets"
+      :aria-expanded="facetsOpen.toString()"
+      aria-controls="facet-form"
+    >
       Options
-      <img alt="Options" :src="filter" class="show-facets-icon">
-    </label>
-    <form class="galc-facet-form">
+      <img alt="" :src="filter" class="show-facets-icon">
+    </button>
+
+    <form
+      id="facet-form"
+      class="galc-facet-form"
+      v-show="facetsOpen || !isMobile"
+    >
       <Suppressed v-if="isAdmin"/>
       <InternalFields v-if="isAdmin"/>
       <Facet
@@ -50,47 +78,34 @@ const liveMessage = computed(() => {
     </form>
 
     <!-- Accessible live region -->
-    <span class="sr-only" aria-live="polite" aria-atomic="true">{{ liveMessage }}</span>
-
+    <span class="sr-only" aria-live="polite" aria-atomic="true">
+      {{ liveMessage }}
+    </span>
   </div>
 </template>
 
 <style lang="scss">
 div.galc-facets {
-
-  input#show-facets {
+  .show-facets-button {
     display: none;
   }
-
-  @media only screen and (min-width: 700px) {
+ 
+   @media only screen and (min-width: 700px) {
     margin-right: 1em;
-    
     // TODO: less hacky way to place this differently on desktop and mobile
     .galc-term-deselection {
       display: none;
     }
-
-    label.show-facets-label {
+    .show-facets-button {
       display: none;
     }
-
     form.galc-facet-form {
       width: 150px;
     }
   }
 
   @media only screen and (max-width: 700px) {
-    input#show-facets {
-      ~ form.galc-facet-form {
-        display: none;
-      }
-
-      &:checked ~ form.galc-facet-form {
-        display: grid;
-      }
-    }
-
-    label.show-facets-label {
+    .show-facets-button {
       display: block;
       font-size: 1rem;
       line-height: 1.75rem;
@@ -101,6 +116,9 @@ div.galc-facets {
       margin: 6px 16px 6px 0;
       width: fit-content;
       cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      height: 33px;
 
       img.show-facets-icon {
         height: 0.9rem;
@@ -178,6 +196,6 @@ div.galc-facets {
   white-space: nowrap;
   border-width: 0;
   }
-} 
 
+}
 </style>

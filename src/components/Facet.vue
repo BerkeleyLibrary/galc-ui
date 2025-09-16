@@ -45,9 +45,10 @@ function onToggle (event: Event) {
 </template>
 
 <style lang="scss">
-fieldset.galc-facet {
-  display: inherit;
+.galc-facet {
+  padding: 0 0.625em;
   border: none;
+  display: inherit;
 
   legend {
     position: absolute;
@@ -67,7 +68,7 @@ fieldset.galc-facet {
       font-size: 1.125rem;
       border-bottom: 1px solid #ddd5c7;
       width: 100%;
-      margin-bottom: 0.5em;
+      margin-bottom: 0.0em;
       cursor: pointer;
 
       &::-webkit-details-marker {
